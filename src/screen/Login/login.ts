@@ -3,10 +3,8 @@ import { Login_Service } from "./service";
 import { Alert } from "react-native";
 
 interface logincerdentials {
-
     userName: string,
     userPassword: string,
-
 }
 
 export const useLoginDetials = () => {
@@ -15,11 +13,10 @@ export const useLoginDetials = () => {
         userName: '',
         userPassword: '',
     });
-
     const [loading,setLoading] = useState<boolean>(false);
 
-    const handleFieldChange = (field: string, value: string) => {
 
+    const handleFieldChange = (field: string, value: string) => {
 
         setLoginCredentials(prev => (
             {
@@ -51,7 +48,7 @@ export const useLoginDetials = () => {
             return response
         } else {
             setLoading(false);
-            console.log('Sorry ji ', response);
+            console.log('Sorry Can not login ', response);
             Alert.alert(`${response.message}`);
             return response
         }

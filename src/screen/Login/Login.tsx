@@ -7,24 +7,27 @@ import { Fonts } from '../../Theme/Fonts';
 import Icon from '../../Resuseable/Icon';
 import MyInput from '../../Resuseable/Components/InputField/MyInput';
 import MyButton from '../../Resuseable/Components/MyButton/MyButton';
-import { Formik } from 'formik';
 import { scale, verticalScale } from '../../Theme/resposive';
 import { useNavigation } from '@react-navigation/native';
 import { useLoginDetials } from './login';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
+type loginNavigator = {
+    UserDashboard : undefined
+}
 
 const Login = () => {
 
     const [secureicon, setSecureIcon] = useState(true);
-    const navigation = useNavigation();
+    const navigation = useNavigation<NativeStackNavigationProp<loginNavigator>>();
 
     const user = useLoginDetials();
 
     const handleSignin = async () => {
         const result =  await user.handleLogin();
-        console.log(" reslut is ",result)
-        console.log('result data is ',result.data[0])
-        if(result.data[0] === true){
+        console.log(" resul t is ",result)
+        console.log('result data is ',result?.data[0])
+        if(result?.data[0] === true){
             navigation.navigate('UserDashboard');
         }
         

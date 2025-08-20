@@ -1,5 +1,45 @@
 import axios, { AxiosRequestConfig } from "axios";
 
+export const apicall_otheer = async (
+  endpoint: '',
+  method: "GET" | "POST",
+  params?: Record<string, any>,
+  data?: Record<string, any>
+) => {
+  const option: AxiosRequestConfig = {
+    method,
+    url: endpoint,
+    params,
+    data,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  try {
+    const response = await axios.request(option);
+
+    return {
+      success: true,
+      status: response.status,
+      data: response.data,
+    };
+  } catch (error: any) {
+    const statusCode = error?.response?.status || 500;
+    const message =
+      error?.response?.data?.message || error?.message || "Something went wrong";
+
+    console.log("The error calling API is :", error?.response?.data || message);
+
+    return {
+      success: false,
+      status: statusCode,
+      data: error?.response?.data || {},
+      message,
+    };
+  }
+};
+
 
 export const apicall = async ({ endpoint  = '', method ='', params = {}, data = {} }) => {
   const option = {
