@@ -70,7 +70,7 @@ export const LoginScreen = () =>{
                 <View
                     style={{
                         rowGap: AppSizes.Gap_30,
-                        alignItems: 'center',
+                        // alignItems: 'center',
                         position: 'relative',
                         marginHorizontal: AppSizes.Margin_Horizontal_10
                     }}>
