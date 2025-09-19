@@ -1,4 +1,4 @@
-import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import Basescreen from '../../Resuseable/BaseScreen';
 import { Colors } from '../../Theme/Color';
@@ -11,24 +11,28 @@ import { scale, verticalScale } from '../../Theme/resposive';
 import { useNavigation } from '@react-navigation/native';
 import { useLoginDetials } from './login';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useDispatch } from 'react-redux';
+import { setUserToken } from '../../utils/Shared/UserSlice';
+import { LoadingBaseModal } from '../../Resuseable/Components/Modal/LoadingModal';
 
 type loginNavigator = {
     UserDashboard : undefined
 }
 
-const Login = () => {
-
+export const LoginScreen = () =>{
     const [secureicon, setSecureIcon] = useState(true);
     const navigation = useNavigation<NativeStackNavigationProp<loginNavigator>>();
+    const dispatch = useDispatch();
 
     const user = useLoginDetials();
 
     const handleSignin = async () => {
         const result =  await user.handleLogin();
-        console.log(" resul t is ",result)
+        console.log(" result is ",result)
         console.log('result data is ',result?.data[0])
         if(result?.data[0] === true){
-            navigation.navigate('UserDashboard');
+            dispatch(setUserToken(result.data[3]));
+            //navigation.navigate('UserDashboard');
         }
         
     }
@@ -39,11 +43,7 @@ const Login = () => {
             //backgroundColor={Colors.white}
             scroable={true}
             paddingHorizontal={AppSizes.Padding_Vertical_10}>
-           { user.loading? (
-            <View style={{flex:1 ,justifyContent:'center'}}>
-                <ActivityIndicator color={Colors.secondary} size={'large'}/>
-            </View>
-           ) :(
+           
              <View style={{ flex: 1, justifyContent: "flex-start", marginTop: verticalScale(40), rowGap: AppSizes.Gap_20, }}>
                 <View
                     style={{
@@ -104,44 +104,47 @@ const Login = () => {
                     ></MyButton>
                 </View>
           </View>
-           ) }
+          {user.loading && <LoadingBaseModal visible ={user.loading}/>}
+          
         </Basescreen>
     )
 }
 
-export default Login
 
-const styles = StyleSheet.create({
-    maincontainer: {
-        flex: 1,
-        paddingHorizontal: AppSizes.Padding_Horizontal_10,
-        rowGap: AppSizes.Gap_30,
-        // justifyContent:'center',
-        alignItems: 'center',
-    },
-    tittle: {
-        fontFamily: Fonts.SemiBold,
-        fontSize: 50,
-        fontWeight: '400',
-        textAlign: 'center',
-    },
 
-    changePasswordText: {
-        fontFamily: Fonts.Medium,
-        fontSize: AppSizes.Font_14,
-    },
-    alternateLogin: {
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        alignItems: 'center',
-    },
 
-    loginButton: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 26,
-        width: '50%',
-        height: '100%',
-    },
 
-});
+// const styles = StyleSheet.create({
+//     maincontainer: {
+//         flex: 1,
+//         paddingHorizontal: AppSizes.Padding_Horizontal_10,
+//         rowGap: AppSizes.Gap_30,
+//         // justifyContent:'center',
+//         alignItems: 'center',
+//     },
+//     tittle: {
+//         fontFamily: Fonts.SemiBold,
+//         fontSize: 50,
+//         fontWeight: '400',
+//         textAlign: 'center',
+//     },
+
+//     changePasswordText: {
+//         fontFamily: Fonts.Medium,
+//         fontSize: AppSizes.Font_14,
+//     },
+//     alternateLogin: {
+//         flexDirection: 'row',
+//         justifyContent: 'space-evenly',
+//         alignItems: 'center',
+//     },
+
+//     loginButton: {
+//         justifyContent: 'center',
+//         alignItems: 'center',
+//         borderRadius: 26,
+//         width: '50%',
+//         height: '100%',
+//     },
+
+// });

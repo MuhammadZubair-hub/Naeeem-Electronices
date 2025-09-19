@@ -13,10 +13,13 @@ export const AppSizes = {
   Padding_Horizontal_20: scale(20),
   Padding_Vertical_20: verticalScale(20),
 
-  Margin_Horizontal_10: scale(10),
-  Margin_Vertical_10: verticalScale(10),
+ 
   Margin_Horizontal_5: scale(5),
   Margin_Vertical_5: verticalScale(5),
+   Margin_Horizontal_10: scale(10),
+  Margin_Vertical_10: verticalScale(10),
+   Margin_Horizontal_20: scale(20),
+  Margin_Vertical_20: verticalScale(20),
 
   Gap_10: scale(10),
   Gap_20: scale(20),

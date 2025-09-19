@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, Button, Alert } from 'react-native'
 import React, { useState } from 'react'
 import Basescreen from '../../../Resuseable/BaseScreen'
 import { Colors } from '../../../Theme/Color'
@@ -11,6 +11,8 @@ import { BarChart } from 'react-native-chart-kit'
 import { scale, screenWidth } from '../../../Theme/resposive'
 import StackedBarChart from './Components/Graph'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
 
 type RootStackParamList = {
   Zonal: undefined; // here undefined means that we are not passing any props to that screen
@@ -75,7 +77,7 @@ const Userdashboard = () => {
 
   return (
     <Basescreen scroable={true} statusBarColor={Colors.secondary}  >
-      <PrimaryHeader headerText='User Role' mainDashboard />
+      <PrimaryHeader headerText='Dashboard' mainDashboard />
 
       {/* <StackedBarChart/> */}
       <View style={{ marginTop: 60, rowGap: AppSizes.Gap_20, marginHorizontal: 20 }}>
@@ -86,6 +88,8 @@ const Userdashboard = () => {
       <View style={{ flex: 1, justifyContent: 'center' }}>
 
         <UsersComponets userText='Zonal Manager DB' onPress={() => navigation.navigate('Zonal')} />
+          
+          
         
       </View>
     </Basescreen>
@@ -93,6 +97,8 @@ const Userdashboard = () => {
 }
 
 export default Userdashboard;
+
+
 
 
 

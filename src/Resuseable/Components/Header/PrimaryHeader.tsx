@@ -7,6 +7,8 @@ import { Colors } from '../../../Theme/Color';
 import { screenHeight, xdHeight } from '../../../Theme/resposive';
 import Icon from '../../Icon';
 import { Fonts } from '../../../Theme/Fonts';
+import { useDispatch } from 'react-redux';
+import { setUserToken } from '../../../utils/Shared/UserSlice';
 
 
 interface PrimaryHeaderProps {
@@ -35,14 +37,22 @@ const PrimaryHeader = (
 ) => {
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const handleLogout = ( )=>{
+    dispatch(setUserToken(null));
+    //navigation.goBack();
+
+  }
 
 
+  
   return(
        <View style={[styles.headerMaincontainer, { backgroundColor: Colors.secondary }]}>
 
 
         {mainDashboard ? (
-          <Icon type='Ionicons' name='log-out-outline' size={AppSizes.Icon_Height_30}  color={Colors.white} onPress={() => navigation.goBack()} />
+          <Icon type='Ionicons' name='menu-outline' size={AppSizes.Icon_Height_30}  color={Colors.white} onPress={()=>navigation.toggleDrawer()} />
         ) : (
           <Icon type='Ionicons' name='arrow-back-outline' size={AppSizes.Icon_Height_30}  color={Colors.white}  onPress={()=>navigation.goBack()} />
         )}

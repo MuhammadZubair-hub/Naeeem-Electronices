@@ -3,9 +3,11 @@ import React, { ReactNode } from 'react'
 import { Colors } from '../../../Theme/Color';
 import Icon from '../../Icon';
 import { AppSizes } from '../../../Theme/appsizes';
+import { Fonts } from '../../../Theme/Fonts';
 
 
 interface MyInputProps {
+  label? :string | null
   placeholder: string,
   onchangetext: (text:string) => void;
   onBlur?: any;
@@ -29,6 +31,7 @@ interface MyInputProps {
 }
 
 const MyInput = ({
+  label = null,
   placeholder,
   onchangetext,
   onBlur,
@@ -54,7 +57,15 @@ const MyInput = ({
 
 
   return (
-    <View
+    <View style={{flexDirection:'column'}}>
+      {label?
+      (
+        <Text style={{color:Colors.primaryDark,fontSize:AppSizes.Font_14,fontFamily:Fonts.SemiBold,marginBottom:AppSizes.Margin_Vertical_5}}>
+          {label}
+      </Text>):
+      (null)}
+
+      <View
       style={[
         styles.maininputContainer,
         {
@@ -95,6 +106,7 @@ const MyInput = ({
 
 
 
+    </View>
     </View>
 
   )
