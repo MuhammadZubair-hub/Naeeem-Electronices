@@ -1,0 +1,82 @@
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
+import { Role } from '../types';
+import { useTheme } from '../hooks/useTheme';
+
+interface RoleGuardProps {
+  children: React.ReactNode;
+}
+
+// Role hierarchy: CEO > GM > RM > ZM > BR > AVO
+const ROLE_HIERARCHY: Record<Role, number> = {
+  [Role.CEO]: 6,
+  [Role.GM]: 5,
+  [Role.RM]: 4,
+  [Role.ZM]: 3,
+  [Role.BR]: 2,
+  [Role.AVO]: 1,
+};
+
+export const RoleGuard = <P extends object>(
+  Component: React.ComponentType<P>,
+  allowedRoles: Role[]
+) => {
+  return (props: P) => {
+    const { user } = useSelector((state: RootState) => state.auth);
+    const { theme } = useTheme();
+
+    if (!user) {
+      return (
+        <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+          <Text style={[styles.errorText, { color: theme.colors.error }]}>
+            Authentication required
+          </Text>
+        </View>
+      );
+    }
+
+    const userRoleLevel = ROLE_HIERARCHY[user.role];
+    const hasAccess = allowedRoles.some(role => {
+      const roleLevel = ROLE_HIERARCHY[role];
+      // User can access if their role level is >= the required role level
+      return userRoleLevel >= roleLevel;
+    });
+
+    if (!hasAccess) {
+      return (
+        <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+          <Text style={[styles.errorText, { color: theme.colors.error }]}>
+            Access Denied
+          </Text>
+          <Text style={[styles.subText, { color: theme.colors.textSecondary }]}>
+            You don't have permission to access this section
+          </Text>
+        </View>
+      );
+    }
+
+    return <Component {...props} />;
+  };
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 18,
+    fontFamily: 'Poppins-SemiBold',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  subText: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+    textAlign: 'center',
+  },
+});
