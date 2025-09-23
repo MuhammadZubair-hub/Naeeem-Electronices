@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { useTheme } from '../../hooks/useTheme';
+import { AppSizes } from '../../utils/AppSizes';
 
 const { width } = Dimensions.get('window');
 
@@ -65,7 +66,7 @@ export const BarGraph: React.FC<BarGraphProps> = ({
           labels,
           datasets: [{ data: values }],
         }}
-        width={width - 40}
+        width={width - 90}
         height={height}
         fromZero
         showValuesOnTopOfBars

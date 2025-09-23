@@ -3,6 +3,9 @@ import { AppStackParamList } from './AppNavigator';
 
 // Centralized screen names
 export const screenName: { [K in keyof AppStackParamList]: K } = {
+  RegionList: 'RegionList',
+  ZoneList: 'ZoneList',
+  // BranchList: 'BranchList', // removed duplicate
   DashboardHome: 'DashboardHome',
   CEO_GM_Dashboard: 'CEO_GM_Dashboard',
   RM_ZM_Dashboard: 'RM_ZM_Dashboard',
@@ -22,4 +25,5 @@ export const screenName: { [K in keyof AppStackParamList]: K } = {
   StaffPerformance: 'StaffPerformance',
   RevenueTrends: 'RevenueTrends',
   RecoveryReport: 'RecoveryReport',
+  AVOsList: 'AVOsList',
 };

@@ -18,7 +18,7 @@ import { Button } from '../../components/common/Button';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import { LineGraph } from '../../components/charts/LineGraph';
 import { BarGraph } from '../../components/charts/BarGraph';
-import { DonutGauge } from '../../components/charts/ProgressGraph';
+import { ProgressGraph } from '../../components/charts/ProgressGraph';
 import { formatCurrency, formatNumber, formatDate } from '../../utils/formatters';
 import { Role } from '../../types';
 import { mockDataService, Sale, Customer } from '../../services/mock/mockDataService';
@@ -267,7 +267,12 @@ export const RecoveryReport: React.FC = () => {
           </Text>
         </View>
         <View style={styles.recoveryBadges}>
-          <StatusBadge status={item.status} size="sm" />
+          <StatusBadge status={
+            item.status === 'pending' ? 'pending' :
+            item.status === 'in_progress' ? 'active' :
+            item.status === 'recovered' ? 'completed' :
+            item.status === 'written_off' ? 'cancelled' : 'pending'
+          } size="sm" />
           <View style={[
             styles.overdueBadge,
             { backgroundColor: item.daysOverdue > 60 ? theme.colors.error + '20' : theme.colors.warning + '20' }
@@ -446,12 +451,11 @@ export const RecoveryReport: React.FC = () => {
           />
           
           <BarGraph
-            title="Overdue Distribution"
-            data={getOverdueDistributionData()}
-            color={theme.colors.warning}
+             title="Overdue Distribution"
+             data={getOverdueDistributionData().map(item => ({ label: item.x, value: item.y }))}
           />
           
-          <DonutGauge
+          <ProgressGraph
             title="Recovery Status Distribution"
             data={getStatusDistributionData()}
             colors={[theme.colors.warning, theme.colors.primary, theme.colors.success, theme.colors.error]}

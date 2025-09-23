@@ -26,6 +26,9 @@ import {
 } from '../../utils/formatters';
 import { Role } from '../../types';
 import { screenName } from '../../navigation/ScreenName';
+import { Header } from '../../components/common/Header';
+import { AVOsList } from '../AVOs/AVOsList';
+import { AppSizes } from '../../utils/AppSizes';
 
 const { width } = Dimensions.get('window');
 
@@ -80,6 +83,7 @@ export const BranchDetail: React.FC<BranchDetailProps> = ({ route }) => {
   } = useSelector((state: RootState) => state.dashboard);
 
   const { branchId } = route.params;
+  console.log('branchId issss', branchId);
   const [branch, setBranch] = useState<Branch | null>(null);
   const [staff, setStaff] = useState<StaffMember[]>([]);
 
@@ -104,7 +108,7 @@ export const BranchDetail: React.FC<BranchDetailProps> = ({ route }) => {
       services: ['Sales', 'Service', 'Installation', 'Warranty'],
     },
     {
-      id: 'branch-2',
+      id: 'branch-4',
       name: 'Lahore Main Branch',
       address: 'Gulberg, Lahore',
       regionId: 'region-1',
@@ -276,6 +280,8 @@ export const BranchDetail: React.FC<BranchDetailProps> = ({ route }) => {
     <View
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
+      <Header title={branch?.name} subtitle="Branch Details" showBackButton />
+
       <ScrollView
         style={styles.scrollView}
         refreshControl={
@@ -283,8 +289,7 @@ export const BranchDetail: React.FC<BranchDetailProps> = ({ route }) => {
         }
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <View style={styles.header}>
+        {/* <View style={styles.header}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backButton}
@@ -304,7 +309,7 @@ export const BranchDetail: React.FC<BranchDetailProps> = ({ route }) => {
               Edit
             </Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
         {/* Branch Info */}
         <Card style={styles.infoCard} padding="lg">
@@ -424,6 +429,15 @@ export const BranchDetail: React.FC<BranchDetailProps> = ({ route }) => {
           </View>
         </Card>
 
+        <Card style={styles.servicesCard} padding="lg">
+          <Text
+            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+          >
+            AVOs
+          </Text>
+          <AVOsList />
+        </Card>
+
         {/* Services */}
         <Card style={styles.servicesCard} padding="lg">
           <Text
@@ -536,7 +550,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 20,
+    // paddingTop: 20,
     paddingBottom: 10,
   },
   backButton: {

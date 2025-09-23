@@ -18,7 +18,7 @@ import { Button } from '../../components/common/Button';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import { LineGraph } from '../../components/charts/LineGraph';
 import { BarGraph } from '../../components/charts/BarGraph';
-import { DonutGauge } from '../../components/charts/ProgressGraph';
+import { ProgressGraph } from '../../components/charts/ProgressGraph';
 import { formatCurrency, formatNumber, formatDate } from '../../utils/formatters';
 import { Role } from '../../types';
 import { mockDataService, StaffMember } from '../../services/mock/mockDataService';
@@ -341,13 +341,13 @@ export const StaffPerformance: React.FC = () => {
             color={theme.colors.primary}
           />
           
-          <BarGraph
+          {/* <BarGraph
             title="Staff Distribution by Role"
             data={getRoleDistributionData()}
             color={theme.colors.success}
-          />
+          /> */}
           
-          <DonutGauge
+          <ProgressGraph
             title="Performance Distribution"
             data={getPerformanceDistributionData()}
             colors={[theme.colors.success, theme.colors.warning, theme.colors.error, theme.colors.textSecondary]}

@@ -19,6 +19,7 @@ import { BarGraph } from '../../components/charts/BarGraph';
 import { ProgressGraph } from '../../components/charts/ProgressGraph';
 import { Role } from '../../types';
 import { screenName } from '../../navigation/ScreenName';
+import MainHeader from '../../components/common/MainHeader';
 
 const { width } = Dimensions.get('window');
 
@@ -115,6 +116,7 @@ export const RM_ZM_Dashboard: React.FC = () => {
         }
         showsVerticalScrollIndicator={false}
       >
+        <MainHeader title={user?.name || 'Dashboard'} />
         {/* Header */}
         <View style={styles.header}>
           <View>

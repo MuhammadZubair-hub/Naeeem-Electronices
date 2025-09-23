@@ -17,7 +17,7 @@ import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { LineGraph } from '../../components/charts/LineGraph';
 import { BarGraph } from '../../components/charts/BarGraph';
-import { DonutGauge } from '../../components/charts/ProgressGraph';
+import { ProgressGraph } from '../../components/charts/ProgressGraph';
 import { formatCurrency, formatNumber, formatDate } from '../../utils/formatters';
 import { Role } from '../../types';
 import { mockDataService } from '../../services/mock/mockDataService';
@@ -399,21 +399,21 @@ export const RevenueTrends: React.FC = () => {
           
           <BarGraph
             title="Revenue by Branch"
-            data={getRevenueByBranchData()}
-            color={theme.colors.success}
+            data={getRevenueByBranchData().map(item => ({ label: item.x, value: item.y }))}
           />
           
           <BarGraph
             title="Revenue by Region"
-            data={getRevenueByRegionData()}
-            color={theme.colors.warning}
+            data={getRevenueByRegionData().map(item => ({ label: item.x, value: item.y }))}
           />
           
+          {/*
           <DonutGauge
             title="Payment Method Distribution"
             data={getPaymentMethodData()}
             colors={[theme.colors.primary, theme.colors.success, theme.colors.warning, theme.colors.error]}
           />
+          */}
         </View>
 
         {/* Bottom Spacing */}

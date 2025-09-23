@@ -18,7 +18,7 @@ import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { LineGraph } from '../../components/charts/LineGraph';
 import { BarGraph } from '../../components/charts/BarGraph';
-import { DonutGauge } from '../../components/charts/ProgressGraph';
+import { ProgressGraph } from '../../components/charts/ProgressGraph';
 import { formatCurrency, formatNumber, formatDate } from '../../utils/formatters';
 import { Role } from '../../types';
 
@@ -321,13 +321,13 @@ export const BranchPerformance: React.FC<BranchPerformanceProps> = ({ route }) =
             color={theme.colors.primary}
           />
           
-          <BarGraph
-            title="Branch Comparison"
+          {/* <BarGraph
+            title="omparison"
             data={branchComparisonData}
             color={theme.colors.success}
-          />
+          /> */}
           
-          <DonutGauge
+          <ProgressGraph
             title="Efficiency Distribution"
             data={efficiencyData}
             colors={[theme.colors.primary, theme.colors.success, theme.colors.warning]}

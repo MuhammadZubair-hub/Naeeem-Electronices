@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import {
   View,
@@ -15,15 +16,15 @@ import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { LineGraph } from '../../components/charts/LineGraph';
 import { BarGraph } from '../../components/charts/BarGraph';
-import { DonutGauge } from '../../components/charts/ProgressGraph';
+
 import { Role } from '../../types';
 
 const { width } = Dimensions.get('window');
 
-export const BR_AVO_Dashboard: React.FC = () => {
+
+const BR_AVO_Dashboard: React.FC = () => {
   const { theme } = useTheme();
   const dispatch = useDispatch<AppDispatch>();
-  
   const { user } = useSelector((state: RootState) => state.auth);
   const { data: dashboardData, isLoading, error } = useSelector((state: RootState) => state.dashboard);
 
@@ -72,16 +73,10 @@ export const BR_AVO_Dashboard: React.FC = () => {
   ];
 
   const staffPerformanceData = [
-    { x: 'Staff 1', y: 8500 },
-    { x: 'Staff 2', y: 7200 },
-    { x: 'Staff 3', y: 6800 },
-    { x: 'Staff 4', y: 5900 },
-  ];
-
-  const paymentMethodData = [
-    { x: 'Cash', y: 45 },
-    { x: 'Card', y: 35 },
-    { x: 'Digital', y: 20 },
+    { label: 'Staff 1', value: 8500 },
+    { label: 'Staff 2', value: 7200 },
+    { label: 'Staff 3', value: 6800 },
+    { label: 'Staff 4', value: 5900 },
   ];
 
   if (error) {
@@ -181,14 +176,9 @@ export const BR_AVO_Dashboard: React.FC = () => {
           <BarGraph
             title="Staff Performance"
             data={staffPerformanceData}
-            color={theme.colors.success}
           />
           
-          <DonutGauge
-            title="Payment Methods"
-            data={paymentMethodData}
-            colors={[theme.colors.primary, theme.colors.success, theme.colors.warning]}
-          />
+
         </View>
 
         {/* Quick Actions */}
@@ -324,4 +314,7 @@ const styles = StyleSheet.create({
   bottomSpacing: {
     height: 20,
   },
+
 });
+
+export default BR_AVO_Dashboard;

@@ -17,10 +17,15 @@ import { usePermissions } from '../../hooks/usePermissions';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { InputField } from '../../components/common/InputField';
-import { formatCurrency, formatNumber, formatPhoneNumber } from '../../utils/formatters';
+import {
+  formatCurrency,
+  formatNumber,
+  formatPhoneNumber,
+} from '../../utils/formatters';
 import { Role } from '../../types';
 import { mockDataService, Customer } from '../../services/mock/mockDataService';
 import { screenName } from '../../navigation/ScreenName';
+import { Header } from '../../components/common/Header';
 
 const { width } = Dimensions.get('window');
 
@@ -39,13 +44,19 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
   const permissions = usePermissions();
-  
+
   const { user } = useSelector((state: RootState) => state.auth);
-  const { data: dashboardData, isLoading, error } = useSelector((state: RootState) => state.dashboard);
+  const {
+    data: dashboardData,
+    isLoading,
+    error,
+  } = useSelector((state: RootState) => state.dashboard);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'inactive' | 'overdue'>('all');
+  const [selectedFilter, setSelectedFilter] = useState<
+    'all' | 'active' | 'inactive' | 'overdue'
+  >('all');
 
   // Get customers from mock data service
   const customers = mockDataService.getCustomers();
@@ -60,38 +71,53 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
 
     // Apply role-based filtering
     if (user?.role === Role.RM || user?.role === Role.ZM) {
-      accessibleCustomers = customers.filter(customer => customer.regionId === user.regionId);
+      accessibleCustomers = customers.filter(
+        customer => customer.regionId === user.regionId,
+      );
     } else if (user?.role === Role.BR) {
-      accessibleCustomers = customers.filter(customer => customer.branchId === user.branchId);
+      accessibleCustomers = customers.filter(
+        customer => customer.branchId === user.branchId,
+      );
     } else if (user?.role === Role.AVO) {
-      accessibleCustomers = customers.filter(customer => customer.assignedTo === user.id);
+      accessibleCustomers = customers.filter(
+        customer => customer.assignedTo === user.id,
+      );
     }
 
     // Apply branch filter if specified
     if (route?.params?.branchId) {
-      accessibleCustomers = accessibleCustomers.filter(customer => customer.branchId === route.params.branchId);
+      accessibleCustomers = accessibleCustomers.filter(
+        customer => customer.branchId === route?.params?.branchId,
+      );
     }
 
     // Apply status filter
     switch (selectedFilter) {
       case 'active':
-        accessibleCustomers = accessibleCustomers.filter(customer => customer.isActive);
+        accessibleCustomers = accessibleCustomers.filter(
+          customer => customer.isActive,
+        );
         break;
       case 'inactive':
-        accessibleCustomers = accessibleCustomers.filter(customer => !customer.isActive);
+        accessibleCustomers = accessibleCustomers.filter(
+          customer => !customer.isActive,
+        );
         break;
       case 'overdue':
-        accessibleCustomers = accessibleCustomers.filter(customer => customer.totalDue > 0);
+        accessibleCustomers = accessibleCustomers.filter(
+          customer => customer.totalDue > 0,
+        );
         break;
     }
 
     // Apply search filter
     if (searchQuery.trim()) {
-      accessibleCustomers = accessibleCustomers.filter(customer =>
-        customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        customer.phone.includes(searchQuery) ||
-        customer.address.toLowerCase().includes(searchQuery.toLowerCase())
+      accessibleCustomers = accessibleCustomers.filter(
+        customer =>
+          customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          customer.phone.includes(searchQuery) ||
+          customer.address.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
@@ -103,13 +129,17 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
   };
 
   const handleCustomerPress = (customer: Customer) => {
-    (navigation as any).navigate(screenName.CustomerDetail, { customerId: customer.id });
+    (navigation as any).navigate(screenName.CustomerDetail, {
+      customerId: customer.id,
+    });
   };
 
   const getFilterButtonStyle = (filter: string) => {
     const isSelected = selectedFilter === filter;
     return {
-      backgroundColor: isSelected ? theme.colors.primary : theme.colors.surfaceVariant,
+      backgroundColor: isSelected
+        ? theme.colors.primary
+        : theme.colors.surfaceVariant,
       borderColor: isSelected ? theme.colors.primary : theme.colors.border,
     };
   };
@@ -130,30 +160,66 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
       <Card style={styles.customerCard} padding="lg">
         <View style={styles.customerHeader}>
           <View style={styles.customerInfo}>
-            <Text style={[styles.customerName, { color: theme.colors.textPrimary }]}>
+            <Text
+              style={[styles.customerName, { color: theme.colors.textPrimary }]}
+            >
               {customer.name}
             </Text>
-            <Text style={[styles.customerType, { color: theme.colors.textSecondary }]}>
-              {customer.customerType === 'business' ? '🏢 Business' : '👤 Individual'}
+            <Text
+              style={[
+                styles.customerType,
+                { color: theme.colors.textSecondary },
+              ]}
+            >
+              {customer.customerType === 'business'
+                ? '🏢 Business'
+                : '👤 Individual'}
             </Text>
-            <Text style={[styles.customerContact, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[
+                styles.customerContact,
+                { color: theme.colors.textSecondary },
+              ]}
+            >
               📧 {customer.email}
             </Text>
-            <Text style={[styles.customerContact, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[
+                styles.customerContact,
+                { color: theme.colors.textSecondary },
+              ]}
+            >
               📞 {formatPhoneNumber(customer.phone)}
             </Text>
-            <Text style={[styles.customerAddress, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[
+                styles.customerAddress,
+                { color: theme.colors.textSecondary },
+              ]}
+            >
               📍 {customer.address}
             </Text>
           </View>
-          <View style={[
-            styles.statusBadge,
-            { backgroundColor: customer.isActive ? theme.colors.success + '20' : theme.colors.error + '20' }
-          ]}>
-            <Text style={[
-              styles.statusText,
-              { color: customer.isActive ? theme.colors.success : theme.colors.error }
-            ]}>
+          <View
+            style={[
+              styles.statusBadge,
+              {
+                backgroundColor: customer.isActive
+                  ? theme.colors.success + '20'
+                  : theme.colors.error + '20',
+              },
+            ]}
+          >
+            <Text
+              style={[
+                styles.statusText,
+                {
+                  color: customer.isActive
+                    ? theme.colors.success
+                    : theme.colors.error,
+                },
+              ]}
+            >
               {customer.isActive ? 'Active' : 'Inactive'}
             </Text>
           </View>
@@ -164,18 +230,29 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
             <Text style={[styles.statValue, { color: theme.colors.primary }]}>
               {formatCurrency(customer.totalPurchases)}
             </Text>
-            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[styles.statLabel, { color: theme.colors.textSecondary }]}
+            >
               Total Purchases
             </Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={[
-              styles.statValue,
-              { color: customer.totalDue > 0 ? theme.colors.error : theme.colors.success }
-            ]}>
+            <Text
+              style={[
+                styles.statValue,
+                {
+                  color:
+                    customer.totalDue > 0
+                      ? theme.colors.error
+                      : theme.colors.success,
+                },
+              ]}
+            >
               {formatCurrency(customer.totalDue)}
             </Text>
-            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[styles.statLabel, { color: theme.colors.textSecondary }]}
+            >
               Outstanding Due
             </Text>
           </View>
@@ -183,62 +260,92 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
             <Text style={[styles.statValue, { color: theme.colors.warning }]}>
               {formatCurrency(customer.creditLimit)}
             </Text>
-            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[styles.statLabel, { color: theme.colors.textSecondary }]}
+            >
               Credit Limit
             </Text>
           </View>
         </View>
 
-        <View style={styles.customerFooter}>
-          <Text style={[styles.lastPurchase, { color: theme.colors.textTertiary }]}>
-            Last Purchase: {new Date(customer.lastPurchaseDate).toLocaleDateString()}
+        {/* <View style={styles.customerFooter}>
+          <Text
+            style={[styles.lastPurchase, { color: theme.colors.textTertiary }]}
+          >
+            Last Purchase:{' '}
+            {new Date(customer.lastPurchaseDate).toLocaleDateString()}
           </Text>
           <View style={styles.customerActions}>
             <TouchableOpacity
-              onPress={(e) => {
+              onPress={e => {
                 e.stopPropagation();
-                (navigation as any).navigate(screenName.CustomerDetail, { customerId: customer.id });
+                (navigation as any).navigate(screenName.CustomerDetail, {
+                  customerId: customer.id,
+                });
               }}
-              style={[styles.actionButton, { backgroundColor: theme.colors.success + '20' }]}
+              style={[
+                styles.actionButton,
+                { backgroundColor: theme.colors.success + '20' },
+              ]}
             >
-              <Text style={[styles.actionButtonText, { color: theme.colors.success }]}>
+              <Text
+                style={[
+                  styles.actionButtonText,
+                  { color: theme.colors.success },
+                ]}
+              >
                 View Details
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={(e) => {
+              onPress={e => {
                 e.stopPropagation();
-                (navigation as any).navigate(screenName.CustomerTransactions, { customerId: customer.id });
+                (navigation as any).navigate(screenName.CustomerTransactions, {
+                  customerId: customer.id,
+                });
               }}
-              style={[styles.actionButton, { backgroundColor: theme.colors.primary + '20' }]}
+              style={[
+                styles.actionButton,
+                { backgroundColor: theme.colors.primary + '20' },
+              ]}
             >
-              <Text style={[styles.actionButtonText, { color: theme.colors.primary }]}>
+              <Text
+                style={[
+                  styles.actionButtonText,
+                  { color: theme.colors.primary },
+                ]}
+              >
                 View Transactions
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
       </Card>
     </TouchableOpacity>
   );
 
   if (error) {
     return (
-      <View style={[styles.container, styles.centerContent, { backgroundColor: theme.colors.background }]}>
+      <View
+        style={[
+          styles.container,
+          styles.centerContent,
+          { backgroundColor: theme.colors.background },
+        ]}
+      >
         <Text style={[styles.errorText, { color: theme.colors.error }]}>
           Failed to load customer data
         </Text>
-        <Button
-          title="Retry"
-          onPress={onRefresh}
-          style={styles.retryButton}
-        />
+        <Button title="Retry" onPress={onRefresh} style={styles.retryButton} />
       </View>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      <Header title="Customers" subtitle="Customer List" showBackButton />
       <ScrollView
         style={styles.scrollView}
         refreshControl={
@@ -251,10 +358,16 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
           <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
             Customer Management
           </Text>
-          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-            {user?.role === Role.CEO || user?.role === Role.GM ? 'All Customers' : 
-             user?.role === Role.RM || user?.role === Role.ZM ? 'Regional Customers' : 
-             user?.role === Role.BR ? 'Branch Customers' : 'My Customers'}
+          <Text
+            style={[styles.subtitle, { color: theme.colors.textSecondary }]}
+          >
+            {user?.role === Role.CEO || user?.role === Role.GM
+              ? 'All Customers'
+              : user?.role === Role.RM || user?.role === Role.ZM
+              ? 'Regional Customers'
+              : user?.role === Role.BR
+              ? 'Branch Customers'
+              : 'My Customers'}
           </Text>
         </View>
 
@@ -271,11 +384,13 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
 
         {/* Filters */}
         <View style={styles.filtersContainer}>
-          <Text style={[styles.filtersLabel, { color: theme.colors.textSecondary }]}>
+          <Text
+            style={[styles.filtersLabel, { color: theme.colors.textSecondary }]}
+          >
             Filter by Status:
           </Text>
           <View style={styles.filtersRow}>
-            {['all', 'active', 'inactive', 'overdue'].map((filter) => (
+            {['all', 'active', 'inactive', 'overdue'].map(filter => (
               <TouchableOpacity
                 key={filter}
                 style={[styles.filterButton, getFilterButtonStyle(filter)]}
@@ -291,39 +406,79 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
 
         {/* Summary Stats */}
         <Card style={styles.summaryCard} padding="lg">
-          <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
+          <Text
+            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+          >
             Customer Overview
           </Text>
           <View style={styles.summaryGrid}>
             <View style={styles.summaryItem}>
-              <Text style={[styles.summaryValue, { color: theme.colors.primary }]}>
+              <Text
+                style={[styles.summaryValue, { color: theme.colors.primary }]}
+              >
                 {formatNumber(filteredCustomers.length)}
               </Text>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.summaryLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Total Customers
               </Text>
             </View>
             <View style={styles.summaryItem}>
-              <Text style={[styles.summaryValue, { color: theme.colors.success }]}>
-                {formatCurrency(filteredCustomers.reduce((sum, customer) => sum + customer.totalPurchases, 0))}
+              <Text
+                style={[styles.summaryValue, { color: theme.colors.success }]}
+              >
+                {formatCurrency(
+                  filteredCustomers.reduce(
+                    (sum, customer) => sum + customer.totalPurchases,
+                    0,
+                  ),
+                )}
               </Text>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.summaryLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Total Purchases
               </Text>
             </View>
             <View style={styles.summaryItem}>
-              <Text style={[styles.summaryValue, { color: theme.colors.error }]}>
-                {formatCurrency(filteredCustomers.reduce((sum, customer) => sum + customer.totalDue, 0))}
+              <Text
+                style={[styles.summaryValue, { color: theme.colors.error }]}
+              >
+                {formatCurrency(
+                  filteredCustomers.reduce(
+                    (sum, customer) => sum + customer.totalDue,
+                    0,
+                  ),
+                )}
               </Text>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.summaryLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Outstanding Due
               </Text>
             </View>
             <View style={styles.summaryItem}>
-              <Text style={[styles.summaryValue, { color: theme.colors.warning }]}>
+              <Text
+                style={[styles.summaryValue, { color: theme.colors.warning }]}
+              >
                 {formatNumber(filteredCustomers.filter(c => c.isActive).length)}
               </Text>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.summaryLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Active Customers
               </Text>
             </View>
@@ -332,13 +487,22 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
 
         {/* Customer List */}
         <View style={styles.customerList}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
+          <Text
+            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+          >
             Customers ({filteredCustomers.length})
           </Text>
           {filteredCustomers.length === 0 ? (
             <Card style={styles.emptyCard} padding="lg">
-              <Text style={[styles.emptyText, { color: theme.colors.textSecondary }]}>
-                {searchQuery ? 'No customers found matching your search.' : 'No customers available.'}
+              <Text
+                style={[
+                  styles.emptyText,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
+                {searchQuery
+                  ? 'No customers found matching your search.'
+                  : 'No customers available.'}
               </Text>
             </Card>
           ) : (

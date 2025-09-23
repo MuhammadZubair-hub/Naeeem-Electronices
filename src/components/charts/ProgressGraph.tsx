@@ -15,6 +15,11 @@ interface ProgressGraphProps {
   data: DataPoint[];
   colors?: string[];
   height?: number;
+  width?: number;
+  accessor?: string;
+  backgroundColor?: string;
+  paddingLeft?: string;
+  absolute?: boolean;
   showLabels?: boolean;
 }
 
@@ -22,19 +27,22 @@ export const ProgressGraph: React.FC<ProgressGraphProps> = ({
   title,
   data,
   colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'],
-  height = 220,
+  height = 300,
   showLabels = true,
 }) => {
   const { theme } = useTheme();
 
   // Convert data to chart format (values between 0 and 1)
-  const chartData = data.map(item => item.y);
+   const chartData = data.map(item => item.y);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.surface }]}>
-      <Text style={[styles.title, { color: theme.colors.textPrimary }]}>{title}</Text>
+      <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
+        {title}
+      </Text>
       <View style={styles.chartContainer}>
-        <ProgressChart
+       
+         <ProgressChart
           data={{ data: chartData }}
           width={width - 40}
           height={height}
@@ -50,10 +58,10 @@ export const ProgressGraph: React.FC<ProgressGraphProps> = ({
             labelColor: (opacity = 1) => theme.colors.textSecondary,
           }}
           hideLegend={!showLabels}
-        />
+        /> 
       </View>
 
-      {showLabels && (
+      {/* {showLabels && (
         <View style={styles.legend}>
           {data.map((item, index) => (
             <View key={item.x} style={styles.legendItem}>
@@ -66,7 +74,7 @@ export const ProgressGraph: React.FC<ProgressGraphProps> = ({
             </View>
           ))}
         </View>
-      )}
+      )} */}
     </View>
   );
 };

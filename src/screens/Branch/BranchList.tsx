@@ -9,7 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { RootState, AppDispatch } from '../../redux/store';
 import { fetchDashboardData } from '../../redux/slices/dashboardSlice';
 import { useTheme } from '../../hooks/useTheme';
@@ -21,6 +21,7 @@ import { formatCurrency, formatNumber } from '../../utils/formatters';
 import { Role } from '../../types';
 import { mockDataService, Branch } from '../../services/mock/mockDataService';
 import { screenName } from '../../navigation/ScreenName';
+import { Header } from '../../components/common/Header';
 
 const { width } = Dimensions.get('window');
 
@@ -31,15 +32,27 @@ export const BranchList: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
   const permissions = usePermissions();
-  
+
   const { user } = useSelector((state: RootState) => state.auth);
-  const { data: dashboardData, isLoading, error } = useSelector((state: RootState) => state.dashboard);
+  const {
+    data: dashboardData,
+    isLoading,
+    error,
+  } = useSelector((state: RootState) => state.dashboard);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredBranches, setFilteredBranches] = useState<Branch[]>([]);
 
   // Get branches from mock data service
   const branches = mockDataService.getBranches();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('user?.role', user);
+      console.log(user.designation, 'user?.designation');
+      // Refresh data when screen is focused
+    }, []),
+  );
 
   useEffect(() => {
     dispatch(fetchDashboardData());
@@ -51,17 +64,22 @@ export const BranchList: React.FC = () => {
 
     // Apply role-based filtering
     if (user?.role === Role.RM || user?.role === Role.ZM) {
-      accessibleBranches = branches.filter(branch => branch.regionId === user.regionId);
+      accessibleBranches = branches.filter(
+        branch => branch.regionId === user.regionId,
+      );
     } else if (user?.role === Role.BR) {
-      accessibleBranches = branches.filter(branch => branch.id === user.branchId);
+      accessibleBranches = branches.filter(
+        branch => branch.id === user.branchId,
+      );
     }
 
     // Apply search filter
     if (searchQuery.trim()) {
-      accessibleBranches = accessibleBranches.filter(branch =>
-        branch.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        branch.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        branch.managerName.toLowerCase().includes(searchQuery.toLowerCase())
+      accessibleBranches = accessibleBranches.filter(
+        branch =>
+          branch.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          branch.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          branch.managerName.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
@@ -73,36 +91,66 @@ export const BranchList: React.FC = () => {
   };
 
   const handleBranchPress = (branch: Branch) => {
-    (navigation as any).navigate(screenName.BranchDetail, { branchId: branch.id });
+    console.log('branch.name issss', branch);
+    (navigation as any).navigate(screenName.BranchDetail, {
+      branchId: branch.id,
+    });
   };
 
   const renderBranchCard = (branch: Branch) => (
     <TouchableOpacity
       key={branch.id}
-      onPress={() => handleBranchPress(branch)}
+      onPress={() => {
+        handleBranchPress(branch);
+        console.log('branch.name', branch);
+      }}
       activeOpacity={0.7}
     >
       <Card style={styles.branchCard} padding="lg">
         <View style={styles.branchHeader}>
           <View style={styles.branchInfo}>
-            <Text style={[styles.branchName, { color: theme.colors.textPrimary }]}>
+            <Text
+              style={[styles.branchName, { color: theme.colors.textPrimary }]}
+            >
               {branch.name}
             </Text>
-            <Text style={[styles.branchAddress, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[
+                styles.branchAddress,
+                { color: theme.colors.textSecondary },
+              ]}
+            >
               📍 {branch.address}
             </Text>
-            <Text style={[styles.branchManager, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[
+                styles.branchManager,
+                { color: theme.colors.textSecondary },
+              ]}
+            >
               👤 Manager: {branch.managerName}
             </Text>
           </View>
-          <View style={[
-            styles.statusBadge,
-            { backgroundColor: branch.isActive ? theme.colors.success + '20' : theme.colors.error + '20' }
-          ]}>
-            <Text style={[
-              styles.statusText,
-              { color: branch.isActive ? theme.colors.success : theme.colors.error }
-            ]}>
+          <View
+            style={[
+              styles.statusBadge,
+              {
+                backgroundColor: branch.isActive
+                  ? theme.colors.success + '20'
+                  : theme.colors.error + '20',
+              },
+            ]}
+          >
+            <Text
+              style={[
+                styles.statusText,
+                {
+                  color: branch.isActive
+                    ? theme.colors.success
+                    : theme.colors.error,
+                },
+              ]}
+            >
               {branch.isActive ? 'Active' : 'Inactive'}
             </Text>
           </View>
@@ -113,7 +161,9 @@ export const BranchList: React.FC = () => {
             <Text style={[styles.statValue, { color: theme.colors.primary }]}>
               {formatCurrency(branch.totalRevenue)}
             </Text>
-            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[styles.statLabel, { color: theme.colors.textSecondary }]}
+            >
               Revenue
             </Text>
           </View>
@@ -121,7 +171,9 @@ export const BranchList: React.FC = () => {
             <Text style={[styles.statValue, { color: theme.colors.success }]}>
               {formatNumber(branch.totalCustomers)}
             </Text>
-            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[styles.statLabel, { color: theme.colors.textSecondary }]}
+            >
               Customers
             </Text>
           </View>
@@ -129,7 +181,9 @@ export const BranchList: React.FC = () => {
             <Text style={[styles.statValue, { color: theme.colors.warning }]}>
               {formatNumber(branch.totalStaff)}
             </Text>
-            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[styles.statLabel, { color: theme.colors.textSecondary }]}
+            >
               Staff
             </Text>
           </View>
@@ -139,7 +193,9 @@ export const BranchList: React.FC = () => {
           <Button
             title="View Customers"
             onPress={() => {
-              (navigation as any).navigate(screenName.CustomerList, { branchId: branch.id });
+              (navigation as any).navigate(screenName.CustomerList, {
+                branchId: branch.id,
+              });
             }}
             variant="outline"
             size="sm"
@@ -148,7 +204,9 @@ export const BranchList: React.FC = () => {
           <Button
             title="View Sales"
             onPress={() => {
-              (navigation as any).navigate(screenName.InvoiceList, { branchId: branch.id });
+              (navigation as any).navigate(screenName.InvoiceList, {
+                branchId: branch.id,
+              });
             }}
             variant="outline"
             size="sm"
@@ -161,21 +219,26 @@ export const BranchList: React.FC = () => {
 
   if (error) {
     return (
-      <View style={[styles.container, styles.centerContent, { backgroundColor: theme.colors.background }]}>
+      <View
+        style={[
+          styles.container,
+          styles.centerContent,
+          { backgroundColor: theme.colors.background },
+        ]}
+      >
         <Text style={[styles.errorText, { color: theme.colors.error }]}>
           Failed to load branch data
         </Text>
-        <Button
-          title="Retry"
-          onPress={onRefresh}
-          style={styles.retryButton}
-        />
+        <Button title="Retry" onPress={onRefresh} style={styles.retryButton} />
       </View>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      <Header title="Branches" subtitle="Branch Managers" showBackButton />
       <ScrollView
         style={styles.scrollView}
         refreshControl={
@@ -188,10 +251,14 @@ export const BranchList: React.FC = () => {
           <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
             Branch Management
           </Text>
-          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-            {user?.role === Role.CEO || user?.role === Role.GM ? 'All Branches' : 
-             user?.role === Role.RM || user?.role === Role.ZM ? 'Regional Branches' : 
-             'Your Branch'}
+          <Text
+            style={[styles.subtitle, { color: theme.colors.textSecondary }]}
+          >
+            {user?.role === Role.CEO || user?.role === Role.GM
+              ? 'All Branches'
+              : user?.role === Role.RM || user?.role === Role.ZM
+              ? 'Regional Branches'
+              : 'Your Branch'}
           </Text>
         </View>
 
@@ -208,39 +275,84 @@ export const BranchList: React.FC = () => {
 
         {/* Summary Stats */}
         <Card style={styles.summaryCard} padding="lg">
-          <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
+          <Text
+            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+          >
             Branch Overview
           </Text>
           <View style={styles.summaryGrid}>
             <View style={styles.summaryItem}>
-              <Text style={[styles.summaryValue, { color: theme.colors.primary }]}>
+              <Text
+                style={[styles.summaryValue, { color: theme.colors.primary }]}
+              >
                 {formatNumber(filteredBranches.length)}
               </Text>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.summaryLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Total Branches
               </Text>
             </View>
             <View style={styles.summaryItem}>
-              <Text style={[styles.summaryValue, { color: theme.colors.success }]}>
-                {formatCurrency(filteredBranches.reduce((sum, branch) => sum + branch.totalRevenue, 0))}
+              <Text
+                style={[styles.summaryValue, { color: theme.colors.success }]}
+              >
+                {formatCurrency(
+                  filteredBranches.reduce(
+                    (sum, branch) => sum + branch.totalRevenue,
+                    0,
+                  ),
+                )}
               </Text>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.summaryLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Total Revenue
               </Text>
             </View>
             <View style={styles.summaryItem}>
-              <Text style={[styles.summaryValue, { color: theme.colors.warning }]}>
-                {formatNumber(filteredBranches.reduce((sum, branch) => sum + branch.totalCustomers, 0))}
+              <Text
+                style={[styles.summaryValue, { color: theme.colors.warning }]}
+              >
+                {formatNumber(
+                  filteredBranches.reduce(
+                    (sum, branch) => sum + branch.totalCustomers,
+                    0,
+                  ),
+                )}
               </Text>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.summaryLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Total Customers
               </Text>
             </View>
             <View style={styles.summaryItem}>
-              <Text style={[styles.summaryValue, { color: theme.colors.error }]}>
-                {formatNumber(filteredBranches.reduce((sum, branch) => sum + branch.totalStaff, 0))}
+              <Text
+                style={[styles.summaryValue, { color: theme.colors.error }]}
+              >
+                {formatNumber(
+                  filteredBranches.reduce(
+                    (sum, branch) => sum + branch.totalStaff,
+                    0,
+                  ),
+                )}
               </Text>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.summaryLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Total Staff
               </Text>
             </View>
@@ -249,13 +361,22 @@ export const BranchList: React.FC = () => {
 
         {/* Branch List */}
         <View style={styles.branchList}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
+          <Text
+            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+          >
             Branches ({filteredBranches.length})
           </Text>
           {filteredBranches.length === 0 ? (
             <Card style={styles.emptyCard} padding="lg">
-              <Text style={[styles.emptyText, { color: theme.colors.textSecondary }]}>
-                {searchQuery ? 'No branches found matching your search.' : 'No branches available.'}
+              <Text
+                style={[
+                  styles.emptyText,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
+                {searchQuery
+                  ? 'No branches found matching your search.'
+                  : 'No branches available.'}
               </Text>
             </Card>
           ) : (

@@ -1,5 +1,11 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
 
 interface GradientButtonProps {
@@ -95,10 +101,14 @@ export const GradientButton: React.FC<GradientButtonProps> = ({
   const buttonStyle = [
     styles.button,
     {
-      backgroundColor: disabled ? theme.colors.disabled : variantStyles.backgroundColor,
+      backgroundColor: disabled
+        ? theme.colors.disabled
+        : variantStyles.backgroundColor,
       paddingVertical: sizeStyles.paddingVertical,
       paddingHorizontal: sizeStyles.paddingHorizontal,
-      width: fullWidth ? '100%' : 'auto',
+      width: fullWidth
+        ? ('100%' as import('react-native').DimensionValue)
+        : undefined,
       elevation: disabled ? 0 : 3,
       shadowColor: theme.colors.shadow,
       shadowOffset: { width: 0, height: 2 },

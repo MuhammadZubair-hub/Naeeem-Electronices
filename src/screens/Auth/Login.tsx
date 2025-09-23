@@ -5,129 +5,130 @@ import {
   TextInput,
   StyleSheet,
   Alert,
-  KeyboardAvoidingView,
+  ScrollView,
   Platform,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../redux/store';
-import { login } from '../../redux/slices/authSlice';
 import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../../components/common/Button';
 import { Card } from '../../components/common/Card';
+import { Header } from '../../components/common/Header';
+import { PieGraph } from '../../components/charts/PieGraph';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { AppSizes } from '../../utils/AppSizes';
+import { useLoginUser } from './login';
+import { loginSuccess } from '../../redux/slices/authSlice';
+import { LoadingModal } from '../../components/common/LoadingModal';
 
 export const Login: React.FC = () => {
   const { theme } = useTheme();
   const dispatch = useDispatch<AppDispatch>();
-  
-  const { isLoading, error } = useSelector((state: RootState) => state.auth);
-  
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
-      return;
-    }
+  const { user, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth,
+  );
 
-    try {
-      await dispatch(login({ email, password })).unwrap();
-    } catch (err) {
-      Alert.alert('Login Failed', error || 'Invalid credentials');
-    }
-  };
-
-  const demoCredentials = [
-    { email: 'ceo@ne.com', role: 'CEO' },
-    { email: 'gm@ne.com', role: 'General Manager' },
-    { email: 'rm@ne.com', role: 'Regional Manager' },
-    { email: 'zm@ne.com', role: 'Zone Manager' },
-    { email: 'br@ne.com', role: 'Branch Manager' },
-    { email: 'avo@ne.com', role: 'Area Sales Officer' },
-  ];
-
-  const fillDemoCredentials = (demoEmail: string) => {
-    setEmail(demoEmail);
-    setPassword('123');
-  };
+  const loginData = useLoginUser();
+  const { credentials, handleChange, handleLogin, isLoading } = loginData;
 
   return (
-    <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <View style={styles.content}>
-        <View style={styles.header}>
-          <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
-            Naeem Electronics
-          </Text>
-          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-            Business Management System
-          </Text>
-        </View>
+    <SafeAreaView style={{ flex: 1, overflow: 'visible' }}>
+      <KeyboardAwareScrollView
+        enableOnAndroid={true} // ensures keyboard scroll works on Android
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+        style={{ backgroundColor: theme.colors.background }}
+      >
+        {/* <Header
+        title="Sign In"
+        subtitle="Welcome back! Please login to continue."
+        showBackButton={false}
+      /> */}
 
-        <Card style={styles.loginCard} padding="lg">
-          <Text style={[styles.loginTitle, { color: theme.colors.textPrimary }]}>
-            Sign In
-          </Text>
-          
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
-              Email
+        {/* <PieGraph title="Sales by Category" /> */}
+        <View style={styles.content}>
+          <View style={styles.header}>
+            <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
+              Naeem Electronics
             </Text>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: theme.colors.surfaceVariant,
-                  borderColor: theme.colors.border,
-                  color: theme.colors.textPrimary,
-                }
-              ]}
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Enter your email"
-              placeholderTextColor={theme.colors.textTertiary}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
+            <Text
+              style={[styles.subtitle, { color: theme.colors.textSecondary }]}
+            >
+              Business Management System
+            </Text>
           </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
-              Password
+          <Card style={styles.loginCard}>
+            <Text
+              style={[styles.loginTitle, { color: theme.colors.textPrimary }]}
+            >
+              Sign In
             </Text>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: theme.colors.surfaceVariant,
-                  borderColor: theme.colors.border,
-                  color: theme.colors.textPrimary,
-                }
-              ]}
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Enter your password"
-              placeholderTextColor={theme.colors.textTertiary}
-              secureTextEntry
+
+            <View>
+              <View style={styles.inputContainer}>
+                <Text
+                  style={[styles.label, { color: theme.colors.textSecondary }]}
+                >
+                  Email
+                </Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    {
+                      backgroundColor: theme.colors.surfaceVariant,
+                      borderColor: theme.colors.border,
+                      color: theme.colors.textPrimary,
+                    },
+                  ]}
+                  value={loginData.credentials.empId}
+                  onChangeText={text => loginData.handleChange('empId', text)}
+                  placeholder="Enter your email"
+                  placeholderTextColor={theme.colors.textTertiary}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Text
+                  style={[styles.label, { color: theme.colors.textSecondary }]}
+                >
+                  Password
+                </Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    {
+                      backgroundColor: theme.colors.surfaceVariant,
+                      borderColor: theme.colors.border,
+                      color: theme.colors.textPrimary,
+                    },
+                  ]}
+                  value={loginData.credentials.password}
+                  onChangeText={text =>
+                    loginData.handleChange('password', text)
+                  }
+                  placeholder="Enter your password"
+                  placeholderTextColor={theme.colors.textTertiary}
+                  secureTextEntry
+                />
+              </View>
+            </View>
+
+            <Button
+              variant="secondary"
+              title="Sign In"
+              onPress={() => loginData.handleLogin(loginData.credentials)}
+              // loading={isLoading}
+              style={styles.loginButton}
             />
-          </View>
+          </Card>
 
-          <Button
-            title="Sign In"
-            onPress={handleLogin}
-            loading={isLoading}
-            style={styles.loginButton}
-          />
-
-          <Text style={[styles.demoText, { color: theme.colors.textTertiary }]}>
-            Demo Credentials (Password: 123)
-          </Text>
-        </Card>
-
-        <Card style={styles.demoCard} padding="md">
+          {/* <Card style={styles.demoCard} padding="md">
           <Text style={[styles.demoTitle, { color: theme.colors.textPrimary }]}>
             Quick Login
           </Text>
@@ -141,9 +142,12 @@ export const Login: React.FC = () => {
               style={styles.demoButton}
             />
           ))}
-        </Card>
-      </View>
-    </KeyboardAvoidingView>
+        </Card> */}
+        </View>
+      </KeyboardAwareScrollView>
+
+      <LoadingModal visible={isLoading} />
+    </SafeAreaView>
   );
 };
 
@@ -153,53 +157,54 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: AppSizes.Padding_Horizontal_20,
     justifyContent: 'center',
   },
   header: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: AppSizes.Gap_20,
   },
   title: {
-    fontSize: 32,
+    fontSize: AppSizes.Font_20,
     fontFamily: 'Poppins-Bold',
-    marginBottom: 8,
+    marginBottom: AppSizes.Gap_10,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: AppSizes.Font_16,
     fontFamily: 'Poppins-Regular',
   },
   loginCard: {
-    marginBottom: 20,
+    marginBottom: AppSizes.Gap_20,
+    rowGap: AppSizes.Gap_20,
   },
   loginTitle: {
-    fontSize: 24,
+    fontSize: AppSizes.Font_20,
     fontFamily: 'Poppins-SemiBold',
-    marginBottom: 24,
+    // marginBottom: AppSizes.Gap_20,
     textAlign: 'center',
   },
   inputContainer: {
-    marginBottom: 16,
+    marginBottom: AppSizes.Gap_10,
   },
   label: {
-    fontSize: 14,
+    fontSize: AppSizes.Font_14,
     fontFamily: 'Poppins-Medium',
-    marginBottom: 8,
+    marginBottom: AppSizes.Gap_10,
   },
   input: {
     borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
+    borderRadius: AppSizes.Radius_15,
+    paddingHorizontal: AppSizes.Padding_Horizontal_20,
+    paddingVertical: AppSizes.Padding_Vertical_15,
+    fontSize: AppSizes.Font_16,
     fontFamily: 'Poppins-Regular',
   },
   loginButton: {
-    marginTop: 8,
-    marginBottom: 16,
+    marginVertical: AppSizes.Margin_Vertical_10,
+    // marginBottom: 16,
   },
   demoText: {
-    fontSize: 12,
+    fontSize: AppSizes.Font_16,
     fontFamily: 'Poppins-Regular',
     textAlign: 'center',
   },
@@ -207,12 +212,12 @@ const styles = StyleSheet.create({
     maxHeight: 300,
   },
   demoTitle: {
-    fontSize: 16,
+    fontSize: AppSizes.Font_16,
     fontFamily: 'Poppins-SemiBold',
-    marginBottom: 12,
+    marginBottom: AppSizes.Margin_Vertical_10,
     textAlign: 'center',
   },
   demoButton: {
-    marginBottom: 8,
+    marginBottom: AppSizes.Margin_Vertical_10,
   },
 });

@@ -1,3 +1,86 @@
+// import React from 'react';
+// import { View, Text, StyleSheet } from 'react-native';
+// import { useSelector } from 'react-redux';
+// import { RootState } from '../redux/store';
+// import { Role } from '../types';
+// import { useTheme } from '../hooks/useTheme';
+
+// interface RoleGuardProps {
+//   children: React.ReactNode;
+// }
+
+// // Role hierarchy: CEO > GM > RM > ZM > BR > AVO
+// const ROLE_HIERARCHY: Record<Role, number> = {
+//   [Role.CEO]: 6,
+//   [Role.GM]: 5,
+//   [Role.RM]: 4,
+//   [Role.ZM]: 3,
+//   [Role.BR]: 2,
+//   [Role.AVO]: 1,
+// };
+
+// export const RoleGuard = <P extends object>(
+//   Component: React.ComponentType<P>,
+//   allowedRoles: Role[]
+// ) => {
+//   return (props: P) => {
+//     const { user } = useSelector((state: RootState) => state.auth);
+//     const { theme } = useTheme();
+
+//     if (!user) {
+//       return (
+//         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+//           <Text style={[styles.errorText, { color: theme.colors.error }]}>
+//             Authentication required
+//           </Text>
+//         </View>
+//       );
+//     }
+
+//     const userRoleLevel = ROLE_HIERARCHY[user.role];
+//     const hasAccess = allowedRoles.some(role => {
+//       const roleLevel = ROLE_HIERARCHY[role];
+//       // User can access if their role level is >= the required role level
+//       return userRoleLevel >= roleLevel;
+//     });
+
+//     if (!hasAccess) {
+//       return (
+//         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+//           <Text style={[styles.errorText, { color: theme.colors.error }]}>
+//             Access Denied
+//           </Text>
+//           <Text style={[styles.subText, { color: theme.colors.textSecondary }]}>
+//             You don't have permission to access this section
+//           </Text>
+//         </View>
+//       );
+//     }
+
+//     return <Component {...props} />;
+//   };
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     padding: 20,
+//   },
+//   errorText: {
+//     fontSize: 18,
+//     fontFamily: 'Poppins-SemiBold',
+//     textAlign: 'center',
+//     marginBottom: 8,
+//   },
+//   subText: {
+//     fontSize: 14,
+//     fontFamily: 'Poppins-Regular',
+//     textAlign: 'center',
+//   },
+// });
+
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -19,9 +102,30 @@ const ROLE_HIERARCHY: Record<Role, number> = {
   [Role.AVO]: 1,
 };
 
+// Helper to map designation string → Role enum
+const mapDesignationToRole = (designation: string): Role | null => {
+  if (!designation) return null;
+  switch (designation.toUpperCase()) {
+    case 'CEO':
+      return Role.CEO;
+    case 'GM':
+      return Role.GM;
+    case 'RM':
+      return Role.RM;
+    case 'ZM':
+      return Role.ZM;
+    case 'BR':
+      return Role.BR;
+    case 'AVO':
+      return Role.AVO;
+    default:
+      return null;
+  }
+};
+
 export const RoleGuard = <P extends object>(
   Component: React.ComponentType<P>,
-  allowedRoles: Role[]
+  allowedRoles: Role[],
 ) => {
   return (props: P) => {
     const { user } = useSelector((state: RootState) => state.auth);
@@ -29,7 +133,12 @@ export const RoleGuard = <P extends object>(
 
     if (!user) {
       return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <View
+          style={[
+            styles.container,
+            { backgroundColor: theme.colors.background },
+          ]}
+        >
           <Text style={[styles.errorText, { color: theme.colors.error }]}>
             Authentication required
           </Text>
@@ -37,16 +146,36 @@ export const RoleGuard = <P extends object>(
       );
     }
 
-    const userRoleLevel = ROLE_HIERARCHY[user.role];
+    const userRole = mapDesignationToRole(user?.designation);
+    if (!userRole) {
+      return (
+        <View
+          style={[
+            styles.container,
+            { backgroundColor: theme.colors.background },
+          ]}
+        >
+          <Text style={[styles.errorText, { color: theme.colors.error }]}>
+            Invalid role
+          </Text>
+        </View>
+      );
+    }
+
+    const userRoleLevel = ROLE_HIERARCHY[userRole];
     const hasAccess = allowedRoles.some(role => {
       const roleLevel = ROLE_HIERARCHY[role];
-      // User can access if their role level is >= the required role level
-      return userRoleLevel >= roleLevel;
+      return userRoleLevel >= roleLevel; // ✅ hierarchy check
     });
 
     if (!hasAccess) {
       return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <View
+          style={[
+            styles.container,
+            { backgroundColor: theme.colors.background },
+          ]}
+        >
           <Text style={[styles.errorText, { color: theme.colors.error }]}>
             Access Denied
           </Text>

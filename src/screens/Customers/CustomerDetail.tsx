@@ -20,10 +20,19 @@ import { Button } from '../../components/common/Button';
 import { LineGraph } from '../../components/charts/LineGraph';
 import { BarGraph } from '../../components/charts/BarGraph';
 import { ProgressGraph } from '../../components/charts/ProgressGraph';
-import { formatCurrency, formatNumber, formatPhoneNumber, formatDate } from '../../utils/formatters';
+import {
+  formatCurrency,
+  formatNumber,
+  formatPhoneNumber,
+  formatDate,
+} from '../../utils/formatters';
 import { Role } from '../../types';
 import { screenName } from '../../navigation/ScreenName';
+import { Image } from 'react-native';
+import { AppSizes } from '../../utils/AppSizes';
+import { Header } from '../../components/common/Header';
 
+// import {} from './../../assets/images/ceo.jgp'
 const { width } = Dimensions.get('window');
 
 interface CustomerDetailProps {
@@ -38,7 +47,13 @@ interface Customer {
   id: string;
   customerCode: string;
   name: string;
+  img?: string;
   fatherName: string;
+  processingNumber: string;
+  SoldBy: string;
+  VerifiedBy: string;
+  InvoiceNo: string;
+  DeliveredBy: string;
   cnic: string;
   phone: string;
   occupation: string;
@@ -87,9 +102,13 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
   const permissions = usePermissions();
-  
+
   const { user } = useSelector((state: RootState) => state.auth);
-  const { data: dashboardData, isLoading, error } = useSelector((state: RootState) => state.dashboard);
+  const {
+    data: dashboardData,
+    isLoading,
+    error,
+  } = useSelector((state: RootState) => state.dashboard);
 
   const { customerId } = route.params;
   const [customer, setCustomer] = useState<Customer | null>(null);
@@ -103,13 +122,21 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
       customerCode: 'CS1439874',
       name: 'Kashif Muzamil',
       fatherName: 'M Muzamil',
+      img: '',
       cnic: '3510268916271',
       phone: '00923011280303',
+      processingNumber: 'PN123456',
+      SoldBy: 'Salman',
+      VerifiedBy: 'Salman 2',
+      DeliveredBy: 'Salman 3',
+      invoiceNo: 'INV789012',
       occupation: 'hpr',
       isHomeOwner: true,
       isMarried: true,
-      residentialAddress: 'gaon havili ajaib sing wlai nzd dr saleem k ghar via kto rada kisn rod vai rrk',
-      officeAddress: 'nishadt dying fct nzd DHA housing scheme via gajumata rohi nal vai f p rod vai rrk',
+      residentialAddress:
+        'gaon havili ajaib sing wlai nzd dr saleem k ghar via kto rada kisn rod vai rrk',
+      officeAddress:
+        'nishadt dying fct nzd DHA housing scheme via gajumata rohi nal vai f p rod vai rrk',
       branchId: 'branch-1',
       regionId: 'region-1',
       zoneId: 'zone-1',
@@ -129,6 +156,11 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
       fatherName: 'Muhammad Ali',
       cnic: '3510268916272',
       phone: '00923011280304',
+      processingNumber: 'PN123456',
+      SoldBy: 'Salman',
+      VerifiedBy: 'Salman 2',
+      DeliveredBy: 'Salman 3',
+      invoiceNo: 'INV789012',
       occupation: 'Business Owner',
       isHomeOwner: true,
       isMarried: true,
@@ -159,7 +191,8 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
       cnic: '3510266212609',
       phone: '00923039471642',
       occupation: 'owner',
-      residentialAddress: 'gaon havili ajaib sing wlai nzd dr saleem k ghar via kto rada kisn rod vai rrk',
+      residentialAddress:
+        'gaon havili ajaib sing wlai nzd dr saleem k ghar via kto rada kisn rod vai rrk',
       officeAddress: 'apna zati zaindara krty h + dodh k akm krty h',
     },
     {
@@ -169,7 +202,8 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
       cnic: '3510202270811',
       phone: '00923001535988',
       occupation: 'E M T',
-      residentialAddress: 'gaon havili ajaib sing wlai nzd dr saleem k ghar via kto rada kisn rod vai rrk',
+      residentialAddress:
+        'gaon havili ajaib sing wlai nzd dr saleem k ghar via kto rada kisn rod vai rrk',
       officeAddress: '1122 me mulazim h diff jgo per duty krty h',
     },
   ];
@@ -215,7 +249,9 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
     if (foundCustomer) {
       setCustomer(foundCustomer);
       // Filter transactions for this customer
-      const customerTransactions = allTransactions.filter(t => t.customerId === customerId);
+      const customerTransactions = allTransactions.filter(
+        t => t.customerId === customerId,
+      );
       setTransactions(customerTransactions);
       // Set guarantors for this customer
       setGuarantors(allGuarantors);
@@ -227,15 +263,23 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
   };
 
   const handleEditCustomer = () => {
-    Alert.alert('Edit Customer', 'Customer editing functionality will be implemented soon.');
+    Alert.alert(
+      'Edit Customer',
+      'Customer editing functionality will be implemented soon.',
+    );
   };
 
   const handleNewTransaction = () => {
-    Alert.alert('New Transaction', 'New transaction functionality will be implemented soon.');
+    Alert.alert(
+      'New Transaction',
+      'New transaction functionality will be implemented soon.',
+    );
   };
 
   const handleViewAllTransactions = () => {
-    (navigation as any).navigate(screenName.CustomerTransactions, { customerId });
+    (navigation as any).navigate(screenName.CustomerTransactions, {
+      customerId,
+    });
   };
 
   const handleContactCustomer = () => {
@@ -245,8 +289,12 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
         `Would you like to call ${customer.name}?`,
         [
           { text: 'Cancel', style: 'cancel' },
-          { text: 'Call', onPress: () => Alert.alert('Calling...', `Calling ${customer.phone}`) },
-        ]
+          {
+            text: 'Call',
+            onPress: () =>
+              Alert.alert('Calling...', `Calling ${customer.phone}`),
+          },
+        ],
       );
     }
   };
@@ -260,19 +308,40 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
   ];
 
   const paymentStatusData = [
-    { x: 'Paid', y: customer ? customer.totalPurchases - customer.totalDue : 0 },
-    { x: 'Due', y: customer ? customer.totalDue : 0 },
+    {
+      name: 'Paid',
+      population: customer ? customer.totalPurchases - customer.totalDue : 0,
+      color: theme.colors.success,
+      legendFontColor: theme.colors.textPrimary,
+      legendFontSize: 12,
+    },
+    {
+      name: 'Due',
+      population: customer ? customer.totalDue : 0,
+      color: theme.colors.error,
+      legendFontColor: theme.colors.textPrimary,
+      legendFontSize: 12,
+    },
   ];
 
   const transactionTypeData = [
-    { x: 'Purchases', y: transactions.filter(t => t.type === 'purchase').length },
+    {
+      x: 'Purchases',
+      y: transactions.filter(t => t.type === 'purchase').length,
+    },
     { x: 'Payments', y: transactions.filter(t => t.type === 'payment').length },
     { x: 'Refunds', y: transactions.filter(t => t.type === 'refund').length },
   ];
 
   if (!customer) {
     return (
-      <View style={[styles.container, styles.centerContent, { backgroundColor: theme.colors.background }]}>
+      <View
+        style={[
+          styles.container,
+          styles.centerContent,
+          { backgroundColor: theme.colors.background },
+        ]}
+      >
         <Text style={[styles.errorText, { color: theme.colors.error }]}>
           Customer not found
         </Text>
@@ -287,21 +356,53 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
 
   if (error) {
     return (
-      <View style={[styles.container, styles.centerContent, { backgroundColor: theme.colors.background }]}>
+      <View
+        style={[
+          styles.container,
+          styles.centerContent,
+          { backgroundColor: theme.colors.background },
+        ]}
+      >
         <Text style={[styles.errorText, { color: theme.colors.error }]}>
           Failed to load customer data
         </Text>
-        <Button
-          title="Retry"
-          onPress={onRefresh}
-          style={styles.retryButton}
-        />
+        <Button title="Retry" onPress={onRefresh} style={styles.retryButton} />
       </View>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
+      <Header
+        title="Customer Details"
+        subtitle="Customer Information"
+        showBackButton
+      />
+      {/* Header */}
+      {/* <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <Text style={[styles.backText, { color: theme.colors.primary }]}>
+              ← Back
+            </Text>
+          </TouchableOpacity>
+          <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
+            Customer Details
+          </Text>
+          <TouchableOpacity
+            onPress={handleEditCustomer}
+            style={styles.editButton}
+          >
+            <Text style={[styles.editText, { color: theme.colors.primary }]}>
+              Edit
+            </Text>
+          </TouchableOpacity>
+        </View> */}
+
       <ScrollView
         style={styles.scrollView}
         refreshControl={
@@ -309,68 +410,162 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
         }
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Text style={[styles.backText, { color: theme.colors.primary }]}>← Back</Text>
-          </TouchableOpacity>
-          <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
-            Customer Details
-          </Text>
-          <TouchableOpacity onPress={handleEditCustomer} style={styles.editButton}>
-            <Text style={[styles.editText, { color: theme.colors.primary }]}>Edit</Text>
-          </TouchableOpacity>
-        </View>
-
         {/* Customer Header */}
         <Card style={styles.infoCard} padding="lg">
           <View style={styles.customerHeader}>
             <View style={styles.customerInfo}>
-              <Text style={[styles.customerName, { color: theme.colors.textPrimary }]}>
-                {customer.name} S/O {customer.fatherName}
+              <Image
+                source={
+                  customer?.img
+                    ? { uri: customer.img }
+                    : require('./../../assets/images/ceo.jpg')
+                }
+                style={styles.customerImage}
+                resizeMode="cover"
+              />
+              <Text
+                style={[
+                  styles.customerName,
+                  { color: theme.colors.textPrimary },
+                ]}
+              >
+                {customer.name} {'\n'}S/O {customer.fatherName}
               </Text>
-              <Text style={[styles.customerCode, { color: theme.colors.primary }]}>
+              <Text
+                style={[styles.customerCode, { color: theme.colors.primary }]}
+              >
                 Customer Code: {customer.customerCode}
               </Text>
-              <Text style={[styles.customerCnic, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.customerCnic,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 CNIC: {customer.cnic}
               </Text>
-              <Text style={[styles.customerContact, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.customerCnic,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
+                Processing#: {customer.processingNumber || 'N/A'}
+              </Text>
+              <Text
+                style={[
+                  styles.customerCnic,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
+                Sold By: {customer.SoldBy || 'N/A'}
+              </Text>
+              <Text
+                style={[
+                  styles.customerCnic,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
+                Verified By: {customer.VerifiedBy || 'N/A'}
+              </Text>
+              <Text
+                style={[
+                  styles.customerCnic,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
+                Delivered By: {customer.DeliveredBy || 'N/A'}
+              </Text>
+              <Text
+                style={[
+                  styles.customerCnic,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
+                CNIC: {customer.cnic}
+              </Text>
+
+              <Text
+                style={[
+                  styles.customerContact,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Phone: {customer.phone}
               </Text>
-              <Text style={[styles.customerOccupation, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.customerOccupation,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Occupation: {customer.occupation}
               </Text>
-              <Text style={[styles.customerStatus, { color: theme.colors.textSecondary }]}>
-                Home Owner: {customer.isHomeOwner ? 'Yes' : 'No'} | Married: {customer.isMarried ? 'Yes' : 'No'}
+              <Text
+                style={[
+                  styles.customerStatus,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
+                Home Owner: {customer.isHomeOwner ? 'Yes' : 'No'} | Married:{' '}
+                {customer.isMarried ? 'Yes' : 'No'}
               </Text>
             </View>
-            <View style={[
-              styles.statusBadge,
-              { backgroundColor: customer.isActive ? theme.colors.success + '20' : theme.colors.error + '20' }
-            ]}>
-              <Text style={[
-                styles.statusText,
-                { color: customer.isActive ? theme.colors.success : theme.colors.error }
-              ]}>
+            <View
+              style={[
+                styles.statusBadge,
+                {
+                  backgroundColor: customer.isActive
+                    ? theme.colors.success + '20'
+                    : theme.colors.error + '20',
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.statusText,
+                  {
+                    color: customer.isActive
+                      ? theme.colors.success
+                      : theme.colors.error,
+                  },
+                ]}
+              >
                 {customer.isActive ? 'Active' : 'Inactive'}
               </Text>
             </View>
           </View>
 
           <View style={styles.addressSection}>
-            <Text style={[styles.addressLabel, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[
+                styles.addressLabel,
+                { color: theme.colors.textSecondary },
+              ]}
+            >
               Location Res.:
             </Text>
-            <Text style={[styles.addressText, { color: theme.colors.textPrimary }]}>
+            <Text
+              style={[styles.addressText, { color: theme.colors.textPrimary }]}
+            >
               {customer.residentialAddress}
             </Text>
             {customer.officeAddress && (
               <>
-                <Text style={[styles.addressLabel, { color: theme.colors.textSecondary }]}>
+                <Text
+                  style={[
+                    styles.addressLabel,
+                    { color: theme.colors.textSecondary },
+                  ]}
+                >
                   Location Offc.:
                 </Text>
-                <Text style={[styles.addressText, { color: theme.colors.textPrimary }]}>
+                <Text
+                  style={[
+                    styles.addressText,
+                    { color: theme.colors.textPrimary },
+                  ]}
+                >
                   {customer.officeAddress}
                 </Text>
               </>
@@ -382,18 +577,35 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
               <Text style={[styles.statValue, { color: theme.colors.primary }]}>
                 {formatCurrency(customer.totalPurchases)}
               </Text>
-              <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.statLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Total Purchases
               </Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={[
-                styles.statValue,
-                { color: customer.totalDue > 0 ? theme.colors.error : theme.colors.success }
-              ]}>
+              <Text
+                style={[
+                  styles.statValue,
+                  {
+                    color:
+                      customer.totalDue > 0
+                        ? theme.colors.error
+                        : theme.colors.success,
+                  },
+                ]}
+              >
                 {formatCurrency(customer.totalDue)}
               </Text>
-              <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.statLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Outstanding Due
               </Text>
             </View>
@@ -401,7 +613,12 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
               <Text style={[styles.statValue, { color: theme.colors.warning }]}>
                 {formatCurrency(customer.creditLimit)}
               </Text>
-              <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.statLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Credit Limit
               </Text>
             </View>
@@ -410,39 +627,81 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
 
         {/* Customer Details */}
         <Card style={styles.detailsCard} padding="lg">
-          <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
+          <Text
+            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+          >
             Customer Information
           </Text>
           <View style={styles.detailsGrid}>
             <View style={styles.detailItem}>
-              <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.detailLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Registration Date
               </Text>
-              <Text style={[styles.detailValue, { color: theme.colors.textPrimary }]}>
+              <Text
+                style={[
+                  styles.detailValue,
+                  { color: theme.colors.textPrimary },
+                ]}
+              >
                 {formatDate(customer.registrationDate)}
               </Text>
             </View>
             <View style={styles.detailItem}>
-              <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.detailLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Last Purchase
               </Text>
-              <Text style={[styles.detailValue, { color: theme.colors.textPrimary }]}>
+              <Text
+                style={[
+                  styles.detailValue,
+                  { color: theme.colors.textPrimary },
+                ]}
+              >
                 {formatDate(customer.lastPurchaseDate)}
               </Text>
             </View>
             <View style={styles.detailItem}>
-              <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.detailLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Branch
               </Text>
-              <Text style={[styles.detailValue, { color: theme.colors.textPrimary }]}>
+              <Text
+                style={[
+                  styles.detailValue,
+                  { color: theme.colors.textPrimary },
+                ]}
+              >
                 Branch {customer.branchId.split('-')[1]}
               </Text>
             </View>
             <View style={styles.detailItem}>
-              <Text style={[styles.detailLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.detailLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Credit Utilization
               </Text>
-              <Text style={[styles.detailValue, { color: theme.colors.textPrimary }]}>
+              <Text
+                style={[
+                  styles.detailValue,
+                  { color: theme.colors.textPrimary },
+                ]}
+              >
                 {((customer.totalDue / customer.creditLimit) * 100).toFixed(1)}%
               </Text>
             </View>
@@ -452,29 +711,66 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
         {/* G1 Detail (First Guarantor) */}
         {guarantors.length > 0 && (
           <Card style={styles.guarantorCard} padding="lg">
-            <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
+            <Text
+              style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+            >
               G1 Detail
             </Text>
             <View style={styles.guarantorInfo}>
-              <Text style={[styles.guarantorName, { color: theme.colors.textPrimary }]}>
+              <Text
+                style={[
+                  styles.guarantorName,
+                  { color: theme.colors.textPrimary },
+                ]}
+              >
                 {guarantors[0].name} S/O {guarantors[0].fatherName}
               </Text>
-              <Text style={[styles.guarantorCnic, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.guarantorCnic,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 CNIC: {guarantors[0].cnic}
               </Text>
-              <Text style={[styles.guarantorOccupation, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.guarantorOccupation,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Occupation: {guarantors[0].occupation}
               </Text>
-              <Text style={[styles.guarantorPhone, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.guarantorPhone,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Phone: {guarantors[0].phone}
               </Text>
-              <Text style={[styles.guarantorAddress, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.guarantorAddress,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 {guarantors[0].residentialAddress}
               </Text>
-              <Text style={[styles.addressLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.addressLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Location Res.:
               </Text>
-              <Text style={[styles.guarantorAddress, { color: theme.colors.textPrimary }]}>
+              <Text
+                style={[
+                  styles.guarantorAddress,
+                  { color: theme.colors.textPrimary },
+                ]}
+              >
                 {guarantors[0].officeAddress}
               </Text>
             </View>
@@ -484,29 +780,66 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
         {/* G2 Detail (Second Guarantor) */}
         {guarantors.length > 1 && (
           <Card style={styles.guarantorCard} padding="lg">
-            <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
+            <Text
+              style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+            >
               G2 Detail
             </Text>
             <View style={styles.guarantorInfo}>
-              <Text style={[styles.guarantorName, { color: theme.colors.textPrimary }]}>
+              <Text
+                style={[
+                  styles.guarantorName,
+                  { color: theme.colors.textPrimary },
+                ]}
+              >
                 {guarantors[1].name} S/O {guarantors[1].fatherName}
               </Text>
-              <Text style={[styles.guarantorCnic, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.guarantorCnic,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 CNIC: {guarantors[1].cnic}
               </Text>
-              <Text style={[styles.guarantorOccupation, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.guarantorOccupation,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Occupation: {guarantors[1].occupation}
               </Text>
-              <Text style={[styles.guarantorPhone, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.guarantorPhone,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Phone: {guarantors[1].phone}
               </Text>
-              <Text style={[styles.guarantorAddress, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.guarantorAddress,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 {guarantors[1].residentialAddress}
               </Text>
-              <Text style={[styles.addressLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.addressLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Location Res.:
               </Text>
-              <Text style={[styles.guarantorAddress, { color: theme.colors.textPrimary }]}>
+              <Text
+                style={[
+                  styles.guarantorAddress,
+                  { color: theme.colors.textPrimary },
+                ]}
+              >
                 {guarantors[1].officeAddress}
               </Text>
             </View>
@@ -515,61 +848,90 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
 
         {/* Charts */}
         <View style={styles.chartsSection}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
+          <Text
+            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+          >
             Customer Analytics
           </Text>
-          
+
           <LineGraph
             title="Purchase Trend (4 Months)"
             data={purchaseTrendData}
             color={theme.colors.primary}
           />
-          
-          <ProgressGraph
+
+          {/* <ProgressGraph
             title="Payment Status"
             data={paymentStatusData}
             colors={[theme.colors.success, theme.colors.error]}
-          />
-          
-          
+          /> */}
         </View>
 
         {/* Recent Transactions */}
         <Card style={styles.transactionsCard} padding="lg">
           <View style={styles.transactionsHeader}>
-            <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
+            <Text
+              style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+            >
               Recent Transactions
             </Text>
             <TouchableOpacity onPress={handleViewAllTransactions}>
-              <Text style={[styles.viewAllText, { color: theme.colors.primary }]}>
+              <Text
+                style={[styles.viewAllText, { color: theme.colors.primary }]}
+              >
                 View All
               </Text>
             </TouchableOpacity>
           </View>
-          {transactions.slice(0, 3).map((transaction) => (
+          {transactions.slice(0, 3).map(transaction => (
             <View key={transaction.id} style={styles.transactionItem}>
               <View style={styles.transactionInfo}>
-                <Text style={[styles.transactionDescription, { color: theme.colors.textPrimary }]}>
+                <Text
+                  style={[
+                    styles.transactionDescription,
+                    { color: theme.colors.textPrimary },
+                  ]}
+                >
                   {transaction.description}
                 </Text>
-                <Text style={[styles.transactionDate, { color: theme.colors.textSecondary }]}>
+                <Text
+                  style={[
+                    styles.transactionDate,
+                    { color: theme.colors.textSecondary },
+                  ]}
+                >
                   {formatDate(transaction.date)}
                 </Text>
               </View>
               <View style={styles.transactionAmount}>
-                <Text style={[
-                  styles.transactionValue,
-                  { 
-                    color: transaction.type === 'payment' ? theme.colors.success : 
-                           transaction.type === 'refund' ? theme.colors.error : 
-                           theme.colors.textPrimary 
-                  }
-                ]}>
-                  {transaction.type === 'payment' ? '+' : transaction.type === 'refund' ? '-' : ''}
+                <Text
+                  style={[
+                    styles.transactionValue,
+                    {
+                      color:
+                        transaction.type === 'payment'
+                          ? theme.colors.success
+                          : transaction.type === 'refund'
+                          ? theme.colors.error
+                          : theme.colors.textPrimary,
+                    },
+                  ]}
+                >
+                  {transaction.type === 'payment'
+                    ? '+'
+                    : transaction.type === 'refund'
+                    ? '-'
+                    : ''}
                   {formatCurrency(transaction.amount)}
                 </Text>
-                <Text style={[styles.transactionType, { color: theme.colors.textSecondary }]}>
-                  {transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}
+                <Text
+                  style={[
+                    styles.transactionType,
+                    { color: theme.colors.textSecondary },
+                  ]}
+                >
+                  {transaction.type.charAt(0).toUpperCase() +
+                    transaction.type.slice(1)}
                 </Text>
               </View>
             </View>
@@ -584,12 +946,12 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ route }) => {
             variant="outline"
             style={styles.actionButton}
           />
-          <Button
+          {/* <Button
             title="New Transaction"
             onPress={handleNewTransaction}
             variant="primary"
             style={styles.actionButton}
-          />
+          /> */}
         </View>
 
         {/* Bottom Spacing */}
@@ -608,6 +970,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scrollView: {
+    marginTop: AppSizes.Margin_Vertical_40,
     flex: 1,
   },
   header: {
@@ -659,6 +1022,13 @@ const styles = StyleSheet.create({
   customerName: {
     fontSize: 20,
     fontFamily: 'Poppins-Bold',
+    marginBottom: 8,
+  },
+  customerImage: {
+    marginHorizontal: AppSizes.Margin_Horizontal_20,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     marginBottom: 8,
   },
   customerCode: {

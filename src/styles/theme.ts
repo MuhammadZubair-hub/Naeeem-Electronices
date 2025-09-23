@@ -1,14 +1,24 @@
 export const colors = {
+  // Gradients for modern UI
+  gradientBlueGreen: ['#3b82f6', '#06b6d4'], // blue to cyan
+  gradientGreenBlue: ['#06d6a0', '#3b82f6'], // green to blue
   // Primary colors
   primary: '#2563eb',
   primaryDark: '#1d4ed8',
   primaryLight: '#3b82f6',
   
+  // // Secondary colors
+  // secondary: '#64748b',
+  // secondaryDark: '#475569',
+  // secondaryLight: '#94a3b8',
+  
+  
   // Secondary colors
-  secondary: '#64748b',
+  secondary: '#146EA5',
   secondaryDark: '#475569',
   secondaryLight: '#94a3b8',
   
+
   // Accent colors
   accent: '#f59e0b',
   accentDark: '#d97706',
@@ -71,13 +81,17 @@ export const colors = {
 };
 
 export const darkColors = {
+  // Gradients for modern UI
+  gradientBlueGreen: ['#2563eb', '#06b6d4'], // blue to cyan (darker)
+  gradientGreenBlue: ['#059669', '#2563eb'], // green to blue (darker)
   // Primary colors
   primary: '#3b82f6',
   primaryDark: '#2563eb',
   primaryLight: '#60a5fa',
   
   // Secondary colors
-  secondary: '#94a3b8',
+  secondary: '#146EA5',
+  // secondary: '#94a3b8',
   secondaryDark: '#64748b',
   secondaryLight: '#cbd5e1',
   

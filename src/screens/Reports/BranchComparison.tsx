@@ -17,7 +17,7 @@ import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { LineGraph } from '../../components/charts/LineGraph';
 import { BarGraph } from '../../components/charts/BarGraph';
-import { DonutGauge } from '../../components/charts/ProgressGraph';
+import { ProgressGraph } from '../../components/charts/ProgressGraph';
 import { formatCurrency, formatNumber, formatDate } from '../../utils/formatters';
 import { Role } from '../../types';
 import { mockDataService, Branch } from '../../services/mock/mockDataService';
@@ -101,8 +101,8 @@ export const BranchComparison: React.FC = () => {
   const getChartData = () => {
     const sortedBranches = getSortedBranches().slice(0, 5); // Top 5 branches
     return sortedBranches.map(branch => ({
-      x: branch.name.split(' ')[0], // First word only
-      y: getMetricValue(branch, selectedMetric),
+      label: branch.name.split(' ')[0], // For BarGraph
+      value: getMetricValue(branch, selectedMetric),
     }));
   };
 
@@ -122,7 +122,7 @@ export const BranchComparison: React.FC = () => {
     const totalRevenue = branches.reduce((sum, branch) => sum + branch.totalRevenue, 0);
     return branches.slice(0, 4).map(branch => ({
       x: branch.name.split(' ')[0],
-      y: Math.round((branch.totalRevenue / totalRevenue) * 100),
+      y: totalRevenue > 0 ? branch.totalRevenue / totalRevenue : 0, // value as fraction 0-1
     }));
   };
 
@@ -301,7 +301,6 @@ export const BranchComparison: React.FC = () => {
           <BarGraph
             title={`Top 5 Branches by ${getMetricLabel(selectedMetric)}`}
             data={getChartData()}
-            color={theme.colors.primary}
           />
           
           <LineGraph
@@ -310,7 +309,7 @@ export const BranchComparison: React.FC = () => {
             color={theme.colors.success}
           />
           
-          <DonutGauge
+          <ProgressGraph
             title="Branch Revenue Distribution"
             data={getBranchDistributionData()}
             colors={[theme.colors.primary, theme.colors.success, theme.colors.warning, theme.colors.error]}

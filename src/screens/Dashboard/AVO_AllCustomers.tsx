@@ -16,7 +16,7 @@ import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { LineGraph } from '../../components/charts/LineGraph';
 import { BarGraph } from '../../components/charts/BarGraph';
-import { DonutGauge } from '../../components/charts/ProgressGraph';
+import { ProgressGraph } from '../../components/charts/ProgressGraph';
 import { Role } from '../../types';
 
 const { width } = Dimensions.get('window');
@@ -34,9 +34,13 @@ interface Customer {
 export const AVO_AllCustomers: React.FC = () => {
   const { theme } = useTheme();
   const dispatch = useDispatch<AppDispatch>();
-  
+
   const { user } = useSelector((state: RootState) => state.auth);
-  const { data: dashboardData, isLoading, error } = useSelector((state: RootState) => state.dashboard);
+  const {
+    data: dashboardData,
+    isLoading,
+    error,
+  } = useSelector((state: RootState) => state.dashboard);
 
   useEffect(() => {
     dispatch(fetchDashboardData());
@@ -74,7 +78,7 @@ export const AVO_AllCustomers: React.FC = () => {
   const customers: Customer[] = [
     {
       id: '1',
-      name: 'Ahmed Ali',
+      name: 'Ahmed Alii',
       email: 'ahmed.ali@email.com',
       phone: '+92-300-1234567',
       totalPurchases: 45000,
@@ -143,32 +147,54 @@ export const AVO_AllCustomers: React.FC = () => {
   const renderCustomerItem = ({ item }: { item: Customer }) => (
     <Card style={styles.customerCard} padding="md">
       <View style={styles.customerHeader}>
-        <Text style={[styles.customerName, { color: theme.colors.textPrimary }]}>
+        <Text
+          style={[styles.customerName, { color: theme.colors.textPrimary }]}
+        >
           {item.name}
         </Text>
-        <View style={[
-          styles.statusBadge,
-          { backgroundColor: item.status === 'active' ? theme.colors.success + '20' : theme.colors.error + '20' }
-        ]}>
-          <Text style={[
-            styles.statusText,
-            { color: item.status === 'active' ? theme.colors.success : theme.colors.error }
-          ]}>
+        <View
+          style={[
+            styles.statusBadge,
+            {
+              backgroundColor:
+                item.status === 'active'
+                  ? theme.colors.success + '20'
+                  : theme.colors.error + '20',
+            },
+          ]}
+        >
+          <Text
+            style={[
+              styles.statusText,
+              {
+                color:
+                  item.status === 'active'
+                    ? theme.colors.success
+                    : theme.colors.error,
+              },
+            ]}
+          >
             {item.status.toUpperCase()}
           </Text>
         </View>
       </View>
-      <Text style={[styles.customerEmail, { color: theme.colors.textSecondary }]}>
+      <Text
+        style={[styles.customerEmail, { color: theme.colors.textSecondary }]}
+      >
         {item.email}
       </Text>
-      <Text style={[styles.customerPhone, { color: theme.colors.textSecondary }]}>
+      <Text
+        style={[styles.customerPhone, { color: theme.colors.textSecondary }]}
+      >
         {item.phone}
       </Text>
       <View style={styles.customerFooter}>
         <Text style={[styles.purchaseAmount, { color: theme.colors.primary }]}>
           {formatCurrency(item.totalPurchases)}
         </Text>
-        <Text style={[styles.lastPurchase, { color: theme.colors.textTertiary }]}>
+        <Text
+          style={[styles.lastPurchase, { color: theme.colors.textTertiary }]}
+        >
           Last: {new Date(item.lastPurchase).toLocaleDateString()}
         </Text>
       </View>
@@ -177,21 +203,25 @@ export const AVO_AllCustomers: React.FC = () => {
 
   if (error) {
     return (
-      <View style={[styles.container, styles.centerContent, { backgroundColor: theme.colors.background }]}>
+      <View
+        style={[
+          styles.container,
+          styles.centerContent,
+          { backgroundColor: theme.colors.background },
+        ]}
+      >
         <Text style={[styles.errorText, { color: theme.colors.error }]}>
           Failed to load dashboard data
         </Text>
-        <Button
-          title="Retry"
-          onPress={onRefresh}
-          style={styles.retryButton}
-        />
+        <Button title="Retry" onPress={onRefresh} style={styles.retryButton} />
       </View>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
       <ScrollView
         style={styles.scrollView}
         refreshControl={
@@ -202,13 +232,19 @@ export const AVO_AllCustomers: React.FC = () => {
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={[styles.greeting, { color: theme.colors.textPrimary }]}>
+            <Text
+              style={[styles.greeting, { color: theme.colors.textPrimary }]}
+            >
               Customer Management
             </Text>
-            <Text style={[styles.userName, { color: theme.colors.textPrimary }]}>
+            <Text
+              style={[styles.userName, { color: theme.colors.textPrimary }]}
+            >
               {user?.name}
             </Text>
-            <Text style={[styles.userRole, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[styles.userRole, { color: theme.colors.textSecondary }]}
+            >
               {user ? getRoleDisplayName(user.role) : ''}
             </Text>
           </View>
@@ -217,39 +253,75 @@ export const AVO_AllCustomers: React.FC = () => {
         {/* Customer Summary */}
         {dashboardData?.summary && (
           <Card style={styles.summaryCard} padding="lg">
-            <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
+            <Text
+              style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+            >
               Customer Overview
             </Text>
             <View style={styles.summaryGrid}>
               <View style={styles.summaryItem}>
-                <Text style={[styles.summaryValue, { color: theme.colors.primary }]}>
+                <Text
+                  style={[styles.summaryValue, { color: theme.colors.primary }]}
+                >
                   {formatNumber(customers.length)}
                 </Text>
-                <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+                <Text
+                  style={[
+                    styles.summaryLabel,
+                    { color: theme.colors.textSecondary },
+                  ]}
+                >
                   Total Customers
                 </Text>
               </View>
               <View style={styles.summaryItem}>
-                <Text style={[styles.summaryValue, { color: theme.colors.success }]}>
-                  {formatNumber(customers.filter(c => c.status === 'active').length)}
+                <Text
+                  style={[styles.summaryValue, { color: theme.colors.success }]}
+                >
+                  {formatNumber(
+                    customers.filter(c => c.status === 'active').length,
+                  )}
                 </Text>
-                <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+                <Text
+                  style={[
+                    styles.summaryLabel,
+                    { color: theme.colors.textSecondary },
+                  ]}
+                >
                   Active Customers
                 </Text>
               </View>
               <View style={styles.summaryItem}>
-                <Text style={[styles.summaryValue, { color: theme.colors.warning }]}>
-                  {formatCurrency(customers.reduce((sum, c) => sum + c.totalPurchases, 0))}
+                <Text
+                  style={[styles.summaryValue, { color: theme.colors.warning }]}
+                >
+                  {formatCurrency(
+                    customers.reduce((sum, c) => sum + c.totalPurchases, 0),
+                  )}
                 </Text>
-                <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+                <Text
+                  style={[
+                    styles.summaryLabel,
+                    { color: theme.colors.textSecondary },
+                  ]}
+                >
                   Total Sales
                 </Text>
               </View>
               <View style={styles.summaryItem}>
-                <Text style={[styles.summaryValue, { color: theme.colors.error }]}>
-                  {formatNumber(customers.filter(c => c.status === 'inactive').length)}
+                <Text
+                  style={[styles.summaryValue, { color: theme.colors.error }]}
+                >
+                  {formatNumber(
+                    customers.filter(c => c.status === 'inactive').length,
+                  )}
                 </Text>
-                <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+                <Text
+                  style={[
+                    styles.summaryLabel,
+                    { color: theme.colors.textSecondary },
+                  ]}
+                >
                   Inactive Customers
                 </Text>
               </View>
@@ -259,38 +331,42 @@ export const AVO_AllCustomers: React.FC = () => {
 
         {/* Charts Section */}
         <View style={styles.chartsSection}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
+          <Text
+            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+          >
             Customer Analytics
           </Text>
-          
+
           <LineGraph
             title="Customer Growth Trend"
             data={customerGrowthData}
             color={theme.colors.primary}
           />
-          
+
           <BarGraph
             title="Customer Value Distribution"
             data={customerValueData}
             color={theme.colors.success}
           />
-          
-          <DonutGauge
+
+          {/* <DonutGauge
             title="Customer Status"
             data={customerStatusData}
             colors={[theme.colors.success, theme.colors.error]}
-          />
+          /> */}
         </View>
 
         {/* Customer List */}
         <View style={styles.customerSection}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
+          <Text
+            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+          >
             All Customers
           </Text>
           <FlatList
             data={customers}
             renderItem={renderCustomerItem}
-            keyExtractor={(item) => item.id}
+            keyExtractor={item => item.id}
             scrollEnabled={false}
             showsVerticalScrollIndicator={false}
           />
@@ -298,7 +374,9 @@ export const AVO_AllCustomers: React.FC = () => {
 
         {/* Quick Actions */}
         <Card style={styles.quickActionsCard} padding="lg">
-          <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
+          <Text
+            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+          >
             Customer Actions
           </Text>
           <View style={styles.quickActionsGrid}>

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { BackHandler, Switch } from 'react-native';
 import {
   View,
   Text,
@@ -8,6 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { toggleTheme } from '../../redux/slices/themeSlice';
 import { useNavigation } from '@react-navigation/native';
 import { RootState, AppDispatch } from '../../redux/store';
 import { fetchDashboardData } from '../../redux/slices/dashboardSlice';
@@ -20,11 +22,15 @@ import { ProgressGraph } from '../../components/charts/ProgressGraph';
 
 import { Role } from '../../types';
 import { screenName } from '../../navigation/ScreenName';
+import MainHeader from '../../components/common/MainHeader';
+import { PieGraph } from '../../components/charts/PieGraph';
+import App from 'App';
+import { AppSizes } from '../../utils/AppSizes';
 
 const { width } = Dimensions.get('window');
 
 export const CEO_GM_Dashboard: React.FC = () => {
-  const { theme } = useTheme();
+  const { theme, isDarkMode } = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
 
@@ -86,11 +92,44 @@ export const CEO_GM_Dashboard: React.FC = () => {
     { x: 'Rawalpindi', y: 65000 },
   ];
 
-  const paymentStatusData = [
-    { x: 'Paid', y: 65 },
-    { x: 'Partial', y: 20 },
-    { x: 'Pending', y: 15 },
+  const PieGraphData = [
+    {
+      name: 'Seoul',
+      population: 21500000,
+      color: 'rgba(131, 167, 234, 1)',
+      legendFontColor: '#7F7F7F',
+      legendFontSize: 15,
+    },
+    {
+      name: 'Toronto',
+      population: 2800000,
+      color: '#F00',
+      legendFontColor: '#7F7F7F',
+      legendFontSize: 15,
+    },
+    {
+      name: 'Beijing',
+      population: 527612,
+      color: 'red',
+      legendFontColor: '#7F7F7F',
+      legendFontSize: 15,
+    },
+    {
+      name: 'New York',
+      population: 8538000,
+      color: '#ffffff',
+      legendFontColor: '#7F7F7F',
+      legendFontSize: 15,
+    },
+    {
+      name: 'Moscow',
+      population: 11920000,
+      color: 'rgb(0, 0, 255)',
+      legendFontColor: '#7F7F7F',
+      legendFontSize: 15,
+    },
   ];
+
   const salesByRegion = [
     { name: 'North', population: 40, color: '#10B981' },
     { name: 'South', population: 30, color: '#3B82F6' },
@@ -127,6 +166,21 @@ export const CEO_GM_Dashboard: React.FC = () => {
     );
   }
 
+  useEffect(() => {
+    // Disable Android back button
+    const backAction = () => {
+      // Optionally, show an alert if needed
+      // Alert.alert("Hold on!", "You cannot go back from this screen.", [{ text: "OK", onPress: () => null }]);
+      return true; // returning true disables back action
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove(); // Cleanup on unmount
+  }, []);
+
   return (
     <View
       style={[styles.container, { backgroundColor: theme.colors.background }]}
@@ -139,25 +193,10 @@ export const CEO_GM_Dashboard: React.FC = () => {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text
-              style={[styles.greeting, { color: theme.colors.textPrimary }]}
-            >
-              Executive Dashboard
-            </Text>
-            <Text
-              style={[styles.userName, { color: theme.colors.textPrimary }]}
-            >
-              {user?.name}
-            </Text>
-            <Text
-              style={[styles.userRole, { color: theme.colors.textSecondary }]}
-            >
-              {user ? getRoleDisplayName(user.role) : ''}
-            </Text>
-          </View>
-        </View>
+
+        <MainHeader title="Executive Dashboard" />
+
+        <PieGraph title="Sales by Region" />
 
         {/* Executive Summary */}
         {dashboardData?.summary && (
@@ -246,11 +285,11 @@ export const CEO_GM_Dashboard: React.FC = () => {
             // color={theme.colors.primary}
           />
 
-          <ProgressGraph
+          {/* <ProgressGraph
             title="Branch Performance (Monthly)"
             data={progressData}
             // colors={[theme.colors.primary]}
-          />
+          /> */}
 
           <BarGraph title="Branch Revenue" data={revenueData} height={250} />
         </View>
@@ -263,7 +302,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
             Navigate Through Hierarchy
           </Text>
           <View style={styles.navigationGrid}>
-            <Button
+            {/* <Button
               title="View All Branches"
               onPress={() =>
                 (navigation as any).navigate(screenName.BranchList)
@@ -316,12 +355,21 @@ export const CEO_GM_Dashboard: React.FC = () => {
               variant="outline"
               size="sm"
               style={styles.navigationButton}
+            /> */}
+            <Button
+              title="All Regions"
+              onPress={() =>
+                (navigation as any).navigate(screenName.RegionList)
+              }
+              variant="outline"
+              size="sm"
+              style={styles.navigationButton}
             />
           </View>
         </Card>
 
         {/* Quick Actions */}
-        <Card style={styles.quickActionsCard} padding="lg">
+        {/* <Card style={styles.quickActionsCard} padding="lg">
           <Text
             style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
           >
@@ -365,7 +413,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
               style={styles.quickActionButton}
             />
           </View>
-        </Card>
+        </Card> */}
 
         {/* Bottom Spacing */}
         <View style={styles.bottomSpacing} />
@@ -475,5 +523,6 @@ const styles = StyleSheet.create({
   },
   bottomSpacing: {
     height: 20,
+    marginBottom: AppSizes.Margin_Vertical_40,
   },
 });

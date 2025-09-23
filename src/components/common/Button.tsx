@@ -70,6 +70,7 @@ export const Button: React.FC<ButtonProps> = ({
       },
       secondary: {
         backgroundColor: disabled ? theme.colors.gray300 : theme.colors.secondary,
+        // : theme.colors.secondary,
         borderWidth: 0,
       },
       outline: {
@@ -134,7 +135,11 @@ export const Button: React.FC<ButtonProps> = ({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variant === 'outline' || variant === 'ghost' ? theme.colors.primary : theme.colors.white}
+          color={
+            variant === 'outline' || variant === 'ghost'
+              ? theme.colors.primary
+              : theme.colors.white
+          }
         />
       ) : (
         <>

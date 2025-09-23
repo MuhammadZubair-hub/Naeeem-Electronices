@@ -267,12 +267,95 @@ const paymentsData: Payment[] = [
 ];
 
 class MockDataService {
+  // Region methods
+  getRegions(): { id: string; name: string; managerName: string }[] {
+    // Derive unique regions from branches
+    const regionMap: {
+      [id: string]: { id: string; name: string; managerName: string };
+    } = {};
+    this.branches.forEach(branch => {
+      if (!regionMap[branch.regionId]) {
+        // Find regional manager (first branch manager in region)
+        const manager = this.staff.find(
+          s =>
+            s.regionId === branch.regionId &&
+            s.role.toLowerCase().includes('regional'),
+        );
+        regionMap[branch.regionId] = {
+          id: branch.regionId,
+          name: branch.regionId,
+          managerName: manager ? manager.name : branch.managerName || 'N/A',
+        };
+      }
+    });
+    return Object.values(regionMap);
+  }
+
+  getZonesByRegion(
+    regionId: string,
+  ): { id: string; name: string; managerName: string }[] {
+    // Derive unique zones from branches in region
+    const zoneMap: {
+      [id: string]: { id: string; name: string; managerName: string };
+    } = {};
+    this.branches
+      .filter(b => b.regionId === regionId)
+      .forEach(branch => {
+        if (!zoneMap[branch.zoneId]) {
+          // Find zonal manager (first staff with zoneId and 'zonal' in role)
+          const manager = this.staff.find(
+            s =>
+              s.zoneId === branch.zoneId &&
+              s.role.toLowerCase().includes('zonal'),
+          );
+          zoneMap[branch.zoneId] = {
+            id: branch.zoneId,
+            name: branch.zoneId,
+            managerName: manager ? manager.name : branch.managerName || 'N/A',
+          };
+        }
+      });
+    return Object.values(zoneMap);
+  }
+
+  getAVOsByBranch(
+    branchId: string,
+  ): { id: string; name: string; managerName: string }[] {
+    // Derive unique AVOs from branches
+    const avoMap: {
+      [id: string]: { id: string; name: string; managerName: string };
+    } = {};
+    this.staff
+      .filter(b => b.id === branchId)
+      .forEach(branch => {
+        if (!avoMap[branch.id]) {
+          // Find AVO manager (first staff with branchId and 'avo' in role)
+          const manager = this.staff.find(
+            s =>
+              s.branchId === branch.id && s.role.toLowerCase().includes('avo'),
+          );
+          avoMap[branch.id] = {
+            id: branch.zoneId,
+            name: branch.zoneId,
+            managerName: manager
+              ? manager.name
+              : this.staff.find(s => s.id === branch.id)?.name || 'N/A',
+          };
+        }
+      });
+    return Object.values(avoMap);
+  }
+
   private branches: Branch[] = branchesData as Branch[];
   private customers: Customer[] = customersData as Customer[];
   private sales: Sale[] = salesData as Sale[];
   private staff: StaffMember[] = staffData;
   private payments: Payment[] = paymentsData;
+  private AVoStaff: StaffMember[] = staffData;
 
+  getAVOStaff(): StaffMember[] {
+    return this.AVoStaff;
+  }
   // Branch methods
   getBranches(): Branch[] {
     return this.branches;
@@ -312,7 +395,9 @@ class MockDataService {
   }
 
   getCustomersByAssignedTo(assignedTo: string): Customer[] {
-    return this.customers.filter(customer => customer.assignedTo === assignedTo);
+    return this.customers.filter(
+      customer => customer.assignedTo === assignedTo,
+    );
   }
 
   // Sales methods
@@ -375,7 +460,7 @@ class MockDataService {
   }
 
   getPaymentsBySale(saleId: string): Payment[] {
-    return this.payments.filter(payment => payment.paymentId === saleId);
+    return this.payments.filter(payment => payment.saleId === saleId);
   }
 
   getPaymentsByCustomer(customerId: string): Payment[] {
@@ -388,15 +473,24 @@ class MockDataService {
   }
 
   getTotalRevenueByBranch(branchId: string): number {
-    return this.getSalesByBranch(branchId).reduce((total, sale) => total + sale.finalAmount, 0);
+    return this.getSalesByBranch(branchId).reduce(
+      (total, sale) => total + sale.finalAmount,
+      0,
+    );
   }
 
   getTotalRevenueByRegion(regionId: string): number {
-    return this.getSalesByRegion(regionId).reduce((total, sale) => total + sale.finalAmount, 0);
+    return this.getSalesByRegion(regionId).reduce(
+      (total, sale) => total + sale.finalAmount,
+      0,
+    );
   }
 
   getTotalRevenueByZone(zoneId: string): number {
-    return this.getSalesByZone(zoneId).reduce((total, sale) => total + sale.finalAmount, 0);
+    return this.getSalesByZone(zoneId).reduce(
+      (total, sale) => total + sale.finalAmount,
+      0,
+    );
   }
 
   getTotalCustomers(): number {
@@ -426,29 +520,32 @@ class MockDataService {
   // Search methods
   searchCustomers(query: string): Customer[] {
     const lowercaseQuery = query.toLowerCase();
-    return this.customers.filter(customer =>
-      customer.name.toLowerCase().includes(lowercaseQuery) ||
-      customer.email.toLowerCase().includes(lowercaseQuery) ||
-      customer.phone.includes(query) ||
-      customer.address.toLowerCase().includes(lowercaseQuery)
+    return this.customers.filter(
+      customer =>
+        customer.name.toLowerCase().includes(lowercaseQuery) ||
+        customer.email.toLowerCase().includes(lowercaseQuery) ||
+        customer.phone.includes(query) ||
+        customer.address.toLowerCase().includes(lowercaseQuery),
     );
   }
 
   searchBranches(query: string): Branch[] {
     const lowercaseQuery = query.toLowerCase();
-    return this.branches.filter(branch =>
-      branch.name.toLowerCase().includes(lowercaseQuery) ||
-      branch.address.toLowerCase().includes(lowercaseQuery) ||
-      branch.managerName.toLowerCase().includes(lowercaseQuery)
+    return this.branches.filter(
+      branch =>
+        branch.name.toLowerCase().includes(lowercaseQuery) ||
+        branch.address.toLowerCase().includes(lowercaseQuery) ||
+        branch.managerName.toLowerCase().includes(lowercaseQuery),
     );
   }
 
   searchSales(query: string): Sale[] {
     const lowercaseQuery = query.toLowerCase();
-    return this.sales.filter(sale =>
-      sale.customerName.toLowerCase().includes(lowercaseQuery) ||
-      sale.invoiceNumber.toLowerCase().includes(lowercaseQuery) ||
-      sale.id.toLowerCase().includes(lowercaseQuery)
+    return this.sales.filter(
+      sale =>
+        sale.customerName.toLowerCase().includes(lowercaseQuery) ||
+        sale.invoiceNumber.toLowerCase().includes(lowercaseQuery) ||
+        sale.id.toLowerCase().includes(lowercaseQuery),
     );
   }
 }
