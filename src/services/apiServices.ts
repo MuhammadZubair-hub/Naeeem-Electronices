@@ -42,5 +42,13 @@ export const API_Config = {
     });
   },
 
+  getBranchesAVOs: async (param: any) => {
+    return apicall_new({
+      endpoint: `${baseUrl}${endPoints.branchAvos}`,
+      method: 'GET',
+      params: param,
+    });
+  },
+
 
 };

@@ -2,19 +2,20 @@ import { useTheme } from '../../hooks/useTheme';
 import { AppSizes } from '../../utils/AppSizes';
 import LottieView from 'lottie-react-native';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 const Loader = () => {
   const { theme } = useTheme();
 
   return (
     <View style={styles.container}>
-      <LottieView
+      {/* <LottieView
         source={require('../../assets/Loader/Loader.json')}
         autoPlay
         loop
         style={{ width: 100, height: 100 }}
-      />
+      /> */}
+      <ActivityIndicator size={'large'} color={theme.colors.secondary}/>
       <Text
         style={{
           marginTop: 12,

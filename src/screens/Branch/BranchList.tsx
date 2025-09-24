@@ -247,6 +247,12 @@ export const BranchList: React.FC = () => {
     </TouchableOpacity>
   );
 
+  const handleBranchPress = ( item ) => {
+    // console.log('itme passsing is ',item);
+    navigation.navigate('AVOsList', { branch: item?.branchCode });
+
+  }
+
   if (error) {
     return (
       <View
@@ -522,8 +528,8 @@ export const BranchList: React.FC = () => {
                   </View>
 
                   <Button
-                    title="View Zones"
-                    onPress={() => handleZonePress(item.zone)}
+                    title="View Branch"
+                    onPress={() => handleBranchPress(item)}
                     variant="secondary"
                     size="sm"
                     style={{ marginTop: 22 }}

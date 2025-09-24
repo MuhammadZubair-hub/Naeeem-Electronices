@@ -5,5 +5,6 @@ export const endPoints = {
   region: 'Common/GetRegion',
   zone: 'Common/GetZone',
   zonebranches: 'Common/GetZonewithBranches',
+  branchAvos :'Common/GetAVOWithBranchCode',
   regioncount: 'Dashboard/GetTotalofRegions',
 };
