@@ -13,9 +13,11 @@ export const AppSizes = {
   Padding_Vertical_25: verticalScale(25),
   Padding_Vertical_30: verticalScale(30),
   Padding_Vertical_35: verticalScale(35),
+  Padding_Vertical_40: verticalScale(40),
 
   Margin_Horizontal_5: scale(5),
   Margin_Horizontal_10: scale(10),
+  Margin_Horizontal_15: scale(15),
   Margin_Horizontal_20: scale(20),
 
   Margin_Vertical_5: verticalScale(5),

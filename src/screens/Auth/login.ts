@@ -27,26 +27,19 @@ export const useLoginUser = () => {
       // ✅ Correct check for success
 
       if (response?.data?.status) {
-        // dispatch(
-        //   loginSuccess({
-        //     user: response.data, // user data
-        //     token: response.data.token, // token from root of response
-        //   }),
-        // );
-
         dispatch(
           loginSuccess({ data: response.data, token: response.data.token }),
         );
         console.log('Login successfulss:', response.data.designation);
-        setIsLoading(false);
       } else {
         Alert.alert('Login Failed', 'Please check your credentials.');
         console.log('Login failed. Please check your credentials.');
-        setIsLoading(false);
       }
     } catch (error) {
       console.error('Login error:', error);
+    } finally {
       setIsLoading(false);
+      setCredentials({ empId: '', password: '' });
     }
   };
 

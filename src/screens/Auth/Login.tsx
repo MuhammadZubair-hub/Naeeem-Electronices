@@ -7,6 +7,7 @@ import {
   Alert,
   ScrollView,
   Platform,
+  Image,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../redux/store';
@@ -21,17 +22,20 @@ import { AppSizes } from '../../utils/AppSizes';
 import { useLoginUser } from './login';
 import { loginSuccess } from '../../redux/slices/authSlice';
 import { LoadingModal } from '../../components/common/LoadingModal';
+import Ionicons from '@react-native-vector-icons/ionicons';
 
 export const Login: React.FC = () => {
   const { theme } = useTheme();
   const dispatch = useDispatch<AppDispatch>();
 
-  const { user, isAuthenticated } = useSelector(
-    (state: RootState) => state.auth,
-  );
+  const [showPswd, setShowPswd] = useState<boolean>(true);
+
+  // const { user, isAuthenticated } = useSelector(
+  //   (state: RootState) => state.auth,
+  // );
 
   const loginData = useLoginUser();
-  const { credentials, handleChange, handleLogin, isLoading } = loginData;
+  // const { credentials, handleChange, handleLogin, isLoading } = loginData;
 
   return (
     <SafeAreaView style={{ flex: 1, overflow: 'visible' }}>
@@ -50,14 +54,22 @@ export const Login: React.FC = () => {
         {/* <PieGraph title="Sales by Category" /> */}
         <View style={styles.content}>
           <View style={styles.header}>
-            <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
+            {/* <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
               Naeem Electronics
             </Text>
             <Text
               style={[styles.subtitle, { color: theme.colors.textSecondary }]}
             >
               Business Management System
-            </Text>
+            </Text> */}
+            <Image
+              source={require('../../assets/images/naeemLogo.png')}
+              resizeMode="contain"
+              style={{
+                width: 200,
+                height: 100,
+              }}
+            />
           </View>
 
           <Card style={styles.loginCard}>
@@ -99,23 +111,45 @@ export const Login: React.FC = () => {
                 >
                   Password
                 </Text>
-                <TextInput
-                  style={[
-                    styles.input,
+                <View
+                  style={
                     {
-                      backgroundColor: theme.colors.surfaceVariant,
-                      borderColor: theme.colors.border,
-                      color: theme.colors.textPrimary,
-                    },
-                  ]}
-                  value={loginData.credentials.password}
-                  onChangeText={text =>
-                    loginData.handleChange('password', text)
+                      // flexDirection: 'row',
+                      // justifyContent: 'space-between',
+                    }
                   }
-                  placeholder="Enter your password"
-                  placeholderTextColor={theme.colors.textTertiary}
-                  secureTextEntry
-                />
+                >
+                  <TextInput
+                    style={[
+                      styles.input,
+                      {
+                        backgroundColor: theme.colors.surfaceVariant,
+                        borderColor: theme.colors.border,
+                        color: theme.colors.textPrimary,
+                        flex: 1,
+                      },
+                    ]}
+                    value={loginData.credentials.password}
+                    onChangeText={text =>
+                      loginData.handleChange('password', text)
+                    }
+                    placeholder="Enter your password"
+                    placeholderTextColor={theme.colors.textTertiary}
+                    secureTextEntry={showPswd ? true : false}
+                  />
+
+                  <Ionicons
+                    style={{
+                      position: 'absolute',
+                      right: AppSizes.Gap_20,
+                      top: AppSizes.Margin_Horizontal_15,
+                    }}
+                    onPress={() => setShowPswd(!showPswd)}
+                    name={showPswd ? 'eye-outline' : 'eye-off-outline'}
+                    size={AppSizes.Icon_Height_25}
+                    color={theme.colors.secondary}
+                  />
+                </View>
               </View>
             </View>
 
@@ -123,7 +157,6 @@ export const Login: React.FC = () => {
               variant="secondary"
               title="Sign In"
               onPress={() => loginData.handleLogin(loginData.credentials)}
-              // loading={isLoading}
               style={styles.loginButton}
             />
           </Card>
@@ -146,7 +179,7 @@ export const Login: React.FC = () => {
         </View>
       </KeyboardAwareScrollView>
 
-      <LoadingModal visible={isLoading} />
+      <LoadingModal visible={loginData.isLoading} />
     </SafeAreaView>
   );
 };

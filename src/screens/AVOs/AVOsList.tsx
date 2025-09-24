@@ -20,9 +20,9 @@ export const AVOsList: React.FC = () => {
   const { regionId } = route.params;
   const zones = mockDataService.getAVOsByBranch('0');
 
-  const handleZonePress = (zone: any) => {
+  const handleAVOPress = (avo: any) => {
     // navigation.navigate(screenName.BranchList, { zoneId: zone.id });
-    navigation.navigate(screenName.CustomerList, { zoneId: zone.id });
+    navigation.navigate(screenName.CustomerList, { zoneId: avo.id });
   };
   const [avos, setAvos] = React.useState<any[]>([]);
 
@@ -45,7 +45,7 @@ export const AVOsList: React.FC = () => {
               style={{
                 marginVertical: 12,
 
-                borderWidth: 1,
+                borderWidth: .5,
                 borderTopColor: theme.colors.secondary,
               }}
             ></View>
@@ -59,8 +59,8 @@ export const AVOsList: React.FC = () => {
             </Text>
             <Button
               title="View Branches"
-              onPress={() => handleZonePress(item)}
-              variant="primary"
+              onPress={() => handleAVOPress(item)}
+              variant="secondary"
               size="md"
               style={{ marginTop: 12 }}
             />

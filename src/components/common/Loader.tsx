@@ -13,7 +13,7 @@ const Loader = () => {
         source={require('../../assets/Loader/Loader.json')}
         autoPlay
         loop
-        style={{ width: 200, height: 200 }}
+        style={{ width: 100, height: 100 }}
       />
       <Text
         style={{

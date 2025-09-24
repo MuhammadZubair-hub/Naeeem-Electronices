@@ -429,6 +429,7 @@ export const BranchDetail: React.FC<BranchDetailProps> = ({ route }) => {
           </View>
         </Card>
 
+        {/* AVOs List */}
         <Card style={styles.servicesCard} padding="lg">
           <Text
             style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
@@ -439,7 +440,7 @@ export const BranchDetail: React.FC<BranchDetailProps> = ({ route }) => {
         </Card>
 
         {/* Services */}
-        <Card style={styles.servicesCard} padding="lg">
+        {/* <Card style={styles.servicesCard} padding="lg">
           <Text
             style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
           >
@@ -465,10 +466,10 @@ export const BranchDetail: React.FC<BranchDetailProps> = ({ route }) => {
               </View>
             ))}
           </View>
-        </Card>
+        </Card> */}
 
         {/* Charts */}
-        <View style={styles.chartsSection}>
+        {/* <View style={styles.chartsSection}>
           <Text
             style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
           >
@@ -482,10 +483,10 @@ export const BranchDetail: React.FC<BranchDetailProps> = ({ route }) => {
           />
 
           <BarGraph title="Branch Revenue" data={revenueData} height={250} />
-        </View>
+        </View> */}
 
         {/* Quick Actions */}
-        <Card style={styles.actionsCard} padding="lg">
+        {/* <Card style={styles.actionsCard} padding="lg">
           <Text
             style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
           >
@@ -525,7 +526,7 @@ export const BranchDetail: React.FC<BranchDetailProps> = ({ route }) => {
               style={styles.actionButton}
             />
           </View>
-        </Card>
+        </Card> */}
 
         {/* Bottom Spacing */}
         <View style={styles.bottomSpacing} />

@@ -189,7 +189,7 @@ export const BranchList: React.FC = () => {
           </View>
         </View>
 
-        <View style={styles.branchActions}>
+        {/* <View style={styles.branchActions}>
           <Button
             title="View Customers"
             onPress={() => {
@@ -212,7 +212,7 @@ export const BranchList: React.FC = () => {
             size="sm"
             style={styles.actionButton}
           />
-        </View>
+        </View> */}
       </Card>
     </TouchableOpacity>
   );

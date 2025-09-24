@@ -7,6 +7,7 @@ import {
   RefreshControl,
   TouchableOpacity,
   Dimensions,
+  FlatList,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -17,11 +18,11 @@ import { usePermissions } from '../../hooks/usePermissions';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { InputField } from '../../components/common/InputField';
-import {
-  formatCurrency,
-  formatNumber,
-  formatPhoneNumber,
-} from '../../utils/formatters';
+// import {
+//   formatCurrency,
+//   formatNumber,
+//   formatPhoneNumber,
+// } from '../../utils/formatters';
 import { Role } from '../../types';
 import { mockDataService, Customer } from '../../services/mock/mockDataService';
 import { screenName } from '../../navigation/ScreenName';
@@ -189,7 +190,8 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
                 { color: theme.colors.textSecondary },
               ]}
             >
-              📞 {formatPhoneNumber(customer.phone)}
+              {/* 📞 {formatPhoneNumber(customer.phone)} */}
+              phone number
             </Text>
             <Text
               style={[
@@ -228,7 +230,7 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
         <View style={styles.customerStats}>
           <View style={styles.statItem}>
             <Text style={[styles.statValue, { color: theme.colors.primary }]}>
-              {formatCurrency(customer.totalPurchases)}
+              {/* {formatCurrency(customer.totalPurchases)} */}
             </Text>
             <Text
               style={[styles.statLabel, { color: theme.colors.textSecondary }]}
@@ -248,7 +250,7 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
                 },
               ]}
             >
-              {formatCurrency(customer.totalDue)}
+              {/* {formatCurrency(customer.totalDue)} */}
             </Text>
             <Text
               style={[styles.statLabel, { color: theme.colors.textSecondary }]}
@@ -258,7 +260,7 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
           </View>
           <View style={styles.statItem}>
             <Text style={[styles.statValue, { color: theme.colors.warning }]}>
-              {formatCurrency(customer.creditLimit)}
+              {/* {formatCurrency(customer.creditLimit)} */}
             </Text>
             <Text
               style={[styles.statLabel, { color: theme.colors.textSecondary }]}
@@ -416,7 +418,7 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
               <Text
                 style={[styles.summaryValue, { color: theme.colors.primary }]}
               >
-                {formatNumber(filteredCustomers.length)}
+                {/* {formatNumber(filteredCustomers.length)} */}
               </Text>
               <Text
                 style={[
@@ -431,12 +433,12 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
               <Text
                 style={[styles.summaryValue, { color: theme.colors.success }]}
               >
-                {formatCurrency(
+                {/* {formatCurrency(
                   filteredCustomers.reduce(
                     (sum, customer) => sum + customer.totalPurchases,
                     0,
                   ),
-                )}
+                )} */}
               </Text>
               <Text
                 style={[
@@ -451,12 +453,12 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
               <Text
                 style={[styles.summaryValue, { color: theme.colors.error }]}
               >
-                {formatCurrency(
+                {/* {formatCurrency(
                   filteredCustomers.reduce(
                     (sum, customer) => sum + customer.totalDue,
                     0,
                   ),
-                )}
+                )} */}
               </Text>
               <Text
                 style={[
@@ -471,7 +473,7 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
               <Text
                 style={[styles.summaryValue, { color: theme.colors.warning }]}
               >
-                {formatNumber(filteredCustomers.filter(c => c.isActive).length)}
+                {/* {formatNumber(filteredCustomers.filter(c => c.isActive).length)} */}
               </Text>
               <Text
                 style={[
@@ -506,7 +508,18 @@ export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
               </Text>
             </Card>
           ) : (
-            filteredCustomers.map(renderCustomerCard)
+            // filteredCustomers.map(renderCustomerCard)
+            <FlatList
+              data={filteredCustomers}
+              keyExtractor={item => item.id.toString()}
+              renderItem={renderCustomerCard}
+              initialNumToRender={20}
+              maxToRenderPerBatch={20}
+              updateCellsBatchingPeriod={50}
+              windowSize={5}
+              removeClippedSubviews={true}
+              showsVerticalScrollIndicator={false}
+            />
           )}
         </View>
 

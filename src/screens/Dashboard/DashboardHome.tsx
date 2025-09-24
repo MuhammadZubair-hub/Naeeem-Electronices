@@ -20,7 +20,7 @@ export const DashboardHome: React.FC = () => {
       // ensure navigation happens after initial render
       setTimeout(() => {
         navigateToRoleDashboard();
-      }, 0);
+      }, 1000);
     }
   }, [user]);
 

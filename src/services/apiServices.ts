@@ -9,4 +9,44 @@ export const API_Config = {
       data: { empId, password },
     });
   },
+
+  getRegionCount: async (param: any) => {
+    return apicall_new({
+      endpoint: `${baseUrl}${endPoints.regioncount}`,
+      method: 'GET',
+      params: param,
+    });
+  },
+
+  getRegions: async (param: any) => {
+    return apicall_new({
+      endpoint: `${baseUrl}${endPoints.region}`,
+      method: 'GET',
+      params: param,
+    });
+  },
+
+  getZones: async (param: any) => {
+    return apicall_new({
+      endpoint: `${baseUrl}${endPoints.zone}`,
+      method: 'GET',
+      params: param,
+    });
+  },
+
+  getZoneBranches: async (param: any) => {
+    return apicall_new({
+      endpoint: `${baseUrl}${endPoints.zonebranches}`,
+      method: 'GET',
+      params: param,
+    });
+  },
+
+  getZoneBranchesWithCode: async (param: any) => {
+    return apicall_new({
+      endpoint: `${baseUrl}${endPoints.zonebrancheswithcode}`,
+      method: 'GET',
+      params: param,
+    });
+  },
 };
