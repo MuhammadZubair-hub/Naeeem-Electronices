@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: AppSizes.Padding_Horizontal_15,
 
     paddingTop: 24,
     paddingBottom: 12,

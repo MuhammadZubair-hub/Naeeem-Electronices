@@ -4,7 +4,6 @@ export const endPoints = {
   login: 'Auth/login',
   region: 'Common/GetRegion',
   zone: 'Common/GetZone',
-  zonebranches: 'Common/GetZoneBranches',
-  zonebrancheswithcode: 'Common/GetZonewithBranches',
-  regioncount:'Dashboard/GetTotalofRegions'
+  zonebranches: 'Common/GetZonewithBranches',
+  regioncount: 'Dashboard/GetTotalofRegions',
 };

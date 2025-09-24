@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BackHandler, Switch } from 'react-native';
+import { Alert, BackHandler, Switch } from 'react-native';
 import {
   View,
   Text,
@@ -31,6 +31,9 @@ import { API_Config } from '../../services/apiServices';
 import { fonts } from '../../assets/fonts/Fonts';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Modal } from '../../components/common/Modal';
+import Loader from '../../components/common/Loader';
+
 const { width } = Dimensions.get('window');
 
 export const CEO_GM_Dashboard: React.FC = () => {
@@ -38,6 +41,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
 
+  const [loader, setLoader] = React.useState<boolean>(false);
   const [regionsData, setRegionsData] = React.useState<any>([]);
   const [regionsCountData, setRegionsCountData] = React.useState<{
     totalCount: string;
@@ -59,26 +63,35 @@ export const CEO_GM_Dashboard: React.FC = () => {
   const Id = useSelector((state: RootState) => state.auth.user?.empId);
 
   useEffect(() => {
-    getAllRegions();
-    getAllRegionsCount();
-  }, [Id,]);
+    getAllDashboardData();
+  }, []);
 
-  useEffect(()=>{},[])
+  const getAllDashboardData = async () => {
+    try {
+      setLoader(true);
+      await Promise.all([getAllRegions(), getAllRegionsCount()]);
+    } catch (e) {
+      Alert.alert('Facing error', `${e}`);
+      console.log('error');
+    } finally {
+      setLoader(false);
+    }
+  };
 
   const getAllRegionsCount = async () => {
     try {
       console.log('user id is: ', Id);
       const response = await API_Config.getRegionCount({ obj: Id });
-      console.log('Regions API Response:', response);
+      console.log('Regions Count API Response:', response);
       if (response?.success) {
-        const data = response.data.data;
+        const data = response.data.data[0];
         setRegionsCountData(pre => ({
           ...pre,
           totalCount: data.instTotalAmount,
           dueCount: data.instDueAmount,
           paidCount: data.instRecAmount,
         }));
-        console.log('Regions data:', response.data.data);
+        console.log('Regions data:', data);
       }
     } catch (error) {
       console.error('Error fetching regions:', error);
@@ -241,25 +254,39 @@ export const CEO_GM_Dashboard: React.FC = () => {
   }, []);
 
   return (
-    <SafeAreaView
-      edges={['top']}
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-    >
-      <ScrollView
-        style={styles.scrollView}
-        refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
-        }
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
+    <>
+      {loader ? (
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <Loader />
+        </View>
+      ) : (
+        <SafeAreaView
+          edges={['top']}
+          style={[
+            styles.container,
+            { backgroundColor: theme.colors.background },
+          ]}
+        >
+          {/* Header */}
 
-        <MainHeader title="Executive Dashboard" />
-        <Text>Paid: {regionsCountData.paidCount}</Text>
-        <PieGraph title="Sales by Region" />
+          <MainHeader title="Executive Dashboard" />
+          <ScrollView
+            style={styles.scrollView}
+            refreshControl={
+              <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
+            }
+            showsVerticalScrollIndicator={false}
+          >
+            <PieGraph
+              title="Sales of All Regions"
+              paidCount={regionsCountData.paidCount}
+              dueCount={regionsCountData.dueCount}
+            />
 
-        {/* Executive Summary */}
-        {/* {dashboardData?.summary && (
+            {/* Executive Summary */}
+            {/* {dashboardData?.summary && (
           <Card style={styles.summaryCard} padding="lg">
             <Text
               style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
@@ -331,8 +358,8 @@ export const CEO_GM_Dashboard: React.FC = () => {
           </Card>
         )} */}
 
-        {/* Charts Section */}
-        {/* <View style={styles.chartsSection}>
+            {/* Charts Section */}
+            {/* <View style={styles.chartsSection}>
           <Text
             style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
           >
@@ -349,8 +376,8 @@ export const CEO_GM_Dashboard: React.FC = () => {
           <BarGraph title="Branch Revenue" data={revenueData} height={250} />
         </View> */}
 
-        {/* Hierarchical Navigation */}
-        {/* <Card style={styles.navigationCard} padding="lg">
+            {/* Hierarchical Navigation */}
+            {/* <Card style={styles.navigationCard} padding="lg">
           <Text
             style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
           >
@@ -423,27 +450,31 @@ export const CEO_GM_Dashboard: React.FC = () => {
           </View>
         </Card> */}
 
-        <Card style={styles.navigationCard} padding="md">
-          <Text
-            style={[
-              styles.sectionTitle,
-              {
-                color: theme.colors.secondary,
-                fontSize: AppSizes.Font_20,
-                fontFamily: fonts.bold,
-              },
-            ]}
-          >
-            All Regions
-          </Text>
-          <View
-            style={{ borderWidth: 0.5, borderTopColor: theme.colors.secondary }}
-          ></View>
-          <RegionList data={regionsData} />
-        </Card>
+            <Card style={styles.navigationCard} padding="md">
+              <Text
+                style={[
+                  styles.sectionTitle,
+                  {
+                    color: theme.colors.secondary,
+                    fontSize: AppSizes.Font_20,
+                    fontFamily: fonts.bold,
+                    textAlign: 'center',
+                  },
+                ]}
+              >
+                All Regions
+              </Text>
+              <View
+                style={{
+                  borderWidth: 0.5,
+                  borderTopColor: theme.colors.secondary,
+                }}
+              ></View>
+              <RegionList data={regionsData} />
+            </Card>
 
-        {/* Quick Actions */}
-        {/* <Card style={styles.quickActionsCard} padding="lg">
+            {/* Quick Actions */}
+            {/* <Card style={styles.quickActionsCard} padding="lg">
           <Text
             style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
           >
@@ -489,10 +520,12 @@ export const CEO_GM_Dashboard: React.FC = () => {
           </View>
         </Card>  */}
 
-        {/* Bottom Spacing */}
-        <View style={styles.bottomSpacing} />
-      </ScrollView>
-    </SafeAreaView>
+            {/* Bottom Spacing */}
+            <View style={styles.bottomSpacing} />
+          </ScrollView>
+        </SafeAreaView>
+      )}
+    </>
   );
 };
 

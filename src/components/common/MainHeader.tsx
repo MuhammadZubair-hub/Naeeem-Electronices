@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: '3%',
+    height: '10%',
 
     paddingHorizontal: 16,
     elevation: 2,

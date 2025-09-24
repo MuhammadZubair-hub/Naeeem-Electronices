@@ -12,6 +12,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { Header } from '../../components/common/Header';
 import { mockDataService } from '../../services/mock/mockDataService';
 import { AppSizes } from '../../utils/AppSizes';
+import { fonts } from '../../assets/fonts/Fonts';
 
 export const RegionList: React.FC = ({ data }) => {
   const { theme } = useTheme();
@@ -62,7 +63,12 @@ export const RegionList: React.FC = ({ data }) => {
           <Text
             style={[
               styles.title,
-              { color: theme.colors.secondary, fontWeight: 'bold' },
+              {
+                color: theme.colors.secondary,
+                fontFamily: fonts.extraBoldItalic,
+                fontSize: AppSizes.Font_20,
+                marginVertical: AppSizes.Margin_Vertical_10,
+              },
             ]}
           >
             {item.region}
@@ -89,7 +95,8 @@ export const RegionList: React.FC = ({ data }) => {
                 {
                   color: theme.colors.black,
                   fontWeight: 'bold',
-                  backgroundColor: 'rgba(7, 7, 7, 0.12)',
+                  backgroundColor: theme.colors.white,
+                  // backgroundColor: 'rgba(7, 7, 7, 0.12)',
                   padding: AppSizes.Padding_Horizontal_5,
                   borderRadius: AppSizes.Radius_15,
                 },
@@ -185,12 +192,11 @@ export const RegionList: React.FC = ({ data }) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingVertical: AppSizes.Padding_Vertical_40 },
-  list: {  },
+  list: {},
   item: {
     // borderRadius: 12,
     // marginBottom: 16,
     // elevation: 2,
-   
   },
   title: { fontSize: 18, fontWeight: 'bold' },
   subtitle: { fontSize: 14, marginTop: 4 },

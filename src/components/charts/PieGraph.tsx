@@ -16,10 +16,14 @@ interface PieGraphProps {
   color?: string;
   height?: number;
   showGrid?: boolean;
+  paidCount: string;
+  dueCount: string;
 }
 
 export const PieGraph: React.FC<PieGraphProps> = ({
   title,
+  paidCount,
+  dueCount,
   color = '#3B82F6',
   height = 200,
   showGrid = true,
@@ -30,28 +34,28 @@ export const PieGraph: React.FC<PieGraphProps> = ({
     backgroundGradientFrom: '#1E2923',
     backgroundGradientTo: '#08130D',
     color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-    strokeWidth: 2, // optional, default 3
+    strokeWidth: 2,
   };
 
+  const paid = parseFloat(paidCount);
+  const due = parseFloat(dueCount);
+
+  const safePaid = isNaN(paid) ? 0 : paid;
+  const safeDue = isNaN(due) ? 0 : due;
+
+  const total = safePaid + safeDue;
+
   const data = [
-    // {
-    //   name: 'Total',
-    //   population: 100,
-    //   color: 'rgba(131, 167, 234, 1)',
-    //   legendFontColor: '#7F7F7F',
-    //   legendFontSize: 15,
-    // },
     {
       name: 'Paid',
-      population: 65,
+      population: safePaid,
       color: 'rgba(80, 192, 115, 1)',
       legendFontColor: '#7F7F7F',
       legendFontSize: 15,
     },
-
     {
       name: 'Due',
-      population: 35,
+      population: safeDue,
       color: 'rgba(217, 79, 33, 1)',
       legendFontColor: '#7F7F7F',
       legendFontSize: 15,
@@ -60,7 +64,12 @@ export const PieGraph: React.FC<PieGraphProps> = ({
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.surface }]}>
-      <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
+      <Text
+        style={[
+          styles.title,
+          { color: theme.colors.secondary, fontSize: AppSizes.Font_20 },
+        ]}
+      >
         {title}
       </Text>
       <View style={styles.chartContainer}>
@@ -71,9 +80,36 @@ export const PieGraph: React.FC<PieGraphProps> = ({
           chartConfig={chartConfig}
           accessor="population"
           backgroundColor="transparent"
-          paddingLeft="15"
-          absolute
+          paddingLeft="100"
+          hasLegend={false}
         />
+      </View>
+
+      <View style={{ paddingHorizontal: AppSizes.Padding_Horizontal_20 }}>
+        <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+          <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
+            Paid:
+          </Text>
+          <Text style={[styles.title, { color: theme.colors.success }]}>
+            {paidCount}
+          </Text>
+        </View>
+        <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+          <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
+            Due:
+          </Text>
+          <Text style={[styles.title, { color: theme.colors.error }]}>
+            {dueCount}
+          </Text>
+        </View>
+        <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+          <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
+            Total:
+          </Text>
+          <Text style={[styles.title, { color: theme.colors.black }]}>
+            {total}
+          </Text>
+        </View>
       </View>
     </View>
   );
@@ -98,6 +134,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   chartContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
   },
 });

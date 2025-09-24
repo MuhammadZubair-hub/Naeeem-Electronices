@@ -6,12 +6,19 @@ import { NavigationContainer } from '@react-navigation/native';
 import { store, persistor, RootState } from './src/redux/store';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { AuthNavigator } from './src/navigation/AuthNavigator';
+import { StatusBar } from 'react-native';
+import { useTheme } from './src/hooks/useTheme';
 
 const AppContent = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  
+
+  const { theme, isDarkMode } = useTheme();
   return (
     <NavigationContainer>
+      <StatusBar
+        backgroundColor={theme.colors.secondary}
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+      />
       {isAuthenticated ? <AppNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );

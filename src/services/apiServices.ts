@@ -42,11 +42,5 @@ export const API_Config = {
     });
   },
 
-  getZoneBranchesWithCode: async (param: any) => {
-    return apicall_new({
-      endpoint: `${baseUrl}${endPoints.zonebrancheswithcode}`,
-      method: 'GET',
-      params: param,
-    });
-  },
+
 };
