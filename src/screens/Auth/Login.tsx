@@ -33,9 +33,7 @@ export const Login: React.FC = () => {
     <View style={styles.container}>
       {/* Background Image */}
       <ImageBackground
-        source={{
-          uri: 'https://img.freepik.com/free-photo/skyscrapers-from-low-angle-view_1359-574.jpg?uid=R215698115&ga=GA1.1.1948378778.1758609707&semt=ais_hybrid&w=740&q=80'
-        }}
+        source={ require('../../assets/images/loginbackground.jpg')}
         style={styles.backgroundImage}
         resizeMode="cover"
       >
@@ -211,15 +209,15 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingHorizontal: AppSizes.Padding_Horizontal_20,
-    paddingVertical: AppSizes.Padding_Vertical_10,
+    paddingHorizontal: AppSizes.Padding_Horizontal_10,
+    paddingVertical: AppSizes.Padding_Vertical_5,
   },
 
   // Header Styles
   headerContainer: {
     alignItems: 'center',
     marginBottom: 40,
-    paddingTop: 40,
+    paddingTop: 20,
   },
   logoContainer: {
     alignItems: 'center',
@@ -258,7 +256,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.35)', // Semi-transparent white
     //backdropFilter: 'blur(20px)', // CSS blur effect
     borderRadius: 24,
-    padding: 32,
+    padding: 12,
     marginHorizontal: 4,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
@@ -277,12 +275,12 @@ const styles = StyleSheet.create({
   },
   loginTitle: {
     fontSize: 24,
-    fontFamily: fonts.bold,
+    fontFamily: fonts.medium,
     textAlign: 'center',
     marginBottom: 8,
   },
   titleUnderline: {
-    width: 40,
+    width: 60,
     height: 3,
     borderRadius: 2,
   },

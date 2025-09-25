@@ -37,8 +37,7 @@ export const PieGraph: React.FC<PieGraphProps> = ({
 
   useEffect(() => {
     console.log('reciving region data: ', allregiondata);
-
-  }, [])
+  }, []);
 
   // const paid = parseFloat(paidCount);
   // const due = parseFloat(dueCount);
@@ -66,9 +65,14 @@ export const PieGraph: React.FC<PieGraphProps> = ({
   // ];
 
   return (
-    <View style={[styles.container, {
-      backgroundColor: theme.colors.surface
-    }]}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.colors.surface,
+        },
+      ]}
+    >
       <Text
         style={[
           styles.title,
@@ -77,30 +81,52 @@ export const PieGraph: React.FC<PieGraphProps> = ({
       >
         {title}
       </Text>
-      <View style={styles.chartContainer}>
+      {/* <View style={styles.chartContainer}>
         <PieChart
           data={allregiondata.map(item => ({
             name: item.regionName,
             population: parseFloat(item.regionamount),
             color: item.colors,
-            legendFontColor: "#7F7F7F",
+            legendFontColor: '#7F7F7F',
             legendFontSize: 12,
           }))}
           width={width - 40}
           height={220}
           chartConfig={chartConfig}
-          accessor={"population"}
+          accessor={'population'}
           backgroundColor="transparent"
-          paddingLeft="100"
+          paddingLeft="0"
           hasLegend={false}
         />
+      </View> */}
+
+      <View style={styles.chartContainer}>
+        <View style={{ width: '100%', alignItems: 'center' }}>
+          <PieChart
+            data={allregiondata.map(item => ({
+              name: item.regionName,
+              population: parseFloat(item.regionamount),
+              color: item.colors,
+              legendFontColor: '#7F7F7F',
+              legendFontSize: 12,
+            }))}
+            width={width} // Use 80% of screen width for responsiveness
+            height={220}
+            chartConfig={chartConfig}
+            accessor={'population'}
+            backgroundColor="transparent"
+            paddingLeft="85"
+            style={{alignSelf:'center'}}
+            hasLegend={false}
+          />
+        </View>
       </View>
 
       <View style={styles.legendContainer}>
         {allregiondata.map((item, index) => {
           const total = allregiondata.reduce(
             (sum, obj) => sum + parseFloat(obj.regionamount || 0),
-            0
+            0,
           );
           const percentage = total
             ? ((parseFloat(item.regionamount) / total) * 100).toFixed(1)
@@ -118,7 +144,6 @@ export const PieGraph: React.FC<PieGraphProps> = ({
           );
         })}
       </View>
-
     </View>
   );
 };
@@ -136,15 +161,14 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   legendContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
     marginTop: 10,
-    
   },
   legendItem: {
-    flexDirection: "row",
-     width: "35%",
+    flexDirection: 'row',
+    width: '35%',
     //alignItems: 'flex-start',
     marginHorizontal: 8,
     marginVertical: 4,
@@ -157,7 +181,7 @@ const styles = StyleSheet.create({
   },
   legendText: {
     fontSize: 12,
-    color: "#7F7F7F",
+    color: '#7F7F7F',
   },
   title: {
     fontSize: 16,
@@ -166,8 +190,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   chartContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    // marginVertical: 10,
   },
 });

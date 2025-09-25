@@ -128,147 +128,130 @@ export const BranchList: React.FC = () => {
     }
   };
 
-  const renderBranchCard = (branch: Branch) => (
-    <TouchableOpacity
-      key={branch.id}
-      onPress={() => {
-        handleBranchPress(branch);
-        console.log('branch.name', branch);
-      }}
-      activeOpacity={0.7}
-    >
-      <Card style={styles.branchCard} padding="lg">
-        <View style={styles.branchHeader}>
-          <View style={styles.branchInfo}>
-            <Text
-              style={[styles.branchName, { color: theme.colors.textPrimary }]}
-            >
-              {branch.name}
-            </Text>
-            <Text
-              style={[
-                styles.branchAddress,
-                { color: theme.colors.textSecondary },
-              ]}
-            >
-              📍 {branch.address}
-            </Text>
-            <Text
-              style={[
-                styles.branchManager,
-                { color: theme.colors.textSecondary },
-              ]}
-            >
-              👤 Manager: {branch.managerName}
-            </Text>
-          </View>
-          <View
-            style={[
-              styles.statusBadge,
-              {
-                backgroundColor: branch.isActive
-                  ? theme.colors.success + '20'
-                  : theme.colors.error + '20',
-              },
-            ]}
-          >
-            <Text
-              style={[
-                styles.statusText,
-                {
-                  color: branch.isActive
-                    ? theme.colors.success
-                    : theme.colors.error,
-                },
-              ]}
-            >
-              {branch.isActive ? 'Active' : 'Inactive'}
-            </Text>
-          </View>
-        </View>
+  // const renderBranchCard = (branch: Branch) => (
+  //   <TouchableOpacity
+  //     key={branch.id}
+  //     onPress={() => {
+  //       handleBranchPress(branch);
+  //       console.log('branch.name', branch);
+  //     }}
+  //     activeOpacity={0.7}
+  //   >
+  //     <Card style={styles.branchCard} padding="lg">
+  //       <View style={styles.branchHeader}>
+  //         <View style={styles.branchInfo}>
+  //           <Text
+  //             style={[styles.branchName, { color: theme.colors.textPrimary }]}
+  //           >
+  //             {branch.name}
+  //           </Text>
+  //           <Text
+  //             style={[
+  //               styles.branchAddress,
+  //               { color: theme.colors.textSecondary },
+  //             ]}
+  //           >
+  //             📍 {branch.address}
+  //           </Text>
+  //           <Text
+  //             style={[
+  //               styles.branchManager,
+  //               { color: theme.colors.textSecondary },
+  //             ]}
+  //           >
+  //             👤 Manager: {branch.managerName}
+  //           </Text>
+  //         </View>
+  //         <View
+  //           style={[
+  //             styles.statusBadge,
+  //             {
+  //               backgroundColor: branch.isActive
+  //                 ? theme.colors.success + '20'
+  //                 : theme.colors.error + '20',
+  //             },
+  //           ]}
+  //         >
+  //           <Text
+  //             style={[
+  //               styles.statusText,
+  //               {
+  //                 color: branch.isActive
+  //                   ? theme.colors.success
+  //                   : theme.colors.error,
+  //               },
+  //             ]}
+  //           >
+  //             {branch.isActive ? 'Active' : 'Inactive'}
+  //           </Text>
+  //         </View>
+  //       </View>
 
-        <View style={styles.branchStats}>
-          <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: theme.colors.primary }]}>
-              {formatCurrency(branch.totalRevenue)}
-            </Text>
-            <Text
-              style={[styles.statLabel, { color: theme.colors.textSecondary }]}
-            >
-              Revenue
-            </Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: theme.colors.success }]}>
-              {formatNumber(branch.totalCustomers)}
-            </Text>
-            <Text
-              style={[styles.statLabel, { color: theme.colors.textSecondary }]}
-            >
-              Customers
-            </Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: theme.colors.warning }]}>
-              {formatNumber(branch.totalStaff)}
-            </Text>
-            <Text
-              style={[styles.statLabel, { color: theme.colors.textSecondary }]}
-            >
-              Staff
-            </Text>
-          </View>
-        </View>
+  //       <View style={styles.branchStats}>
+  //         <View style={styles.statItem}>
+  //           <Text style={[styles.statValue, { color: theme.colors.primary }]}>
+  //             {formatCurrency(branch.totalRevenue)}
+  //           </Text>
+  //           <Text
+  //             style={[styles.statLabel, { color: theme.colors.textSecondary }]}
+  //           >
+  //             Revenue
+  //           </Text>
+  //         </View>
+  //         <View style={styles.statItem}>
+  //           <Text style={[styles.statValue, { color: theme.colors.success }]}>
+  //             {formatNumber(branch.totalCustomers)}
+  //           </Text>
+  //           <Text
+  //             style={[styles.statLabel, { color: theme.colors.textSecondary }]}
+  //           >
+  //             Customers
+  //           </Text>
+  //         </View>
+  //         <View style={styles.statItem}>
+  //           <Text style={[styles.statValue, { color: theme.colors.warning }]}>
+  //             {formatNumber(branch.totalStaff)}
+  //           </Text>
+  //           <Text
+  //             style={[styles.statLabel, { color: theme.colors.textSecondary }]}
+  //           >
+  //             Staff
+  //           </Text>
+  //         </View>
+  //       </View>
 
-        {/* <View style={styles.branchActions}>
-          <Button
-            title="View Customers"
-            onPress={() => {
-              (navigation as any).navigate(screenName.CustomerList, {
-                branchId: branch.id,
-              });
-            }}
-            variant="outline"
-            size="sm"
-            style={styles.actionButton}
-          />
-          <Button
-            title="View Sales"
-            onPress={() => {
-              (navigation as any).navigate(screenName.InvoiceList, {
-                branchId: branch.id,
-              });
-            }}
-            variant="outline"
-            size="sm"
-            style={styles.actionButton}
-          />
-        </View> */}
-      </Card>
-    </TouchableOpacity>
-  );
+  //       {/* <View style={styles.branchActions}>
+  //         <Button
+  //           title="View Customers"
+  //           onPress={() => {
+  //             (navigation as any).navigate(screenName.CustomerList, {
+  //               branchId: branch.id,
+  //             });
+  //           }}
+  //           variant="outline"
+  //           size="sm"
+  //           style={styles.actionButton}
+  //         />
+  //         <Button
+  //           title="View Sales"
+  //           onPress={() => {
+  //             (navigation as any).navigate(screenName.InvoiceList, {
+  //               branchId: branch.id,
+  //             });
+  //           }}
+  //           variant="outline"
+  //           size="sm"
+  //           style={styles.actionButton}
+  //         />
+  //       </View> */}
+  //     </Card>
+  //   </TouchableOpacity>
+  // );
 
   const handleBranchPress = ( item ) => {
    console.log('itme passsing is ',item);
     navigation.navigate('AVOsList', { branch: item?.branchCode });
 
-  }
-
-  if (error) {
-    return (
-      <View
-        style={[
-          styles.container,
-          styles.centerContent,
-          { backgroundColor: theme.colors.background },
-        ]}
-      >
-        <Text style={[styles.errorText, { color: theme.colors.error }]}>
-          Failed to load branch data
-        </Text>
-        <Button title="Retry" style={styles.retryButton} />
-      </View>
-    );
   }
 
   return (
@@ -283,7 +266,7 @@ export const BranchList: React.FC = () => {
     
           {/* Main Screen Content */}
           <View style={styles.safeArea}>
-            <Header title="Zones" subtitle="Zonal Managers" showBackButton />
+            <Header title="Branches" subtitle="Zone's Branches" showBackButton />
     
             {loading ? (
               <Loader />
@@ -356,7 +339,7 @@ export const BranchList: React.FC = () => {
                     </View> */}
     
                     <Button
-                      title="View Branch"
+                      title="View Branch AVO's"
                       onPress={() => handleBranchPress(item)}
                       variant="secondary"
                       size="sm"

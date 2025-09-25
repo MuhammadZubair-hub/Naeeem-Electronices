@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   Alert,
   BackHandler,
@@ -9,24 +9,24 @@ import {
   Text,
   ScrollView,
   Dimensions,
-} from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigation } from "@react-navigation/native";
-import { SafeAreaView } from "react-native-safe-area-context";
+} from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { RootState, AppDispatch } from "../../redux/store";
-import { fetchDashboardData } from "../../redux/slices/dashboardSlice";
-import { useTheme } from "../../hooks/useTheme";
-import { Card } from "../../components/common/Card";
-import Loader from "../../components/common/Loader";
-import MainHeader from "../../components/common/MainHeader";
-import { PieGraph } from "../../components/charts/PieGraph";
-import { RegionList } from "../Regions/RegionList";
-import { API_Config } from "../../services/apiServices";
-import { fonts } from "../../assets/fonts/Fonts";
-import { AppSizes } from "../../utils/AppSizes";
+import { RootState, AppDispatch } from '../../redux/store';
+import { fetchDashboardData } from '../../redux/slices/dashboardSlice';
+import { useTheme } from '../../hooks/useTheme';
+import { Card } from '../../components/common/Card';
+import Loader from '../../components/common/Loader';
+import MainHeader from '../../components/common/MainHeader';
+import { PieGraph } from '../../components/charts/PieGraph';
+import { RegionList } from '../Regions/RegionList';
+import { API_Config } from '../../services/apiServices';
+import { fonts } from '../../assets/fonts/Fonts';
+import { AppSizes } from '../../utils/AppSizes';
 
-const { width } = Dimensions.get("window");
+const { width } = Dimensions.get('window');
 
 interface Region {
   regionName: string;
@@ -42,9 +42,9 @@ export const CEO_GM_Dashboard: React.FC = () => {
   const [loader, setLoader] = useState(false);
   const [regionsData, setRegionsData] = useState<any[]>([]);
   const [regionsCountData, setRegionsCountData] = useState({
-    totalCount: "",
-    dueCount: "",
-    paidCount: "",
+    totalCount: '',
+    dueCount: '',
+    paidCount: '',
   });
   const [allRegionsTotal, setAllRegionsTotal] = useState<Region[]>([]);
   const [showGraph, setShowGraph] = useState(false);
@@ -54,8 +54,8 @@ export const CEO_GM_Dashboard: React.FC = () => {
 
   // ✅ Random color generator (optimized)
   const getRandomColor = useCallback(() => {
-    const letters = "0123456789ABCDEF";
-    let color = "#";
+    const letters = '0123456789ABCDEF';
+    let color = '#';
     for (let i = 0; i < 6; i++) {
       color += letters[Math.floor(Math.random() * 16)];
     }
@@ -70,7 +70,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
       }
       return Array.from(colors);
     },
-    [getRandomColor]
+    [getRandomColor],
   );
 
   // ✅ API Calls
@@ -86,7 +86,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
         });
       }
     } catch (error) {
-      console.error("Error fetching regions count:", error);
+      console.error('Error fetching regions count:', error);
     }
   }, [Id]);
 
@@ -108,7 +108,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
         setShowGraph(true);
       }
     } catch (error) {
-      console.error("Error fetching regions:", error);
+      console.error('Error fetching regions:', error);
     }
   }, [Id, generateUniqueColors]);
 
@@ -117,7 +117,10 @@ export const CEO_GM_Dashboard: React.FC = () => {
       setLoader(true);
       await Promise.all([getAllRegions(), getAllRegionsCount()]);
     } catch (e) {
-      Alert.alert("Error", "Something went wrong while fetching dashboard data");
+      Alert.alert(
+        'Error',
+        'Something went wrong while fetching dashboard data',
+      );
     } finally {
       setLoader(false);
     }
@@ -130,8 +133,8 @@ export const CEO_GM_Dashboard: React.FC = () => {
   useEffect(() => {
     const backAction = () => true; // disable hardware back
     const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
+      'hardwareBackPress',
+      backAction,
     );
     return () => backHandler.remove();
   }, []);
@@ -144,7 +147,6 @@ export const CEO_GM_Dashboard: React.FC = () => {
     <View style={styles.container}>
       {/* Background Image + Overlay */}
       <ImageBackground
-
         blurRadius={10}
         source={require('../../assets/images/loginbackground.jpg')}
         style={styles.backgroundImage}
@@ -152,7 +154,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
       >
         <View style={styles.overlay} />
 
-        <SafeAreaView edges={["top"]} style={styles.safeArea}>
+        <SafeAreaView edges={['top']} style={styles.safeArea}>
           <MainHeader title="Executive Dashboard" />
 
           {loader ? (
@@ -166,33 +168,48 @@ export const CEO_GM_Dashboard: React.FC = () => {
               showsVerticalScrollIndicator={false}
             >
               {showGraph && (
-                <PieGraph title="Sales of All Regions" allregiondata={allRegionsTotal} />
+                <PieGraph
+                  title="Sales of All Regions"
+                  allregiondata={allRegionsTotal}
+                />
               )}
 
-              <Card style={styles.navigationCard} padding="md">
+              <View
+                style={{
+                  borderColor: theme.colors.secondary,
+                  borderWidth: 1,
+                  borderRadius: AppSizes.Radius_20,
+                  paddingVertical: 10,
+                  marginHorizontal: 20,
+                }}
+              >
+                {/* <Card style={styles.navigationCard} padding="md">
+                  
+                </Card> */}
+
                 <Text
                   style={[
                     styles.sectionTitle,
                     {
-                      color: theme.colors.secondary,
+                      color: theme.colors.white,
+                      
                       fontSize: AppSizes.Font_20,
                       fontFamily: fonts.bold,
-                      textAlign: "center",
+                      textAlign: 'center',
                     },
                   ]}
                 >
                   All Regions
                 </Text>
-                <View
+                {/* <View
                   style={{
-                    borderWidth: 0.5,
+                    borderWidth: 1,
                     borderTopColor: theme.colors.secondary,
+                    marginBottom:5
                   }}
-                />
-
-              </Card>
-              <RegionList data={regionsData} />
-
+                /> */}
+                <RegionList data={regionsData} />
+              </View>
 
               <View style={styles.bottomSpacing} />
             </ScrollView>
@@ -205,15 +222,19 @@ export const CEO_GM_Dashboard: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  backgroundImage: { flex: 1, width: "100%", height: "100%" },
-  safeArea: { flex: 1, backgroundColor: "transparent", zIndex: 2 },
+  backgroundImage: { flex: 1, width: '100%', height: '100%' },
+  safeArea: { flex: 1, backgroundColor: 'transparent', zIndex: 2 },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.4)",
+    backgroundColor: 'rgba(0,0,0,0.4)',
     zIndex: 1,
   },
   scrollView: { flex: 1 },
-  sectionTitle: { fontSize: 18, fontFamily: "Poppins-SemiBold", marginBottom: 16 },
+  sectionTitle: {
+    fontSize: 18,
+    fontFamily: 'Poppins-SemiBold',
+    marginBottom: 16,
+  },
   navigationCard: { marginHorizontal: 20, marginBottom: 10, elevation: 5 },
   bottomSpacing: { marginBottom: AppSizes.Margin_Vertical_40 },
 });

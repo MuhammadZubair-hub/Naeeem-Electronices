@@ -40,14 +40,14 @@ export const LoadingModal: React.FC<LoadingModalProps> = ({
             justifyContent: 'center',
           }}
         >
-         {/* <LottieView
-                source={require('../../assets/Loader/Loader.json')}
-                autoPlay
-                loop
-                style={{ width: 100, height: 100,alignSelf:'center' }}
-              /> */}
+          <LottieView
+            source={require('../../assets/Loader/Loader.json')}
+            autoPlay
+            loop
+            style={{ width: 100, height: 100, alignSelf: 'center' }}
+          />
 
-              <ActivityIndicator size={'large'} color={theme.colors.secondary} style={{ width: 100, height: 100,alignSelf:'center' }}/>
+          {/* <ActivityIndicator size={'large'} color={theme.colors.secondary} style={{ width: 100, height: 100,alignSelf:'center' }}/> */}
         </View>
       </View>
     </Modal>

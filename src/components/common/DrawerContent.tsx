@@ -81,9 +81,9 @@ const DrawerContent: React.FC<DrawerContentComponentProps> = props => {
               marginRight: 8,
             }}
           >
-            {isDarkMode ? 'Dark' : 'Light'} Mode
+            Settings
           </Text>
-          <Switch
+          {/* <Switch
             value={isDarkMode}
             onValueChange={_value => {
               dispatch(toggleTheme());
@@ -95,7 +95,7 @@ const DrawerContent: React.FC<DrawerContentComponentProps> = props => {
               false: theme.colors.gray300,
               true: theme.colors.primary,
             }}
-          />
+          /> */}
         </View>
 
         <TouchableOpacity style={styles.logOutButton} onPress={handleLogout}>

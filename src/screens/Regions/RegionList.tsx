@@ -25,13 +25,21 @@ export const RegionList: React.FC = ({ data }) => {
   };
 
   return (
-   
-
     <FlatList
       data={data}
       keyExtractor={item => item.id}
       renderItem={({ item }) => (
-        <View style={[{ backgroundColor: theme.colors.surface,borderRadius: theme.borderRadius.lg,padding:5  }, styles.item]}>
+        <View
+          style={[
+            {
+              backgroundColor: theme.colors.surface,
+              borderRadius: theme.borderRadius.lg,
+              padding: AppSizes.Gap_10,
+             
+            },
+            styles.item,
+          ]}
+        >
           <Text
             style={[
               styles.title,
@@ -39,7 +47,7 @@ export const RegionList: React.FC = ({ data }) => {
                 color: theme.colors.secondary,
                 fontFamily: fonts.extraBoldItalic,
                 fontSize: AppSizes.Font_20,
-                marginVertical: AppSizes.Margin_Vertical_10,
+                // marginVertical: AppSizes.Margin_Vertical_10,
               },
             ]}
           >
@@ -67,14 +75,14 @@ export const RegionList: React.FC = ({ data }) => {
                 {
                   color: theme.colors.white,
                   fontWeight: 'bold',
-                 // backgroundColor: theme.colors.white,
+                  // backgroundColor: theme.colors.white,
                   // backgroundColor: 'rgba(7, 7, 7, 0.12)',
-                  padding: AppSizes.Padding_Horizontal_5,
+                  paddingHorizontal: AppSizes.Padding_Horizontal_5,
                   borderRadius: AppSizes.Radius_15,
                 },
               ]}
             >
-              {parseFloat(item.instTotalAmount).toFixed(2)|| 'N/A'}
+              {parseFloat(item.instTotalAmount).toFixed(2) || 'N/A'}
             </Text>
           </View>
 
@@ -100,7 +108,7 @@ export const RegionList: React.FC = ({ data }) => {
                   color: theme.colors.success,
                   fontWeight: 'bold',
                   //backgroundColor: 'rgba(109, 207, 18, 0.12)',
-                   paddingHorizontal: AppSizes.Padding_Horizontal_5,
+                  paddingHorizontal: AppSizes.Padding_Horizontal_5,
                   borderRadius: AppSizes.Radius_15,
                 },
               ]}
@@ -136,7 +144,7 @@ export const RegionList: React.FC = ({ data }) => {
                 },
               ]}
             >
-              {parseFloat(item.instDueAmount).toFixed(2)|| 'N/A'}
+              {parseFloat(item.instDueAmount).toFixed(2) || 'N/A'}
             </Text>
           </View>
 
@@ -157,7 +165,11 @@ export const RegionList: React.FC = ({ data }) => {
           ></View>
         </View>
       )}
-      contentContainerStyle={{rowGap:30,marginHorizontal: 20,borderRadius: theme.borderRadius.lg ,}}
+      contentContainerStyle={{
+        rowGap: 30,
+        marginHorizontal: 5,
+        borderRadius: theme.borderRadius.lg,
+      }}
     />
   );
 };
@@ -168,7 +180,7 @@ const styles = StyleSheet.create({
   item: {
     // borderRadius: 12,
     // marginBottom: 16,
-   elevation: 2,
+    elevation: 2,
   },
   title: { fontSize: 18, fontWeight: 'bold' },
   subtitle: { fontSize: 14, marginTop: 4 },

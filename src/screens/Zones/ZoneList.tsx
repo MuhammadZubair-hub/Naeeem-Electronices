@@ -67,7 +67,7 @@ export const ZoneList: React.FC = () => {
 
       {/* Main Screen Content */}
       <View style={styles.safeArea}>
-        <Header title="Zones" subtitle="Zonal Managers" showBackButton />
+        <Header title="Zones" subtitle="Region's Zones" showBackButton />
 
         {loading ? (
           <Loader />
@@ -140,7 +140,7 @@ export const ZoneList: React.FC = () => {
                 </View>
 
                 <Button
-                  title="View Zones"
+                  title="View Branches"
                   onPress={() => handleZonePress(item.zone)}
                   variant="secondary"
                   size="sm"

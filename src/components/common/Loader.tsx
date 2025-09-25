@@ -9,13 +9,13 @@ const Loader = () => {
 
   return (
     <View style={styles.container}>
-      {/* <LottieView
+      <LottieView
         source={require('../../assets/Loader/Loader.json')}
         autoPlay
         loop
         style={{ width: 100, height: 100 }}
-      /> */}
-      <ActivityIndicator size={'large'} color={theme.colors.secondary}/>
+      />
+      {/* <ActivityIndicator size={'large'} color={theme.colors.secondary}/> */}
       <Text
         style={{
           marginTop: 12,
