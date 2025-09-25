@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     borderBottomLeftRadius: AppSizes.Radius_30,
     borderBottomRightRadius: AppSizes.Radius_30,
-    marginBottom: AppSizes.Margin_Vertical_20,
+    //marginBottom: AppSizes.Margin_Vertical_10,
     // zIndex: 10,
   },
   menuButton: {

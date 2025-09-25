@@ -30,10 +30,10 @@ export const useLoginUser = () => {
         dispatch(
           loginSuccess({ data: response.data, token: response.data.token }),
         );
-        console.log('Login successfulss:', response.data.designation);
+        //console.log('Login successfulss:', response.data.designation);
       } else {
-        Alert.alert('Login Failed', 'Please check your credentials.');
-        console.log('Login failed. Please check your credentials.');
+        Alert.alert('Login Failed', response.data.message);
+        //console.log('Login failed. Please check your credentials.');
       }
     } catch (error) {
       console.error('Login error:', error);

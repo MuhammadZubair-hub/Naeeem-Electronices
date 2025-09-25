@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
+  ImageBackground,
 } from 'react-native';
 import { Button } from '../../components/common/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -24,7 +25,7 @@ export const AVOsList: React.FC = () => {
   const route = useRoute<any>();
   const { branch } = route.params;
   const zones = mockDataService.getAVOsByBranch('0');
-  
+
   const Id = useSelector((state: RootState) => state.auth.user?.empId);
 
   const handleAVOPress = (avo: any) => {
@@ -39,17 +40,17 @@ export const AVOsList: React.FC = () => {
     // setAvos(AvosData);
     // console.log('AVOs:', AvosData);
 
-    console.log('id is ',Id, 'branch is is ', branch);
+    console.log('id is ', Id, 'branch is is ', branch);
 
     getAVos();
 
   }, []);
 
-  const getAVos = async ()=>{
+  const getAVos = async () => {
 
     const response = await API_Config.getBranchesAVOs({
-      ID :Id,
-      BranchID : branch
+      ID: Id,
+      BranchID: branch
     });
 
     if (response.success) {
@@ -59,204 +60,191 @@ export const AVOsList: React.FC = () => {
       console.log('the error is : ', response.message);
       return
     }
-    
+
 
   }
 
   return (
-    <View>
+    
+     <ImageBackground
+          blurRadius={10}
+          source={require('../../assets/images/loginbackground.jpg')}
+          style={styles.backgroundImage}
+          resizeMode="cover"
+        >
+          {/* Overlay for dark shade */}
+          <View style={styles.overlay} />
+    
+          {/* Main Screen Content */}
+          <View style={styles.safeArea}>
       {/* <Header title="Branches" subtitle="Branch Manager" showBackButton /> */}
-       <Header title="AVO's" subtitle="Branch Managers" showBackButton />
+      <Header title="AVO's" subtitle="Branch Managers" showBackButton />
       <FlatList
-                    data={avos}
-                    keyExtractor={item => item.id}
-                    ListEmptyComponent={() => {
-                      <View>
-                        <Text>No Item Found</Text>
-                      </View>;
-                    }}
-                    renderItem={({ item }) => (
-                      <View
-                        style={[
-                          { backgroundColor: theme.colors.surface },
-                          styles.item,
-                        ]}
-                      >
-                        <Text
-                          style={[
-                            styles.title,
-                            {
-                              color: theme.colors.secondary,
-                              fontFamily: fonts.extraBoldItalic,
-                              fontSize: AppSizes.Font_20,
-                              marginVertical: AppSizes.Margin_Vertical_10,
-                            },
-                          ]}
-                        >
-                          {item.branchName}
-                        </Text>
-      
-                        <View
-                          style={{
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                          }}
-                        >
-                          <Text
-                            style={[
-                              styles.subtitle,
-                              {
-                                color: theme.colors.textSecondary,
-                                fontSize: AppSizes.Font_14,
-                                fontWeight: 'bold',
-                              },
-                            ]}
-                          >
-                            Total Amount :
-                          </Text>
-                          <Text
-                            style={[
-                              styles.subtitle,
-                              {
-                                color: theme.colors.black,
-                                fontWeight: 'bold',
-                                backgroundColor: theme.colors.white,
-                                padding: AppSizes.Padding_Horizontal_5,
-                                borderRadius: AppSizes.Radius_15,
-                              },
-                            ]}
-                          >
-                            {item.instTotalAmount || 'N/A'}
-                          </Text>
-                        </View>
-      
-                        <View
-                          style={{
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                          }}
-                        >
-                          <Text
-                            style={[
-                              styles.subtitle,
-                              {
-                                color: theme.colors.textSecondary,
-                                fontSize: AppSizes.Font_14,
-                                fontWeight: 'bold',
-                              },
-                            ]}
-                          >
-                            Paid Amount :
-                          </Text>
-                          <Text
-                            style={[
-                              styles.subtitle,
-                              {
-                                color: theme.colors.success,
-                                fontWeight: 'bold',
-                                backgroundColor: 'rgba(109, 207, 18, 0.12)',
-                                padding: AppSizes.Padding_Horizontal_5,
-                                borderRadius: AppSizes.Radius_15,
-                              },
-                            ]}
-                          >
-                            {item.instRecAmount || 'N/A'}
-                          </Text>
-                        </View>
-      
-                        <View
-                          style={{
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                          }}
-                        >
-                          <Text
-                            style={[
-                              styles.subtitle,
-                              {
-                                color: theme.colors.textSecondary,
-                                fontSize: AppSizes.Font_14,
-                                fontWeight: 'bold',
-                              },
-                            ]}
-                          >
-                            Due Amount :
-                          </Text>
-                          <Text
-                            style={[
-                              styles.subtitle,
-                              {
-                                color: theme.colors.error,
-                                fontWeight: 'bold',
-                                backgroundColor: 'rgba(255, 0, 0, 0.12)',
-                                padding: AppSizes.Padding_Horizontal_5,
-                                borderRadius: AppSizes.Radius_15,
-                              },
-                            ]}
-                          >
-                            {item.instDueAmount || 'N/A'}
-                          </Text>
-                        </View>
-      
-                        <View
-                          style={{
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                          }}
-                        >
-                          <Text
-                            style={[
-                              styles.subtitle,
-                              {
-                                color: theme.colors.textSecondary,
-                                fontSize: AppSizes.Font_14,
-                                fontWeight: 'bold',
-                              },
-                            ]}
-                          >
-                            AVO Name:
-                          </Text>
-                          <Text
-                            style={[
-                              styles.subtitle,
-                              {
-                                color: theme.colors.secondary,
-                                fontWeight: 'bold',
-                                backgroundColor: 'rgba(7, 7, 7, 0.12)',
-                                padding: AppSizes.Padding_Horizontal_5,
-                                borderRadius: AppSizes.Radius_15,
-                              },
-                            ]}
-                          >
-                            {item.assignedName || 'N/A'}
-                          </Text>
-                        </View>
-      
-                        <Button
-                          title="View AVO"
-                          //onPress={() => handleBranchPress(item)}
-                          variant="secondary"
-                          size="sm"
-                          style={{ marginTop: 22 }}
-                        />
-                        <View
-                          style={{
-                            marginVertical: 12,
-                            marginTop: AppSizes.Margin_Vertical_20,
-                            borderWidth: 0.5,
-                            borderTopColor: theme.colors.secondary,
-                          }}
-                        ></View>
-                      </View>
-                    )}
-                    contentContainerStyle={styles.list}
-                  />
+        data={avos}
+        keyExtractor={item => item.id}
+        ListEmptyComponent={() => {
+          <View>
+            <Text>No Item Found</Text>
+          </View>;
+        }}
+        renderItem={({ item }) => (
+          <View
+            style={[
+              { backgroundColor: theme.colors.surface },
+              styles.item,
+            ]}
+          >
+            <Text
+              style={[
+                styles.title,
+                {
+                  color: theme.colors.secondary,
+                  fontFamily: fonts.extraBoldItalic,
+                  fontSize: AppSizes.Font_20,
+                  marginVertical: AppSizes.Margin_Vertical_10,
+                },
+              ]}
+            >
+              {item.assignedName}
+            </Text>
+
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Text
+                style={[
+                  styles.subtitle,
+                  {
+                    color: theme.colors.textSecondary,
+                    fontSize: AppSizes.Font_14,
+                    fontWeight: 'bold',
+                  },
+                ]}
+              >
+                Total Amount :
+              </Text>
+              <Text
+                style={[
+                  styles.subtitle,
+                  {
+                    color: theme.colors.white,
+                    fontWeight: 'bold',
+                    //backgroundColor: theme.colors.white,
+                    padding: AppSizes.Padding_Horizontal_5,
+                    borderRadius: AppSizes.Radius_15,
+                  },
+                ]}
+              >
+                {item.instTotalAmount || 'N/A'}
+              </Text>
+            </View>
+
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Text
+                style={[
+                  styles.subtitle,
+                  {
+                    color: theme.colors.textSecondary,
+                    fontSize: AppSizes.Font_14,
+                    fontWeight: 'bold',
+                  },
+                ]}
+              >
+                Paid Amount :
+              </Text>
+              <Text
+                style={[
+                  styles.subtitle,
+                  {
+                    color: theme.colors.success,
+                    fontWeight: 'bold',
+                    //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                    padding: AppSizes.Padding_Horizontal_5,
+                    borderRadius: AppSizes.Radius_15,
+                  },
+                ]}
+              >
+                {item.instRecAmount || 'N/A'}
+              </Text>
+            </View>
+
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Text
+                style={[
+                  styles.subtitle,
+                  {
+                    color: theme.colors.textSecondary,
+                    fontSize: AppSizes.Font_14,
+                    fontWeight: 'bold',
+                  },
+                ]}
+              >
+                Due Amount :
+              </Text>
+              <Text
+                style={[
+                  styles.subtitle,
+                  {
+                    color: theme.colors.warning,
+                    fontWeight: 'bold',
+                    //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                    padding: AppSizes.Padding_Horizontal_5,
+                    borderRadius: AppSizes.Radius_15,
+                  },
+                ]}
+              >
+                {item.instDueAmount || 'N/A'}
+              </Text>
+            </View>
+
+         
+            <Button
+              title="View AVO"
+              onPress={() => {}}
+              variant="secondary"
+              size="sm"
+              style={{ marginTop: 22 }}
+            />
+            <View
+              style={{
+                marginVertical: 12,
+                marginTop: AppSizes.Margin_Vertical_20,
+                borderWidth: 0.5,
+                borderTopColor: theme.colors.secondary,
+              }}
+            ></View>
+          </View>
+        )}
+        contentContainerStyle={styles.list}
+      />
     </View>
+
+         
+        </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  backgroundImage: { flex: 1, width: '100%', height: '100%' },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  safeArea: { flex: 1, paddingBottom: 20 },
   list: { padding: 20 },
   item: {
     borderRadius: 12,

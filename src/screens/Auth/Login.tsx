@@ -5,6 +5,8 @@ import {
   TextInput,
   StyleSheet,
   Image,
+  TouchableOpacity,
+  ImageBackground,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
@@ -17,6 +19,8 @@ import { AppSizes } from '../../utils/AppSizes';
 import { useLoginUser } from './login';
 import { LoadingModal } from '../../components/common/LoadingModal';
 import Ionicons from '@react-native-vector-icons/ionicons';
+import { fonts } from '../../assets/fonts/Fonts';
+// import { BlurView } from '@react-native-community/blur';
 
 export const Login: React.FC = () => {
   const { theme } = useTheme();
@@ -26,168 +30,327 @@ export const Login: React.FC = () => {
   const loginData = useLoginUser();
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <KeyboardAwareScrollView
-        enableOnAndroid
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={styles.scrollContainer}
-        style={{ backgroundColor: theme.colors.background }}
+    <View style={styles.container}>
+      {/* Background Image */}
+      <ImageBackground
+        source={{
+          uri: 'https://img.freepik.com/free-photo/skyscrapers-from-low-angle-view_1359-574.jpg?uid=R215698115&ga=GA1.1.1948378778.1758609707&semt=ais_hybrid&w=740&q=80'
+        }}
+        style={styles.backgroundImage}
+        resizeMode="cover"
       >
-        {/* App Logo */}
-        <View style={styles.header}>
-          <Image
-            source={require('../../assets/images/naeemLogo.png')}
-            resizeMode="contain"
-            style={styles.logo}
-          />
-          <Text style={[styles.welcome, { color: theme.colors.textPrimary }]}>
-            Welcome Back
-          </Text>
-          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-            Sign in to continue
-          </Text>
-        </View>
-
-        {/* Login Card */}
-        <Card style={styles.loginCard}>
-          <Text style={[styles.loginTitle, { color: theme.colors.textPrimary }]}>
-            Sign In
-          </Text>
-
+        {/* Dark Overlay for better readability */}
+        <View style={styles.overlay} />
         
-          <View style={[styles.inputContainer,{backgroundColor: theme.colors.surfaceVariant,}]}>
-            <Ionicons
-              name="mail-outline"
-              size={20}
-              color={theme.colors.secondary}
-              style={styles.icon}
-            />
-            <TextInput
-              style={[
-                styles.input,
-                {
-                 // backgroundColor: theme.colors.surfaceVariant,
-                  borderColor: theme.colors.border,
-                  color: theme.colors.textPrimary,
-                },
-              ]}
-              value={loginData.credentials.empId}
-              onChangeText={text => loginData.handleChange('empId', text)}
-              placeholder="Enter your email"
-              placeholderTextColor={theme.colors.textTertiary}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-          </View>
+        <SafeAreaView style={styles.safeArea}>
+          <KeyboardAwareScrollView
+            enableOnAndroid
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={styles.scrollContainer}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Header Section */}
+            <View style={styles.headerContainer}>
+              <View style={styles.logoContainer}>
+                <Text style={[styles.brandTitle, { color: '#FFFFFF' }]}>
+                  Naeem Electronics
+                </Text>
+                <View style={styles.brandUnderline} />
+              </View>
+              
+              <View style={styles.titleContainer}>
+                <Text style={[styles.welcomeTitle, { color: '#FFFFFF' }]}>
+                  Welcome Back
+                </Text>
+                <Text style={[styles.welcomeSubtitle, { color: 'rgba(255,255,255,0.8)' }]}>
+                  Please sign in to your account
+                </Text>
+              </View>
+            </View>
 
-         
-         <View style={[styles.inputContainer,{backgroundColor: theme.colors.surfaceVariant,}]}>
-            <Ionicons
-              name="lock-closed-outline"
-              size={20}
-              color={theme.colors.secondary}
-              style={styles.icon}
-            />
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  //backgroundColor: theme.colors.surfaceVariant,
-                  borderColor: theme.colors.border,
-                  color: theme.colors.textPrimary,
-                },
-              ]}
-              value={loginData.credentials.password}
-              onChangeText={text =>
-                loginData.handleChange('password', text)
-              }
-              placeholder="Enter your password"
-              placeholderTextColor={theme.colors.textTertiary}
-              secureTextEntry={showPswd}
-            />
-            <Ionicons
-              name={showPswd ? 'eye-outline' : 'eye-off-outline'}
-              size={20}
-              color={theme.colors.secondary}
-              style={styles.eyeIcon}
-              onPress={() => setShowPswd(!showPswd)}
-            />
-          </View>
+            {/* Login Form Card with Glass Effect */}
+            <View style={styles.glassCard}>
+              {/* Card Header */}
+              <View style={styles.cardHeader}>
+                <Text style={[styles.loginTitle, { color: theme.colors.white }]}>
+                  Sign In
+                </Text>
+                <View style={[styles.titleUnderline, { backgroundColor: theme.colors.black }]} />
+              </View>
 
-          {/* Sign In Button */}
-          <Button
-            variant="secondary"
-            title="Sign In"
-            onPress={() => loginData.handleLogin(loginData.credentials)}
-            style={styles.loginButton}
-          />
-        </Card>
-      </KeyboardAwareScrollView>
+              {/* Input Fields Container */}
+              <View style={styles.inputFieldsContainer}>
+                {/* User ID Input */}
+                <View style={styles.fieldContainer}>
+                  <Text style={[styles.fieldLabel, { color: theme.colors.white }]}>
+                    User ID
+                  </Text>
+                  <View style={[
+                    styles.inputContainer,
+                    {
+                      backgroundColor: 'rgba(255,255,255,0.9)',
+                      borderColor: 'rgba(255,255,255,0.3)',
+                    }
+                  ]}>
+                    <View style={styles.iconContainer}>
+                      <Ionicons
+                        name="person-outline"
+                        size={22}
+                        color={theme.colors.secondary}
+                      />
+                    </View>
+                    <TextInput
+                      style={[
+                        styles.input,
+                        {
+                          color: theme.colors.textTertiary,
+                        },
+                      ]}
+                      value={loginData.credentials.empId}
+                      onChangeText={text => loginData.handleChange('empId', text)}
+                      placeholder="Enter your user ID"
+                      placeholderTextColor={theme.colors.textTertiary}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                    />
+                  </View>
+                </View>
+
+                {/* Password Input */}
+                <View style={styles.fieldContainer}>
+                  <Text style={[styles.fieldLabel, { color: theme.colors.white }]}>
+                    Password
+                  </Text>
+                  <View style={[
+                    styles.inputContainer,
+                    {
+                      backgroundColor: 'rgba(255,255,255,0.9)',
+                      borderColor: 'rgba(255,255,255,0.3)',
+                    }
+                  ]}>
+                    <View style={styles.iconContainer}>
+                      <Ionicons
+                        name="lock-closed-outline"
+                        size={22}
+                        color={theme.colors.secondary}
+                      />
+                    </View>
+                    <TextInput
+                      style={[
+                        styles.input,
+                        {
+                          color: theme.colors.textTertiary,
+                        },
+                      ]}
+                      value={loginData.credentials.password}
+                      onChangeText={text =>
+                        loginData.handleChange('password', text)
+                      }
+                      placeholder="Enter your password"
+                      placeholderTextColor={theme.colors.textTertiary}
+                      secureTextEntry={showPswd}
+                    />
+                    <TouchableOpacity
+                      style={styles.eyeIconContainer}
+                      onPress={() => setShowPswd(!showPswd)}
+                      activeOpacity={0.7}
+                    >
+                      <Ionicons
+                        name={showPswd ? 'eye-outline' : 'eye-off-outline'}
+                        size={22}
+                        color={theme.colors.secondary}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+
+              {/* Sign In Button */}
+              <View style={styles.buttonContainer}>
+                <Button
+                  variant="secondary"
+                  title="Sign In"
+                  onPress={() => loginData.handleLogin(loginData.credentials)}
+                  style={styles.loginButton}
+                />
+              </View>
+            </View>
+
+            {/* Footer Spacing */}
+            <View style={styles.footer} />
+          </KeyboardAwareScrollView>
+        </SafeAreaView>
+      </ImageBackground>
 
       <LoadingModal visible={loginData.isLoading} />
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)', // Dark overlay for better text readability
+    zIndex: 1,
+  },
+  safeArea: {
+    flex: 1,
+    zIndex: 2,
+  },
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: 'center',
     paddingHorizontal: AppSizes.Padding_Horizontal_20,
     paddingVertical: AppSizes.Padding_Vertical_10,
   },
-  header: {
+
+  // Header Styles
+  headerContainer: {
     alignItems: 'center',
-    marginBottom: AppSizes.Gap_20,
+    marginBottom: 40,
+    paddingTop: 40,
   },
-  logo: {
-    width: 180,
-    height: 80,
-    marginBottom: AppSizes.Gap_10,
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 32,
   },
-  welcome: {
-    fontSize: AppSizes.Font_20,
-    fontFamily: 'Poppins-Bold',
+  brandTitle: {
+    fontSize: 32,
+    fontFamily: fonts.bold,
+    textAlign: 'center',
+    marginBottom: 8,
+    letterSpacing: 1,
   },
-  subtitle: {
-    fontSize: AppSizes.Font_14,
+  brandUnderline: {
+    width: 60,
+    height: 3,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 2,
+  },
+  titleContainer: {
+    alignItems: 'center',
+  },
+  welcomeTitle: {
+    fontSize: 28,
+    fontFamily: fonts.bold,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  welcomeSubtitle: {
+    fontSize: 16,
     fontFamily: 'Poppins-Regular',
+    textAlign: 'center',
   },
-  loginCard: {
-    borderRadius: AppSizes.Radius_20,
-    padding: AppSizes.Padding_Horizontal_20,
-    rowGap: AppSizes.Gap_20,
-    elevation: 5,
+
+  // Glass Card Effect
+  glassCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.35)', // Semi-transparent white
+    //backdropFilter: 'blur(20px)', // CSS blur effect
+    borderRadius: 24,
+    padding: 32,
+    marginHorizontal: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 20,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 25,
+    //elevation: 15,
+  },
+  cardHeader: {
+    alignItems: 'center',
+    marginBottom: 32,
   },
   loginTitle: {
-    fontSize: AppSizes.Font_18,
-    fontFamily: 'Poppins-SemiBold',
+    fontSize: 24,
+    fontFamily: fonts.bold,
     textAlign: 'center',
-    marginBottom: AppSizes.Gap_10,
+    marginBottom: 8,
+  },
+  titleUnderline: {
+    width: 40,
+    height: 3,
+    borderRadius: 2,
+  },
+
+  // Input Fields Styles
+  inputFieldsContainer: {
+    marginBottom: 32,
+  },
+  fieldContainer: {
+    marginBottom: 20,
+  },
+  fieldLabel: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
+    marginBottom: 8,
+    marginLeft: 4,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderRadius: AppSizes.Radius_15,
-    marginBottom: AppSizes.Gap_10,
-    paddingHorizontal: 10,
+    borderWidth: 1.5,
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    minHeight: 56,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  iconContainer: {
+    marginRight: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   input: {
     flex: 1,
-    paddingVertical: AppSizes.Padding_Vertical_10,
-    fontSize: AppSizes.Font_16,
+    fontSize: 16,
     fontFamily: 'Poppins-Regular',
+    paddingVertical: 16,
   },
-  icon: {
-    marginRight: 8,
+  eyeIconContainer: {
+    padding: 4,
+    marginLeft: 8,
   },
-  eyeIcon: {
-    position: 'absolute',
-    right: 12,
+
+  // Button Styles
+  buttonContainer: {
+    marginBottom: 8,
   },
   loginButton: {
-    marginTop: AppSizes.Gap_10,
+    minHeight: 56,
+    borderRadius: 16,
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+  },
+
+  // Footer
+  footer: {
+    height: 40,
   },
 });

@@ -47,7 +47,7 @@ export const LoadingModal: React.FC<LoadingModalProps> = ({
                 style={{ width: 100, height: 100,alignSelf:'center' }}
               /> */}
 
-              <ActivityIndicator size={'large'} color={theme.colors.secondary}/>
+              <ActivityIndicator size={'large'} color={theme.colors.secondary} style={{ width: 100, height: 100,alignSelf:'center' }}/>
         </View>
       </View>
     </Modal>

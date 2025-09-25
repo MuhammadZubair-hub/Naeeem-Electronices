@@ -25,41 +25,13 @@ export const RegionList: React.FC = ({ data }) => {
   };
 
   return (
-    // <View
-    //   style={[styles.container, { backgroundColor: theme.colors.background }]}
-    // >
-    //   <Header title="All Regions" subtitle="Regional Managers" showBackButton />
-    //   <FlatList
-    //     data={regions}
-    //     keyExtractor={item => item.id}
-    //     renderItem={({ item }) => (
-    //       <View style={[{ backgroundColor: theme.colors.surface }, styles.item]} >
-    //         <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
-    //           {item.name}
-    //         </Text>
-    //         <Text
-    //           style={[styles.subtitle, { color: theme.colors.textSecondary }]}
-    //         >
-    //           Manager: {item.managerName}
-    //         </Text>
-    //         <Button
-    //           title="View Zones"
-    //           onPress={() => handleRegionPress(item)}
-    //           variant="primary"
-    //           size="md"
-    //           style={{ marginTop: 12 }}
-    //         />
-    //       </View>
-    //     )}
-    //     contentContainerStyle={styles.list}
-    //   />
-    // </View>
+   
 
     <FlatList
       data={data}
       keyExtractor={item => item.id}
       renderItem={({ item }) => (
-        <View style={[{ backgroundColor: theme.colors.surface }, styles.item]}>
+        <View style={[{ backgroundColor: theme.colors.surface,borderRadius: theme.borderRadius.lg,padding:5  }, styles.item]}>
           <Text
             style={[
               styles.title,
@@ -93,16 +65,16 @@ export const RegionList: React.FC = ({ data }) => {
               style={[
                 styles.subtitle,
                 {
-                  color: theme.colors.black,
+                  color: theme.colors.white,
                   fontWeight: 'bold',
-                  backgroundColor: theme.colors.white,
+                 // backgroundColor: theme.colors.white,
                   // backgroundColor: 'rgba(7, 7, 7, 0.12)',
                   padding: AppSizes.Padding_Horizontal_5,
                   borderRadius: AppSizes.Radius_15,
                 },
               ]}
             >
-              {item.instTotalAmount || 'N/A'}
+              {parseFloat(item.instTotalAmount).toFixed(2)|| 'N/A'}
             </Text>
           </View>
 
@@ -127,13 +99,13 @@ export const RegionList: React.FC = ({ data }) => {
                 {
                   color: theme.colors.success,
                   fontWeight: 'bold',
-                  backgroundColor: 'rgba(109, 207, 18, 0.12)',
-                  padding: AppSizes.Padding_Horizontal_5,
+                  //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                   paddingHorizontal: AppSizes.Padding_Horizontal_5,
                   borderRadius: AppSizes.Radius_15,
                 },
               ]}
             >
-              {item.instRecAmount || 'N/A'}
+              {parseFloat(item.instRecAmount).toFixed(2) || 'N/A'}
             </Text>
           </View>
 
@@ -156,15 +128,15 @@ export const RegionList: React.FC = ({ data }) => {
               style={[
                 styles.subtitle,
                 {
-                  color: theme.colors.error,
+                  color: theme.colors.warning,
                   fontWeight: 'bold',
-                  backgroundColor: 'rgba(255, 0, 0, 0.12)',
-                  padding: AppSizes.Padding_Horizontal_5,
+                  //backgroundColor: 'rgba(255, 238, 0, 0.12)',
+                  paddingHorizontal: AppSizes.Padding_Horizontal_5,
                   borderRadius: AppSizes.Radius_15,
                 },
               ]}
             >
-              {item.instDueAmount || 'N/A'}
+              {parseFloat(item.instDueAmount).toFixed(2)|| 'N/A'}
             </Text>
           </View>
 
@@ -185,18 +157,18 @@ export const RegionList: React.FC = ({ data }) => {
           ></View>
         </View>
       )}
-      contentContainerStyle={styles.list}
+      contentContainerStyle={{rowGap:30,marginHorizontal: 20,borderRadius: theme.borderRadius.lg ,}}
     />
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingVertical: AppSizes.Padding_Vertical_40 },
-  list: {},
+  //list: {rowGap:30,marginHorizontal: 20,borderRadius: theme.borderRadius.lg},
   item: {
     // borderRadius: 12,
     // marginBottom: 16,
-    // elevation: 2,
+   elevation: 2,
   },
   title: { fontSize: 18, fontWeight: 'bold' },
   subtitle: { fontSize: 14, marginTop: 4 },
