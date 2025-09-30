@@ -9,12 +9,14 @@ import {
   Dimensions,
   FlatList,
   ImageBackground,
+  Alert,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   useFocusEffect,
   useNavigation,
   useRoute,
+  NavigationProp,
 } from '@react-navigation/native';
 import { RootState, AppDispatch } from '../../redux/store';
 import {
@@ -35,26 +37,30 @@ import { API_Config } from '../../services/apiServices';
 import { fonts } from '../../assets/fonts/Fonts';
 import { AppSizes } from '../../utils/AppSizes';
 import Loader from '../../components/common/Loader';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { showMessage } from 'react-native-flash-message';
 
 const { width } = Dimensions.get('window');
 
 // Branch interface is now imported from mockDataService
+type RootStackParamList = {
+  AVOsList: { branch: string };
+};
 
 export const BranchList: React.FC = () => {
   const route = useRoute();
-  const { zoneId } = route.params;
-
+  const { zoneId } = route.params as { zoneId: any };
   const { theme } = useTheme();
-  const dispatch = useDispatch<AppDispatch>();
-  const navigation = useNavigation();
-  const permissions = usePermissions();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [loading, setLoading] = useState(false);
-  const { user } = useSelector((state: RootState) => state.auth);
-  const {
-    data: dashboardData,
-    isLoading,
-    error,
-  } = useSelector((state: RootState) => state.dashboard);
+  // const dispatch = useDispatch<AppDispatch>();
+  // const permissions = usePermissions();
+  // const { user } = useSelector((state: RootState) => state.auth);
+  // const {
+  //   data: dashboardData,
+  //   isLoading,
+  //   error,
+  // } = useSelector((state: RootState) => state.dashboard);
 
   const [branches, setBranches] = useState();
   const Id = useSelector((state: RootState) => state.auth.user?.empId);
@@ -124,6 +130,11 @@ export const BranchList: React.FC = () => {
       setLoading(false);
     } else {
       setLoading(false);
+      showMessage({
+        message: 'Error',
+        description: response.data.message,
+        type: 'danger',
+      });
       console.log('response erro', response.message);
     }
   };
@@ -248,112 +259,121 @@ export const BranchList: React.FC = () => {
   //   </TouchableOpacity>
   // );
 
-  const handleBranchPress = ( item ) => {
-   console.log('itme passsing is ',item);
+  const handleBranchPress = (item: any) => {
+    console.log('itme passsing is ', item);
     navigation.navigate('AVOsList', { branch: item?.branchCode });
-
-  }
+  };
 
   return (
-    <ImageBackground
-          blurRadius={10}
-          source={require('../../assets/images/loginbackground.jpg')}
-          style={styles.backgroundImage}
-          resizeMode="cover"
-        >
-          {/* Overlay for dark shade */}
-          <View style={styles.overlay} />
-    
-          {/* Main Screen Content */}
-          <View style={styles.safeArea}>
-            <Header title="Branches" subtitle="Zone's Branches" showBackButton />
-    
-            {loading ? (
-              <Loader />
-            ) : (
-              <FlatList
-                data={branches}
-                keyExtractor={item => item.id}
-                ListEmptyComponent={() => (
-                  <View style={{ alignItems: 'center', marginTop: 20 }}>
-                    <Text style={{ color: theme.colors.white }}>No Item Found</Text>
-                  </View>
-                )}
-                renderItem={({ item }) => (
-                  <View
+    <SafeAreaView style={styles.backgroundImage}>
+      {/* Overlay for dark shade */}
+      <View style={styles.overlay} />
+
+      {/* Main Screen Content */}
+      <View style={styles.safeArea}>
+        <Header title="Branches" subtitle="Zone's Branches" showBackButton />
+
+        {loading ? (
+          <Loader />
+        ) : (
+          <FlatList
+            data={branches}
+            keyExtractor={item => item.id}
+            ListEmptyComponent={() => (
+              <View style={{ alignItems: 'center', marginTop: 20 }}>
+                <Text style={{ color: theme.colors.white }}>No Item Found</Text>
+              </View>
+            )}
+            renderItem={({ item }) => (
+              <View
+                style={[{ backgroundColor: theme.colors.surface }, styles.item]}
+              >
+                <View
+                  style={{
+                    justifyContent: 'space-between',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text
                     style={[
-                      { backgroundColor: theme.colors.surface },
-                      styles.item,
+                      styles.title,
+                      {
+                        color: theme.colors.secondary,
+                        fontFamily: fonts.extraBoldItalic,
+                        fontSize: AppSizes.Font_20,
+                        marginVertical: AppSizes.Margin_Vertical_10,
+                      },
                     ]}
                   >
-                    <Text
-                      style={[
-                        styles.title,
-                        {
-                          color: theme.colors.secondary,
-                          fontFamily: fonts.extraBoldItalic,
-                          fontSize: AppSizes.Font_20,
-                          marginVertical: AppSizes.Margin_Vertical_10,
-                        },
-                      ]}
-                    >
-                      {item.branchName}
-                    </Text>
-    
-                    {/* Amounts */}
-                    <View style={styles.row}>
-                      <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-                        Total Amount :
-                      </Text>
-                      <Text style={[styles.value, { color: theme.colors.white }]}>
-                        {parseFloat(item.instTotalAmount).toFixed(2)|| 'N/A'}
-                      </Text>
-                    </View>
-    
-                    <View style={styles.row}>
-                      <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-                        Paid Amount :
-                      </Text>
-                      <Text style={[styles.value, { color: theme.colors.success,  }]}>
-                        {parseFloat(item.instRecAmount).toFixed(2) || 'N/A'}
-                      </Text>
-                    </View>
-    
-    
-                    <View style={styles.row}>
-                      <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-                        Due Amount :
-                      </Text>
-                      <Text style={[styles.value, { color: theme.colors.warning,  }]}>
-                        {parseFloat(item.instDueAmount).toFixed(2)|| 'N/A'}
-                      </Text>
-                    </View>
-    
-                    {/* <View style={styles.row}>
-                      <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-                        Zone Branches :
-                      </Text>
-                      <Text style={[styles.value, { color: theme.colors.secondary, }]}>
-                        {item.zoneBranches || 'N/A'}
-                      </Text>
-                    </View> */}
-    
-                    <Button
-                      title="View Branch AVO's"
-                      onPress={() => handleBranchPress(item)}
-                      variant="secondary"
-                      size="sm"
-                      style={{ marginTop: 22 }}
-                    />
-    
-                    <View style={styles.divider} />
-                  </View>
-                )}
-                contentContainerStyle={styles.list}
-              />
+                    {item.branchName}
+                  </Text>
+                  <Text
+                    style={[styles.value, { color: theme.colors.secondary }]}
+                  >
+                    ( {item?.branchCode || 'N/A'})
+                  </Text>
+                </View>
+
+                {/* Amounts */}
+                <View style={styles.row}>
+                  <Text
+                    style={[
+                      styles.subtitle,
+                      { color: theme.colors.textSecondary },
+                    ]}
+                  >
+                    Total Outstand :
+                  </Text>
+                  <Text style={[styles.value, { color: theme.colors.black }]}>
+                    {item.instTotalAmount || 'N/A'}
+                  </Text>
+                </View>
+
+                <View style={styles.row}>
+                  <Text
+                    style={[
+                      styles.subtitle,
+                      { color: theme.colors.textSecondary },
+                    ]}
+                  >
+                    Total Paid :
+                  </Text>
+                  <Text style={[styles.value, { color: theme.colors.success }]}>
+                    {item.instRecAmount || 'N/A'}
+                  </Text>
+                </View>
+
+                <View style={styles.row}>
+                  <Text
+                    style={[
+                      styles.subtitle,
+                      { color: theme.colors.textSecondary },
+                    ]}
+                  >
+                    Total Due :
+                  </Text>
+                  <Text style={[styles.value, { color: theme.colors.warning }]}>
+                    {item.instDueAmount || 'N/A'}
+                  </Text>
+                </View>
+
+                <Button
+                  title="View Branch AVO's"
+                  onPress={() => handleBranchPress(item)}
+                  variant="secondary"
+                  size="sm"
+                  style={{ marginTop: 22 }}
+                />
+
+                <View style={styles.divider} />
+              </View>
             )}
-          </View>
-        </ImageBackground>
+            contentContainerStyle={styles.list}
+          />
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -362,18 +382,17 @@ const styles = StyleSheet.create({
   backgroundImage: { flex: 1, width: '100%', height: '100%' },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'white',
   },
   safeArea: { flex: 1, paddingBottom: 20 },
   list: { padding: AppSizes.Padding_Vertical_15, rowGap: AppSizes.Gap_20 },
   item: {
     borderRadius: 12,
     padding: 16,
-    // marginBottom: 16,
-    elevation: 2,
+    elevation: 10,
   },
   title: { fontSize: 18, fontWeight: 'bold' },
-  subtitle: { fontSize: 14, marginTop: 4 },
+  subtitle: { fontSize: 14, marginTop: 4,fontWeight: 'bold' },
 
   summaryCard: {
     marginHorizontal: 20,
@@ -419,6 +438,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     marginVertical: 12,
+    marginHorizontal: AppSizes.Gap_30,
     borderWidth: 0.5,
     borderTopColor: '#ccc',
   },

@@ -4,8 +4,8 @@ export { Button } from './Button';
 export { InputField } from './InputField';
 export { Modal } from './Modal';
 export { LoadingModal } from './LoadingModal';
-export { KPIPanel } from './KPIPanel';
-export { SummaryPanel } from './SummaryPanel';
+// export { KPIPanel } from './KPIPanel';
+// export { SummaryPanel } from './SummaryPanel';
 
 // Modern Components
 export { ModernCard } from './ModernCard';

@@ -1,4 +1,4 @@
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, ImageBackground } from 'react-native';
 import React, { useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
@@ -55,8 +55,10 @@ export const DashboardHome: React.FC = () => {
   // loader until redirect
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      {/* <Loader /> */}
+      <Loader />
     </View>
+    // <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    // </View>
   );
 };
 

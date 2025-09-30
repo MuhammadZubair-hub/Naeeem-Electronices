@@ -1,4 +1,4 @@
-import React, { use, useEffect } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   ImageBackground,
+  Alert,
 } from 'react-native';
 import { Button } from '../../components/common/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -18,6 +19,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { fonts } from '../../assets/fonts/Fonts';
 import { AppSizes } from '../../utils/AppSizes';
+import Loader from '../../components/common/Loader';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { showMessage } from 'react-native-flash-message';
 
 export const AVOsList: React.FC = () => {
   const { theme } = useTheme();
@@ -33,19 +37,15 @@ export const AVOsList: React.FC = () => {
     navigation.navigate(screenName.CustomerList, { zoneId: avo.id });
   };
   const [avos, setAvos] = React.useState<any[]>([]);
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
-    // Fetch AVOs when the component mounts
-    // const AvosData = mockDataService.getAVOStaff();
-    // setAvos(AvosData);
-    // console.log('AVOs:', AvosData);
-
     console.log('id is ', Id, 'branch is is ', branch);
 
     getAVos();
   }, []);
 
   const getAVos = async () => {
+    setLoading(true);
     const response = await API_Config.getBranchesAVOs({
       ID: Id,
       BranchID: branch,
@@ -54,175 +54,181 @@ export const AVOsList: React.FC = () => {
     if (response.success) {
       console.log(response.data.data);
       setAvos(response.data.data);
+      setLoading(false);
     } else {
+      setLoading(false);
+      showMessage({
+        message: 'Error',
+        description: response.data.message,
+        type: 'danger',
+      });
+
       console.log('the error is : ', response.message);
       return;
     }
   };
 
   return (
-    <ImageBackground
-      blurRadius={10}
-      source={require('../../assets/images/loginbackground.jpg')}
-      style={styles.backgroundImage}
-      resizeMode="cover"
-    >
+    <SafeAreaView style={styles.backgroundImage}>
       {/* Overlay for dark shade */}
       <View style={styles.overlay} />
 
       {/* Main Screen Content */}
       <View style={styles.safeArea}>
-        {/* <Header title="Branches" subtitle="Branch Manager" showBackButton /> */}
         <Header title="AVO's" subtitle="Branch's AVOs" showBackButton />
-        <FlatList
-          data={avos}
-          keyExtractor={item => item.id}
-          ListEmptyComponent={() => {
-            <View>
-              <Text>No Item Found</Text>
-            </View>;
-          }}
-          renderItem={({ item }) => (
-            <View
-              style={[{ backgroundColor: theme.colors.surface }, styles.item]}
-            >
-              <Text
-                style={[
-                  styles.title,
-                  {
-                    color: theme.colors.secondary,
-                    fontFamily: fonts.extraBoldItalic,
-                    fontSize: AppSizes.Font_20,
-                    marginVertical: AppSizes.Margin_Vertical_10,
-                  },
-                ]}
-              >
-                {item.assignedName}
-              </Text>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Text
-                  style={[
-                    styles.subtitle,
-                    {
-                      color: theme.colors.textSecondary,
-                      fontSize: AppSizes.Font_14,
-                      fontWeight: 'bold',
-                    },
-                  ]}
-                >
-                  Total Amount :
-                </Text>
-                <Text
-                  style={[
-                    styles.subtitle,
-                    {
-                      color: theme.colors.white,
-                      fontWeight: 'bold',
-                      //backgroundColor: theme.colors.white,
-                      padding: AppSizes.Padding_Horizontal_5,
-                      borderRadius: AppSizes.Radius_15,
-                    },
-                  ]}
-                >
-                  {parseFloat(item.instTotalAmount).toFixed(2) || 'N/A'}
-                </Text>
+        {loading ? (
+          <Loader />
+        ) : (
+          <FlatList
+            data={avos}
+            keyExtractor={item => item.id}
+            ListEmptyComponent={() => (
+              <View>
+                <Text>No Item Found</Text>
               </View>
-
+            )}
+            renderItem={({ item }) => (
               <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                }}
+                style={[{ backgroundColor: theme.colors.surface }, styles.item]}
               >
                 <Text
                   style={[
-                    styles.subtitle,
+                    styles.title,
                     {
-                      color: theme.colors.textSecondary,
-                      fontSize: AppSizes.Font_14,
-                      fontWeight: 'bold',
+                      color: theme.colors.secondary,
+                      fontFamily: fonts.extraBoldItalic,
+                      fontSize: AppSizes.Font_20,
+                      marginVertical: AppSizes.Margin_Vertical_10,
                     },
                   ]}
                 >
-                  Paid Amount :
+                  {item.assignedName}
                 </Text>
-                <Text
-                  style={[
-                    styles.subtitle,
-                    {
-                      color: theme.colors.success,
-                      fontWeight: 'bold',
-                      //backgroundColor: 'rgba(109, 207, 18, 0.12)',
-                      padding: AppSizes.Padding_Horizontal_5,
-                      borderRadius: AppSizes.Radius_15,
-                    },
-                  ]}
-                >
-                  {parseFloat(item.instRecAmount).toFixed(2) || 'N/A'}
-                </Text>
-              </View>
 
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Text
-                  style={[
-                    styles.subtitle,
-                    {
-                      color: theme.colors.textSecondary,
-                      fontSize: AppSizes.Font_14,
-                      fontWeight: 'bold',
-                    },
-                  ]}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}
                 >
-                  Due Amount :
-                </Text>
-                <Text
-                  style={[
-                    styles.subtitle,
-                    {
-                      color: theme.colors.warning,
-                      fontWeight: 'bold',
-                      //backgroundColor: 'rgba(109, 207, 18, 0.12)',
-                      padding: AppSizes.Padding_Horizontal_5,
-                      borderRadius: AppSizes.Radius_15,
-                    },
-                  ]}
-                >
-                  {parseFloat(item.instDueAmount).toFixed(2) || 'N/A'}
-                </Text>
-              </View>
+                  <Text
+                    style={[
+                      styles.subtitle,
+                      {
+                        color: theme.colors.textSecondary,
+                        fontSize: AppSizes.Font_14,
+                        fontWeight: 'bold',
+                      },
+                    ]}
+                  >
+                    Total Outstand :
+                  </Text>
+                  <Text
+                    style={[
+                      styles.subtitle,
+                      {
+                        color: theme.colors.black,
+                        fontWeight: 'bold',
+                        //backgroundColor: theme.colors.white,
+                        padding: AppSizes.Padding_Horizontal_5,
+                        borderRadius: AppSizes.Radius_15,
+                      },
+                    ]}
+                  >
+                    {item.instTotalAmount || 'N/A'}
+                  </Text>
+                </View>
 
-              <Button
-                title="View AVO"
-                onPress={() => {}}
-                variant="secondary"
-                size="sm"
-                style={{ marginTop: 22 }}
-              />
-              <View
-                style={{
-                  marginVertical: 12,
-                  marginTop: AppSizes.Margin_Vertical_20,
-                  borderWidth: 0.5,
-                  borderTopColor: theme.colors.secondary,
-                }}
-              ></View>
-            </View>
-          )}
-          contentContainerStyle={styles.list}
-        />
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.subtitle,
+                      {
+                        color: theme.colors.textSecondary,
+                        fontSize: AppSizes.Font_14,
+                        fontWeight: 'bold',
+                      },
+                    ]}
+                  >
+                    Total Paid :
+                  </Text>
+                  <Text
+                    style={[
+                      styles.subtitle,
+                      {
+                        color: theme.colors.success,
+                        fontWeight: 'bold',
+                        //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                        padding: AppSizes.Padding_Horizontal_5,
+                        borderRadius: AppSizes.Radius_15,
+                      },
+                    ]}
+                  >
+                    {item.instRecAmount || 'N/A'}
+                  </Text>
+                </View>
+
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.subtitle,
+                      {
+                        color: theme.colors.textSecondary,
+                        fontSize: AppSizes.Font_14,
+                        fontWeight: 'bold',
+                      },
+                    ]}
+                  >
+                    Total Due :
+                  </Text>
+                  <Text
+                    style={[
+                      styles.subtitle,
+                      {
+                        color: theme.colors.warning,
+                        fontWeight: 'bold',
+                        //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                        padding: AppSizes.Padding_Horizontal_5,
+                        borderRadius: AppSizes.Radius_15,
+                      },
+                    ]}
+                  >
+                    {item.instDueAmount || 'N/A'}
+                  </Text>
+                </View>
+
+                <Button
+                  title="View AVO"
+                  onPress={() => {}}
+                  variant="secondary"
+                  size="sm"
+                  style={{ marginTop: 22 }}
+                />
+                <View
+                  style={{
+                    marginVertical: 12,
+                    marginHorizontal: AppSizes.Gap_30,
+                    borderWidth: 0.5,
+                    borderTopColor: '#ccc',
+                  }}
+                ></View>
+              </View>
+            )}
+            contentContainerStyle={styles.list}
+          />
+        )}
       </View>
-    </ImageBackground>
+    </SafeAreaView>
   );
 };
 
@@ -231,16 +237,11 @@ const styles = StyleSheet.create({
   backgroundImage: { flex: 1, width: '100%', height: '100%' },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'white',
   },
   safeArea: { flex: 1, paddingBottom: 20 },
-  list: { padding: 20 },
-  item: {
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    elevation: 2,
-  },
+  list: { padding: 20, rowGap: AppSizes.Padding_Horizontal_20 },
+  item: { borderRadius: 12, padding: 16, elevation: 10 },
   title: { fontSize: 18, fontWeight: 'bold' },
   subtitle: { fontSize: 14, marginTop: 4 },
 });

@@ -8,6 +8,7 @@ import { AppNavigator } from './src/navigation/AppNavigator';
 import { AuthNavigator } from './src/navigation/AuthNavigator';
 import { StatusBar } from 'react-native';
 import { useTheme } from './src/hooks/useTheme';
+import FlashMessage from 'react-native-flash-message';
 
 const AppContent = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -16,8 +17,9 @@ const AppContent = () => {
   return (
     <NavigationContainer>
       <StatusBar
-        backgroundColor={theme.colors.secondary}
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={theme.colors.secondaryDark}
+        barStyle={'light-content'}
+        // barStyle={isDarkMode ? 'light-content' : 'dark-content'}
       />
       {isAuthenticated ? <AppNavigator /> : <AuthNavigator />}
     </NavigationContainer>
@@ -30,6 +32,7 @@ const App = () => {
       <PersistGate loading={null} persistor={persistor}>
         <SafeAreaProvider>
           <AppContent />
+          <FlashMessage position="top" />
         </SafeAreaProvider>
       </PersistGate>
     </Provider>

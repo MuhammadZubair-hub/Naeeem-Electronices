@@ -14,8 +14,8 @@ export const colors = {
   
   
   // Secondary colors
-  secondary: '#146EA5',
-  secondaryDark: '#475569',
+  secondary: '#2e3192',
+  secondaryDark: '#140958',
   secondaryLight: '#94a3b8',
   
 

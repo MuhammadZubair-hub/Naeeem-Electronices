@@ -40,7 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
     <View
       style={[
         styles.container,
-        { backgroundColor: theme.colors.secondary },
+        { backgroundColor: theme.colors.secondaryDark },
         style,
       ]}
     >

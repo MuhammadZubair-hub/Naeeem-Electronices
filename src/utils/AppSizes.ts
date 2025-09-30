@@ -2,6 +2,7 @@ import { moderateScale, scale, verticalScale } from './responsive';
 
 export const AppSizes = {
   Padding_Horizontal_5: scale(5),
+  Padding_Horizontal_8: scale(8),
   Padding_Horizontal_10: scale(10),
   Padding_Horizontal_20: scale(20),
   Padding_Horizontal_15: scale(15),
@@ -25,6 +26,8 @@ export const AppSizes = {
   Margin_Vertical_20: verticalScale(20),
   Margin_Vertical_30: verticalScale(30),
   Margin_Vertical_40: verticalScale(40),
+  Margin_Vertical_90: verticalScale(90),
+  Margin_Vertical_100: verticalScale(100),
 
   Gap_10: scale(10),
   Gap_20: scale(20),
@@ -37,7 +40,7 @@ export const AppSizes = {
   Font_18: moderateScale(18),
   Font_20: moderateScale(20),
 
-  Icon_Height: verticalScale(20),
+  Icon_Height_20: verticalScale(20),
   Icon_Height_25: verticalScale(25),
   Icon_Height_30: verticalScale(30),
   Icon_Height_35: verticalScale(35),
@@ -49,6 +52,7 @@ export const AppSizes = {
 
   Radius_4: scale(4),
   Radius_8: scale(8),
+  Radius_10: scale(10),
   Radius_15: scale(15),
   Radius_20: scale(20),
   Radius_30: scale(30),

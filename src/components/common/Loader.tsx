@@ -10,7 +10,7 @@ const Loader = () => {
   return (
     <View style={styles.container}>
       <LottieView
-        source={require('../../assets/Loader/Loader.json')}
+        source={require('../../assets/Loader/newLoader.json')}
         autoPlay
         loop
         style={{ width: 100, height: 100 }}

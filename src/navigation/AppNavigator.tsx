@@ -53,7 +53,7 @@ export type AppStackParamList = {
   StaffPerformance: undefined;
   RevenueTrends: undefined;
   RecoveryReport: undefined;
-  AVOsList: undefined
+  AVOsList: undefined;
 };
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
@@ -69,7 +69,7 @@ const DashboardStack = () => (
       name="RegionList"
       component={RoleGuard(RegionList, [Role.CEO, Role.GM, Role.RM, Role.ZM])}
     />
-    
+
     <Stack.Screen
       name="ZoneList"
       component={RoleGuard(ZoneList, [Role.CEO, Role.GM, Role.RM, Role.ZM])}
@@ -230,13 +230,17 @@ const DashboardStack = () => (
 );
 
 export const AppNavigator: React.FC = () => (
-  <Drawer.Navigator
-    screenOptions={{
-      headerShown: false,
-      drawerStyle: { backgroundColor: 'transparent', width: '65%' },
-    }}
-    drawerContent={props => <DrawerContent {...props} />}
-  >
-    <Drawer.Screen name="Main" component={DashboardStack} />
-  </Drawer.Navigator>
+  // <Drawer.Navigator
+  //   screenOptions={{
+  //     headerShown: false,
+  //     drawerStyle: { backgroundColor: 'transparent', width: '65%' },
+  //   }}
+  //   drawerContent={props => <DrawerContent {...props} />}
+  // >
+  //   <Drawer.Screen name="Main" component={DashboardStack} />
+  // </Drawer.Navigator>
+
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="Main" component={DashboardStack} />
+  </Stack.Navigator>
 );

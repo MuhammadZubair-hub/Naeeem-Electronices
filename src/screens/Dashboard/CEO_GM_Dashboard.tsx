@@ -25,13 +25,18 @@ import { RegionList } from '../Regions/RegionList';
 import { API_Config } from '../../services/apiServices';
 import { fonts } from '../../assets/fonts/Fonts';
 import { AppSizes } from '../../utils/AppSizes';
+import { BarGraph } from '../../components/charts/BarGraph';
+import { colors } from '../../styles/theme';
+import { HorizontalStackedBarGraph } from '../../components/charts/BarGraphHorizontal';
+import { showMessage } from 'react-native-flash-message';
 
 const { width } = Dimensions.get('window');
 
 interface Region {
-  regionName: string;
-  regionamount: string;
-  colors: string;
+  region: string;
+  total: number;
+  paid: number;
+  due: number;
 }
 
 export const CEO_GM_Dashboard: React.FC = () => {
@@ -41,11 +46,11 @@ export const CEO_GM_Dashboard: React.FC = () => {
 
   const [loader, setLoader] = useState(false);
   const [regionsData, setRegionsData] = useState<any[]>([]);
-  const [regionsCountData, setRegionsCountData] = useState({
-    totalCount: '',
-    dueCount: '',
-    paidCount: '',
-  });
+  const [regionsCountData, setRegionsCountData] = useState<{
+    totalCount: number;
+    dueCount: number;
+    paidCount: number;
+  }>({ totalCount: 0, dueCount: 0, paidCount: 0 });
   const [allRegionsTotal, setAllRegionsTotal] = useState<Region[]>([]);
   const [showGraph, setShowGraph] = useState(false);
 
@@ -80,10 +85,15 @@ export const CEO_GM_Dashboard: React.FC = () => {
       if (response?.success) {
         const data = response.data.data[0];
         setRegionsCountData({
-          totalCount: parseFloat(data.instTotalAmount).toFixed(2),
-          dueCount: parseFloat(data.instDueAmount).toFixed(2),
-          paidCount: parseFloat(data.instRecAmount).toFixed(2),
+          totalCount: data.instTotalAmount,
+          dueCount: data.instDueAmount,
+          paidCount: data.instRecAmount,
         });
+
+        console.log('Regions total : ', data);
+      } else {
+        Alert.alert('Error in Fetching API', response.data.message);
+        //console.log('Login failed. Please check your credentials.');
       }
     } catch (error) {
       console.error('Error fetching regions count:', error);
@@ -97,15 +107,26 @@ export const CEO_GM_Dashboard: React.FC = () => {
         const data = response.data.data;
         setRegionsData(data);
 
-        const colors = generateUniqueColors(data.length);
+        console.log(data, 'horizontal data fetched');
         const formatted = data.map((item: any, index: number) => ({
-          regionName: item.region,
-          regionamount: parseFloat(item.instTotalAmount).toFixed(0),
-          colors: colors[index],
+          region: item.region,
+          total: parseInt(String(item.instTotalAmount).replace(/,/g, ''), 10),
+
+          paid: parseInt(String(item.instRecAmount).replace(/,/g, ''), 10),
+          due: parseInt(String(item.instDueAmount).replace(/,/g, ''), 10),
+          // total: parseFloat(item.instTotalAmount),
+          // paid: parseFloat(item.instRecAmount),
+          // due: parseFloat(item.instDueAmount),
         }));
 
         setAllRegionsTotal(formatted);
+
         setShowGraph(true);
+      } else {showMessage({
+        message: 'Error',
+        description: response.data.message,
+        type: 'danger',
+      });
       }
     } catch (error) {
       console.error('Error fetching regions:', error);
@@ -115,12 +136,13 @@ export const CEO_GM_Dashboard: React.FC = () => {
   const getAllDashboardData = useCallback(async () => {
     try {
       setLoader(true);
-      await Promise.all([getAllRegions(), getAllRegionsCount()]);
+      await Promise.all([getAllRegions()]);
     } catch (e) {
       Alert.alert(
         'Error',
         'Something went wrong while fetching dashboard data',
       );
+      console.log('in else');
     } finally {
       setLoader(false);
     }
@@ -143,87 +165,95 @@ export const CEO_GM_Dashboard: React.FC = () => {
     dispatch(fetchDashboardData());
   }, [dispatch]);
 
+  const users = useSelector((state: RootState) => state.auth.user);
+
+  // const data = [
+  //   { week: 'Total Outstanding', blue: regionsCountData.totalCount },
+  //   { week: 'Total Paid', blue: regionsCountData.paidCount },
+  //   { week: 'Total Due', blue: regionsCountData.dueCount },
+  // ];
+
+  const dataHorizontal = [
+    { region: 'Region 1', total: 120, paid: 80, due: 40 },
+    { region: 'Region 2', total: 100, paid: 50, due: 50 },
+    { region: 'Region 3', total: 200, paid: 120, due: 80 },
+    { region: 'Region 4', total: 150, paid: 100, due: 50 },
+    { region: 'Region 5', total: 90, paid: 60, due: 30 },
+    { region: 'Region 6', total: 120, paid: 80, due: 40 },
+    { region: 'Region 7', total: 100, paid: 50, due: 50 },
+    { region: 'Region 8', total: 200, paid: 120, due: 80 },
+    { region: 'Region 9', total: 150, paid: 100, due: 50 },
+    { region: 'Region 10', total: 90, paid: 60, due: 30 },
+
+    // … up to 10+
+  ];
+
+  const data = [
+    {
+      week: 'Outstand',
+      blue: parseInt(String(regionsCountData.totalCount).replace(/,/g, ''), 10),
+
+      color: theme.colors.secondaryDark,
+    },
+    {
+      week: ' Paid',
+      blue: parseInt(String(regionsCountData.paidCount).replace(/,/g, ''), 10),
+      color: theme.colors.success,
+    },
+    {
+      week: ' Due',
+      blue: parseInt(String(regionsCountData.dueCount).replace(/,/g, ''), 10),
+      color: theme.colors.warning,
+    },
+  ];
+
   return (
     <View style={styles.container}>
-      {/* Background Image + Overlay */}
-      <ImageBackground
-        blurRadius={10}
-        source={require('../../assets/images/loginbackground.jpg')}
-        style={styles.backgroundImage}
-        resizeMode="cover"
+      <View style={styles.overlay} />
+
+      <SafeAreaView
+        edges={['top']}
+        style={[styles.safeArea, { backgroundColor: theme.colors.surface }]}
       >
-        <View style={styles.overlay} />
+        <MainHeader title={users?.firstName} subTitle={users?.designation} />
 
-        <SafeAreaView edges={['top']} style={styles.safeArea}>
-          <MainHeader title="Executive Dashboard" />
-
-          {loader ? (
-            <Loader />
-          ) : (
-            <ScrollView
-              style={styles.scrollView}
-              refreshControl={
-                <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
-              }
-              showsVerticalScrollIndicator={false}
-            >
-              {showGraph && (
-                <PieGraph
-                  title="Sales of All Regions"
-                  allregiondata={allRegionsTotal}
-                />
-              )}
-
-              <View
-                style={{
-                  borderColor: theme.colors.secondary,
-                  borderWidth: 1,
-                  borderRadius: AppSizes.Radius_20,
-                  paddingVertical: 10,
-                  marginHorizontal: 20,
-                }}
-              >
-                {/* <Card style={styles.navigationCard} padding="md">
-                  
-                </Card> */}
-
-                <Text
-                  style={[
-                    styles.sectionTitle,
-                    {
-                      color: theme.colors.white,
-                      
-                      fontSize: AppSizes.Font_20,
-                      fontFamily: fonts.bold,
-                      textAlign: 'center',
-                    },
-                  ]}
-                >
-                  All Regions
-                </Text>
-                {/* <View
-                  style={{
-                    borderWidth: 1,
-                    borderTopColor: theme.colors.secondary,
-                    marginBottom:5
-                  }}
+        {loader ? (
+          <Loader />
+        ) : (
+          <ScrollView
+            style={styles.scrollView}
+            refreshControl={
+              <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
+            }
+            showsVerticalScrollIndicator={false}
+          >
+            {showGraph && (
+              <>
+                {/* <BarGraph
+                  total={regionsCountData.totalCount}
+                  paid={regionsCountData.paidCount}
+                  due={regionsCountData.dueCount}
+                  data={data}
+                  purple={false}
                 /> */}
-                <RegionList data={regionsData} />
-              </View>
 
-              <View style={styles.bottomSpacing} />
-            </ScrollView>
-          )}
-        </SafeAreaView>
-      </ImageBackground>
+                <HorizontalStackedBarGraph data={allRegionsTotal} />
+              </>
+            )}
+
+            <RegionList data={regionsData} />
+
+            <View style={styles.bottomSpacing} />
+          </ScrollView>
+        )}
+      </SafeAreaView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  backgroundImage: { flex: 1, width: '100%', height: '100%' },
-  safeArea: { flex: 1, backgroundColor: 'transparent', zIndex: 2 },
+  safeArea: { flex: 1, backgroundColor: 'white', zIndex: 2 },
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.4)',

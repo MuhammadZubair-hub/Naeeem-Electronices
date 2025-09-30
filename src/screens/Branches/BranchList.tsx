@@ -68,5 +68,5 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   title: { fontSize: 18, fontWeight: 'bold' },
-  subtitle: { fontSize: 14, marginTop: 4 },
+  subtitle: { fontSize: 14, marginTop: 4, fontWeight: 'bold' },
 });

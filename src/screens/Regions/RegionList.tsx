@@ -1,20 +1,16 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-} from 'react-native';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { Button } from '../../components/common/Button';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../hooks/useTheme';
-import { Header } from '../../components/common/Header';
-import { mockDataService } from '../../services/mock/mockDataService';
 import { AppSizes } from '../../utils/AppSizes';
 import { fonts } from '../../assets/fonts/Fonts';
 
-export const RegionList: React.FC = ({ data }) => {
+interface RegionListProps {
+  data: any;
+}
+
+export const RegionList: React.FC<RegionListProps> = ({ data }) => {
   const { theme } = useTheme();
   const navigation = useNavigation<any>();
 
@@ -27,15 +23,45 @@ export const RegionList: React.FC = ({ data }) => {
   return (
     <FlatList
       data={data}
+      ListHeaderComponent={() => (
+        <Text
+          style={{
+            paddingVertical: AppSizes.Padding_Vertical_10,
+            textAlign: 'center',
+            borderRadius: theme.borderRadius.md,
+
+            elevation: 12,
+            shadowColor: theme.colors.secondaryDark,
+            borderBottomWidth: 4,
+            borderBottomColor: theme.colors.secondaryDark,
+            backgroundColor: theme.colors.white,
+            color: theme.colors.secondaryDark,
+            fontSize: AppSizes.Font_18,
+            fontFamily: fonts.extraBold,
+          }}
+        >
+          Regions List{' '}
+        </Text>
+      )}
+      ListHeaderComponentStyle={{ padding: AppSizes.Padding_Vertical_10 }}
+      ListEmptyComponent={() => (
+        <View>
+          <Text>No Item Found</Text>
+        </View>
+      )}
       keyExtractor={item => item.id}
+      contentContainerStyle={{
+        rowGap: AppSizes.Gap_30,
+        marginHorizontal: AppSizes.Margin_Horizontal_20,
+        borderRadius: theme.borderRadius.lg,
+      }}
       renderItem={({ item }) => (
         <View
           style={[
             {
-              backgroundColor: theme.colors.surface,
+              // backgroundColor: theme.colors.surface,
               borderRadius: theme.borderRadius.lg,
               padding: AppSizes.Gap_10,
-             
             },
             styles.item,
           ]}
@@ -67,22 +93,49 @@ export const RegionList: React.FC = ({ data }) => {
                 },
               ]}
             >
-              Total Amount :
+              Regional Manager :
             </Text>
             <Text
               style={[
                 styles.subtitle,
                 {
-                  color: theme.colors.white,
-                  fontWeight: 'bold',
-                  // backgroundColor: theme.colors.white,
-                  // backgroundColor: 'rgba(7, 7, 7, 0.12)',
+                  color: theme.colors.secondaryDark,
+                  fontFamily: fonts.semiBold,
                   paddingHorizontal: AppSizes.Padding_Horizontal_5,
                   borderRadius: AppSizes.Radius_15,
                 },
               ]}
             >
-              {parseFloat(item.instTotalAmount).toFixed(2) || 'N/A'}
+              {item.rmName || 'N/A'}
+            </Text>
+          </View>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+          >
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.textSecondary,
+                  fontSize: AppSizes.Font_14,
+                  fontWeight: 'bold',
+                },
+              ]}
+            >
+              Total Installments :
+            </Text>
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.secondary,
+                  fontWeight: 'bold',
+                  paddingHorizontal: AppSizes.Padding_Horizontal_5,
+                  borderRadius: AppSizes.Radius_15,
+                },
+              ]}
+            >
+              {item.instTotalAmount || 'N/A'}
             </Text>
           </View>
 
@@ -99,7 +152,7 @@ export const RegionList: React.FC = ({ data }) => {
                 },
               ]}
             >
-              Paid Amount :
+              Total Paid :
             </Text>
             <Text
               style={[
@@ -113,7 +166,7 @@ export const RegionList: React.FC = ({ data }) => {
                 },
               ]}
             >
-              {parseFloat(item.instRecAmount).toFixed(2) || 'N/A'}
+              {item.instRecAmount || 'N/A'}
             </Text>
           </View>
 
@@ -130,7 +183,7 @@ export const RegionList: React.FC = ({ data }) => {
                 },
               ]}
             >
-              Due Amount :
+              Total Due :
             </Text>
             <Text
               style={[
@@ -144,7 +197,7 @@ export const RegionList: React.FC = ({ data }) => {
                 },
               ]}
             >
-              {parseFloat(item.instDueAmount).toFixed(2) || 'N/A'}
+              {item.instDueAmount || 'N/A'}
             </Text>
           </View>
 
@@ -158,6 +211,7 @@ export const RegionList: React.FC = ({ data }) => {
           <View
             style={{
               marginVertical: 12,
+              marginHorizontal: AppSizes.Gap_30,
               marginTop: AppSizes.Margin_Vertical_20,
               borderWidth: 0.5,
               borderTopColor: theme.colors.secondary,
@@ -165,11 +219,6 @@ export const RegionList: React.FC = ({ data }) => {
           ></View>
         </View>
       )}
-      contentContainerStyle={{
-        rowGap: 30,
-        marginHorizontal: 5,
-        borderRadius: theme.borderRadius.lg,
-      }}
     />
   );
 };
@@ -180,7 +229,8 @@ const styles = StyleSheet.create({
   item: {
     // borderRadius: 12,
     // marginBottom: 16,
-    elevation: 2,
+    elevation: 14,
+    backgroundColor: 'white',
   },
   title: { fontSize: 18, fontWeight: 'bold' },
   subtitle: { fontSize: 14, marginTop: 4 },

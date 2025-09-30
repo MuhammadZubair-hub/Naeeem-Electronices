@@ -18,7 +18,11 @@ import { Button } from '../../components/common/Button';
 import { LineGraph } from '../../components/charts/LineGraph';
 import { BarGraph } from '../../components/charts/BarGraph';
 import { ProgressGraph } from '../../components/charts/ProgressGraph';
-import { formatCurrency, formatNumber, formatDate } from '../../utils/formatters';
+import {
+  formatCurrency,
+  formatNumber,
+  formatDate,
+} from '../../utils/formatters';
 import { Role } from '../../types';
 import { mockDataService, Branch } from '../../services/mock/mockDataService';
 
@@ -28,12 +32,18 @@ export const BranchComparison: React.FC = () => {
   const { theme } = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const permissions = usePermissions();
-  
+
   const { user } = useSelector((state: RootState) => state.auth);
-  const { data: dashboardData, isLoading, error } = useSelector((state: RootState) => state.dashboard);
+  const {
+    data: dashboardData,
+    isLoading,
+    error,
+  } = useSelector((state: RootState) => state.dashboard);
 
   const [branches, setBranches] = useState<Branch[]>([]);
-  const [selectedMetric, setSelectedMetric] = useState<'revenue' | 'customers' | 'staff' | 'efficiency'>('revenue');
+  const [selectedMetric, setSelectedMetric] = useState<
+    'revenue' | 'customers' | 'staff' | 'efficiency'
+  >('revenue');
 
   useEffect(() => {
     dispatch(fetchDashboardData());
@@ -42,11 +52,15 @@ export const BranchComparison: React.FC = () => {
   useEffect(() => {
     // Get branches based on user role
     let accessibleBranches = mockDataService.getBranches();
-    
+
     if (user?.role === Role.RM || user?.role === Role.ZM) {
-      accessibleBranches = mockDataService.getBranchesByRegion(user.regionId || '');
+      accessibleBranches = mockDataService.getBranchesByRegion(
+        user.regionId || '',
+      );
     } else if (user?.role === Role.BR) {
-      accessibleBranches = accessibleBranches.filter(branch => branch.id === user.branchId);
+      accessibleBranches = accessibleBranches.filter(
+        branch => branch.id === user.branchId,
+      );
     }
 
     setBranches(accessibleBranches);
@@ -58,31 +72,46 @@ export const BranchComparison: React.FC = () => {
 
   const getMetricValue = (branch: Branch, metric: string) => {
     switch (metric) {
-      case 'revenue': return branch.totalRevenue;
-      case 'customers': return branch.totalCustomers;
-      case 'staff': return branch.totalStaff;
-      case 'efficiency': return Math.round((branch.totalRevenue / branch.totalStaff) / 1000); // Revenue per staff in thousands
-      default: return 0;
+      case 'revenue':
+        return branch.totalRevenue;
+      case 'customers':
+        return branch.totalCustomers;
+      case 'staff':
+        return branch.totalStaff;
+      case 'efficiency':
+        return Math.round(branch.totalRevenue / branch.totalStaff / 1000); // Revenue per staff in thousands
+      default:
+        return 0;
     }
   };
 
   const getMetricLabel = (metric: string) => {
     switch (metric) {
-      case 'revenue': return 'Revenue (PKR)';
-      case 'customers': return 'Customers';
-      case 'staff': return 'Staff Members';
-      case 'efficiency': return 'Efficiency (PKR/Staff)';
-      default: return '';
+      case 'revenue':
+        return 'Revenue (PKR)';
+      case 'customers':
+        return 'Customers';
+      case 'staff':
+        return 'Staff Members';
+      case 'efficiency':
+        return 'Efficiency (PKR/Staff)';
+      default:
+        return '';
     }
   };
 
   const getMetricFormat = (metric: string) => {
     switch (metric) {
-      case 'revenue': return 'currency';
-      case 'customers': return 'number';
-      case 'staff': return 'number';
-      case 'efficiency': return 'currency';
-      default: return 'number';
+      case 'revenue':
+        return 'currency';
+      case 'customers':
+        return 'number';
+      case 'staff':
+        return 'number';
+      case 'efficiency':
+        return 'currency';
+      default:
+        return 'number';
     }
   };
 
@@ -95,7 +124,10 @@ export const BranchComparison: React.FC = () => {
   };
 
   const getSortedBranches = () => {
-    return [...branches].sort((a, b) => getMetricValue(b, selectedMetric) - getMetricValue(a, selectedMetric));
+    return [...branches].sort(
+      (a, b) =>
+        getMetricValue(b, selectedMetric) - getMetricValue(a, selectedMetric),
+    );
   };
 
   const getChartData = () => {
@@ -119,7 +151,10 @@ export const BranchComparison: React.FC = () => {
   };
 
   const getBranchDistributionData = () => {
-    const totalRevenue = branches.reduce((sum, branch) => sum + branch.totalRevenue, 0);
+    const totalRevenue = branches.reduce(
+      (sum, branch) => sum + branch.totalRevenue,
+      0,
+    );
     return branches.slice(0, 4).map(branch => ({
       x: branch.name.split(' ')[0],
       y: totalRevenue > 0 ? branch.totalRevenue / totalRevenue : 0, // value as fraction 0-1
@@ -129,24 +164,46 @@ export const BranchComparison: React.FC = () => {
   const renderBranchCard = (branch: Branch, index: number) => {
     const value = getMetricValue(branch, selectedMetric);
     const isTopPerformer = index === 0;
-    
+
     return (
       <Card key={branch.id} style={styles.branchCard} padding="lg">
         <View style={styles.branchHeader}>
           <View style={styles.branchInfo}>
-            <Text style={[styles.branchName, { color: theme.colors.textPrimary }]}>
+            <Text
+              style={[styles.branchName, { color: theme.colors.textPrimary }]}
+            >
               {branch.name}
             </Text>
-            <Text style={[styles.branchAddress, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[
+                styles.branchAddress,
+                { color: theme.colors.textSecondary },
+              ]}
+            >
               📍 {branch.address}
             </Text>
-            <Text style={[styles.branchManager, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[
+                styles.branchManager,
+                { color: theme.colors.textSecondary },
+              ]}
+            >
               👤 {branch.managerName}
             </Text>
           </View>
           {isTopPerformer && (
-            <View style={[styles.topPerformerBadge, { backgroundColor: theme.colors.success + '20' }]}>
-              <Text style={[styles.topPerformerText, { color: theme.colors.success }]}>
+            <View
+              style={[
+                styles.topPerformerBadge,
+                { backgroundColor: theme.colors.success + '20' },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.topPerformerText,
+                  { color: theme.colors.success },
+                ]}
+              >
                 🏆 #1
               </Text>
             </View>
@@ -158,7 +215,12 @@ export const BranchComparison: React.FC = () => {
             <Text style={[styles.metricValue, { color: theme.colors.primary }]}>
               {formatMetricValue(value, selectedMetric)}
             </Text>
-            <Text style={[styles.metricLabel, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[
+                styles.metricLabel,
+                { color: theme.colors.textSecondary },
+              ]}
+            >
               {getMetricLabel(selectedMetric)}
             </Text>
           </View>
@@ -166,7 +228,12 @@ export const BranchComparison: React.FC = () => {
             <Text style={[styles.metricValue, { color: theme.colors.success }]}>
               {formatCurrency(branch.totalRevenue)}
             </Text>
-            <Text style={[styles.metricLabel, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[
+                styles.metricLabel,
+                { color: theme.colors.textSecondary },
+              ]}
+            >
               Total Revenue
             </Text>
           </View>
@@ -174,7 +241,12 @@ export const BranchComparison: React.FC = () => {
             <Text style={[styles.metricValue, { color: theme.colors.warning }]}>
               {formatNumber(branch.totalCustomers)}
             </Text>
-            <Text style={[styles.metricLabel, { color: theme.colors.textSecondary }]}>
+            <Text
+              style={[
+                styles.metricLabel,
+                { color: theme.colors.textSecondary },
+              ]}
+            >
               Customers
             </Text>
           </View>
@@ -185,21 +257,25 @@ export const BranchComparison: React.FC = () => {
 
   if (error) {
     return (
-      <View style={[styles.container, styles.centerContent, { backgroundColor: theme.colors.background }]}>
+      <View
+        style={[
+          styles.container,
+          styles.centerContent,
+          { backgroundColor: theme.colors.background },
+        ]}
+      >
         <Text style={[styles.errorText, { color: theme.colors.error }]}>
           Failed to load comparison data
         </Text>
-        <Button
-          title="Retry"
-          onPress={onRefresh}
-          style={styles.retryButton}
-        />
+        <Button title="Retry" onPress={onRefresh} style={styles.retryButton} />
       </View>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
       <ScrollView
         style={styles.scrollView}
         refreshControl={
@@ -212,14 +288,18 @@ export const BranchComparison: React.FC = () => {
           <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
             Branch Comparison
           </Text>
-          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
+          <Text
+            style={[styles.subtitle, { color: theme.colors.textSecondary }]}
+          >
             Performance Analysis Across Branches
           </Text>
         </View>
 
         {/* Metric Selector */}
         <Card style={styles.metricCard} padding="lg">
-          <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
+          <Text
+            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+          >
             Compare By
           </Text>
           <View style={styles.metricButtons}>
@@ -228,22 +308,35 @@ export const BranchComparison: React.FC = () => {
               { key: 'customers', label: 'Customers' },
               { key: 'staff', label: 'Staff' },
               { key: 'efficiency', label: 'Efficiency' },
-            ].map((metric) => (
+            ].map(metric => (
               <TouchableOpacity
                 key={metric.key}
                 onPress={() => setSelectedMetric(metric.key as any)}
                 style={[
                   styles.metricButton,
                   {
-                    backgroundColor: selectedMetric === metric.key ? theme.colors.primary : theme.colors.surfaceVariant,
-                    borderColor: selectedMetric === metric.key ? theme.colors.primary : theme.colors.border,
-                  }
+                    backgroundColor:
+                      selectedMetric === metric.key
+                        ? theme.colors.primary
+                        : theme.colors.surfaceVariant,
+                    borderColor:
+                      selectedMetric === metric.key
+                        ? theme.colors.primary
+                        : theme.colors.border,
+                  },
                 ]}
               >
-                <Text style={[
-                  styles.metricButtonText,
-                  { color: selectedMetric === metric.key ? theme.colors.white : theme.colors.textPrimary }
-                ]}>
+                <Text
+                  style={[
+                    styles.metricButtonText,
+                    {
+                      color:
+                        selectedMetric === metric.key
+                          ? theme.colors.white
+                          : theme.colors.textPrimary,
+                    },
+                  ]}
+                >
                   {metric.label}
                 </Text>
               </TouchableOpacity>
@@ -253,39 +346,81 @@ export const BranchComparison: React.FC = () => {
 
         {/* Summary Stats */}
         <Card style={styles.summaryCard} padding="lg">
-          <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
+          <Text
+            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+          >
             Summary Statistics
           </Text>
           <View style={styles.summaryGrid}>
             <View style={styles.summaryItem}>
-              <Text style={[styles.summaryValue, { color: theme.colors.primary }]}>
+              <Text
+                style={[styles.summaryValue, { color: theme.colors.primary }]}
+              >
                 {formatNumber(branches.length)}
               </Text>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.summaryLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Total Branches
               </Text>
             </View>
             <View style={styles.summaryItem}>
-              <Text style={[styles.summaryValue, { color: theme.colors.success }]}>
-                {formatCurrency(branches.reduce((sum, branch) => sum + branch.totalRevenue, 0))}
+              <Text
+                style={[styles.summaryValue, { color: theme.colors.success }]}
+              >
+                {formatCurrency(
+                  branches.reduce(
+                    (sum, branch) => sum + branch.totalRevenue,
+                    0,
+                  ),
+                )}
               </Text>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.summaryLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Total Revenue
               </Text>
             </View>
             <View style={styles.summaryItem}>
-              <Text style={[styles.summaryValue, { color: theme.colors.warning }]}>
-                {formatNumber(branches.reduce((sum, branch) => sum + branch.totalCustomers, 0))}
+              <Text
+                style={[styles.summaryValue, { color: theme.colors.warning }]}
+              >
+                {formatNumber(
+                  branches.reduce(
+                    (sum, branch) => sum + branch.totalCustomers,
+                    0,
+                  ),
+                )}
               </Text>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.summaryLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Total Customers
               </Text>
             </View>
             <View style={styles.summaryItem}>
-              <Text style={[styles.summaryValue, { color: theme.colors.error }]}>
-                {formatNumber(branches.reduce((sum, branch) => sum + branch.totalStaff, 0))}
+              <Text
+                style={[styles.summaryValue, { color: theme.colors.error }]}
+              >
+                {formatNumber(
+                  branches.reduce((sum, branch) => sum + branch.totalStaff, 0),
+                )}
               </Text>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.summaryLabel,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 Total Staff
               </Text>
             </View>
@@ -294,34 +429,45 @@ export const BranchComparison: React.FC = () => {
 
         {/* Charts */}
         <View style={styles.chartsSection}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
+          <Text
+            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+          >
             Performance Charts
           </Text>
-          
+
           <BarGraph
             title={`Top 5 Branches by ${getMetricLabel(selectedMetric)}`}
             data={getChartData()}
           />
-          
+
           <LineGraph
             title="Revenue Trend (6 Months)"
             data={getRevenueTrendData()}
             color={theme.colors.success}
           />
-          
+
           <ProgressGraph
             title="Branch Revenue Distribution"
             data={getBranchDistributionData()}
-            colors={[theme.colors.primary, theme.colors.success, theme.colors.warning, theme.colors.error]}
+            colors={[
+              theme.colors.primary,
+              theme.colors.success,
+              theme.colors.warning,
+              theme.colors.error,
+            ]}
           />
         </View>
 
         {/* Branch Rankings */}
         <View style={styles.rankingsSection}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
+          <Text
+            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+          >
             Branch Rankings by {getMetricLabel(selectedMetric)}
           </Text>
-          {getSortedBranches().map((branch, index) => renderBranchCard(branch, index))}
+          {getSortedBranches().map((branch, index) =>
+            renderBranchCard(branch, index),
+          )}
         </View>
 
         {/* Bottom Spacing */}

@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../redux/slices/authSlice';
 import { Alert } from 'react-native';
+import { CommonStyles } from '../../styles/GlobalStyle';
+import { showMessage } from 'react-native-flash-message';
 
 export const useLoginUser = () => {
   const [credentials, setCredentials] = useState({ empId: '', password: '' });
@@ -30,10 +32,20 @@ export const useLoginUser = () => {
         dispatch(
           loginSuccess({ data: response.data, token: response.data.token }),
         );
+        showMessage({
+          message: 'Logged in successfully',
+          type: 'success',
+          style: CommonStyles.sucsses,
+        });
         //console.log('Login successfulss:', response.data.designation);
       } else {
-        Alert.alert('Login Failed', response.data.message);
-        //console.log('Login failed. Please check your credentials.');
+        showMessage({
+          message: 'Logged in Failed',
+          description:
+            response?.data?.message || 'Login failed. Please try again.',
+          type: 'danger',
+          style: CommonStyles.error,
+        });
       }
     } catch (error) {
       console.error('Login error:', error);

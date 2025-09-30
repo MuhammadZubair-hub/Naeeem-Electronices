@@ -36,7 +36,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   const getButtonStyle = (): ViewStyle => {
     const baseStyle: ViewStyle = {
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borderRadius.lg,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
@@ -69,7 +69,9 @@ export const Button: React.FC<ButtonProps> = ({
         borderWidth: 0,
       },
       secondary: {
-        backgroundColor: disabled ? theme.colors.gray300 : theme.colors.secondary,
+        backgroundColor: disabled
+          ? theme.colors.gray300
+          : theme.colors.secondaryDark,
         // : theme.colors.secondary,
         borderWidth: 0,
       },

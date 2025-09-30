@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   ImageBackground,
+  Alert,
 } from 'react-native';
 import { Button } from '../../components/common/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -20,7 +21,18 @@ import { AppSizes } from '../../utils/AppSizes';
 import Loader from '../../components/common/Loader';
 import { fonts } from '../../assets/fonts/Fonts';
 import { Card } from '../../components/common';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { showMessage } from 'react-native-flash-message';
 
+type Zone = {
+  id: string;
+  zone: string;
+  instTotalAmount: string | number;
+  instRecAmount: string | number;
+  instDueAmount: string | number;
+  zoneBranches: string | number;
+  item: any;
+};
 
 export const ZoneList: React.FC = () => {
   const { theme } = useTheme();
@@ -28,7 +40,7 @@ export const ZoneList: React.FC = () => {
   const route = useRoute<any>();
   const { data } = route.params;
 
-  const [zoneData, setZoneData] = useState([]);
+  const [zoneData, setZoneData] = useState<Zone[]>([]);
   const [loading, setLoading] = useState(false);
 
   const Id = useSelector((state: RootState) => state.auth.user?.empId);
@@ -39,10 +51,18 @@ export const ZoneList: React.FC = () => {
 
   const getAllZones = async () => {
     try {
-      setLoading(true);
       const response = await API_Config.getZones({ ID: Id, Region: data });
       if (response?.success) {
-        setZoneData(response.data.data);
+        setLoading(true);
+        if (response?.success) {
+          setZoneData(response.data.data);
+        }
+      } else {
+        showMessage({
+          message: 'Error',
+          description: response.data.message,
+          type: 'danger',
+        });
       }
     } catch (error) {
       console.error('Error fetching regions:', error);
@@ -56,12 +76,7 @@ export const ZoneList: React.FC = () => {
   };
 
   return (
-    <ImageBackground
-      blurRadius={10}
-      source={require('../../assets/images/loginbackground.jpg')}
-      style={styles.backgroundImage}
-      resizeMode="cover"
-    >
+    <SafeAreaView style={styles.backgroundImage}>
       {/* Overlay for dark shade */}
       <View style={styles.overlay} />
 
@@ -82,10 +97,7 @@ export const ZoneList: React.FC = () => {
             )}
             renderItem={({ item }) => (
               <View
-                style={[
-                  { backgroundColor: theme.colors.surface },
-                  styles.item,
-                ]}
+                style={[{ backgroundColor: theme.colors.surface }, styles.item]}
               >
                 <Text
                   style={[
@@ -98,44 +110,81 @@ export const ZoneList: React.FC = () => {
                     },
                   ]}
                 >
-                  {item.zone}
+                  {item.zmName}
                 </Text>
+
+                <View style={styles.row}>
+                  <Text
+                    style={[
+                      styles.subtitle,
+                      { color: theme.colors.textSecondary },
+                    ]}
+                  >
+                    Zone Branches :
+                  </Text>
+                  <Text
+                    style={[styles.value, { color: theme.colors.secondary }]}
+                  >
+                    {item.zoneBranches || 'N/A'}
+                  </Text>
+                </View>
+
+                {/* <View style={styles.row}>
+                  <Text
+                    style={[
+                      styles.subtitle,
+                      { color: theme.colors.textSecondary },
+                    ]}
+                  >
+                    Manager :
+                  </Text>
+                  <Text
+                    style={[styles.value, { color: theme.colors.secondary }]}
+                  >
+                    {item.zmName || 'N/A'}
+                  </Text>
+                </View> */}
 
                 {/* Amounts */}
                 <View style={styles.row}>
-                  <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-                    Total Amount :
+                  <Text
+                    style={[
+                      styles.subtitle,
+                      { color: theme.colors.textSecondary },
+                    ]}
+                  >
+                    Total Outstand :
                   </Text>
-                  <Text style={[styles.value, { color: theme.colors.white }]}>
-                    {parseFloat(item.instTotalAmount).toFixed(2)|| 'N/A'}
-                  </Text>
-                </View>
-
-                <View style={styles.row}>
-                  <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-                    Paid Amount :
-                  </Text>
-                  <Text style={[styles.value, { color: theme.colors.success,  }]}>
-                    {parseFloat(item.instRecAmount).toFixed(2) || 'N/A'}
-                  </Text>
-                </View>
-
-
-                <View style={styles.row}>
-                  <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-                    Due Amount :
-                  </Text>
-                  <Text style={[styles.value, { color: theme.colors.warning,  }]}>
-                    {parseFloat(item.instDueAmount).toFixed(2)|| 'N/A'}
+                  <Text style={[styles.value, { color: theme.colors.black }]}>
+                    {item?.instTotalAmount || 'N/A'}
                   </Text>
                 </View>
 
                 <View style={styles.row}>
-                  <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-                    Zone Branches :
+                  <Text
+                    style={[
+                      styles.subtitle,
+                      { color: theme.colors.textSecondary },
+                    ]}
+                  >
+                    Total Paid :
                   </Text>
-                  <Text style={[styles.value, { color: theme.colors.secondary, }]}>
-                    {item.zoneBranches || 'N/A'}
+                  <Text style={[styles.value, { color: theme.colors.success }]}>
+                    {item?.instRecAmount || 'N/A'}
+                  </Text>
+                </View>
+
+                <View style={styles.row}>
+                  <Text
+                    style={[
+                      styles.subtitle,
+                      { color: theme.colors.textSecondary },
+                    ]}
+                  >
+                    Total Due :
+                  </Text>
+                  <Text style={[styles.value, { color: theme.colors.warning }]}>
+                    {item?.instDueAmount || 'N/A'}
                   </Text>
                 </View>
 
@@ -154,23 +203,26 @@ export const ZoneList: React.FC = () => {
           />
         )}
       </View>
-    </ImageBackground>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  backgroundImage: { flex: 1, width: '100%', height: '100%' },
+  backgroundImage: { flex: 1 },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: 'white',
   },
   safeArea: { flex: 1, paddingBottom: 20 },
   list: { padding: AppSizes.Padding_Vertical_15, rowGap: AppSizes.Gap_20 },
   item: {
     borderRadius: 12,
     padding: 16,
-    elevation: 2,
+    elevation: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
   },
   title: { fontSize: 18, fontWeight: 'bold' },
   subtitle: { fontSize: 14, fontWeight: 'bold' },
@@ -186,11 +238,11 @@ const styles = StyleSheet.create({
   },
   divider: {
     marginVertical: 12,
+    marginHorizontal: AppSizes.Gap_30,
     borderWidth: 0.5,
     borderTopColor: '#ccc',
   },
 });
-
 
 // export const ZoneList: React.FC = () => {
 //   const { theme } = useTheme();
@@ -253,7 +305,7 @@ const styles = StyleSheet.create({
 //       ) : (
 //         <View style={{ margin: AppSizes.Margin_Vertical_10 }}>
 //           <>
-            
+
 //             <FlatList
 //               data={zoneData}
 //               keyExtractor={item => item.id}
@@ -446,8 +498,6 @@ const styles = StyleSheet.create({
 //     </View>
 //   );
 // };
-
-
 
 // const styles = StyleSheet.create({
 //   container: { flex: 1, paddingBottom: 100 },
