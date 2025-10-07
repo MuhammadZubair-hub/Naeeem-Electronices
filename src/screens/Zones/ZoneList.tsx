@@ -12,7 +12,6 @@ import { Button } from '../../components/common/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../hooks/useTheme';
 import { Header } from '../../components/common/Header';
-import { mockDataService } from '../../services/mock/mockDataService';
 import { screenName } from '../../navigation/ScreenName';
 import { API_Config } from '../../services/apiServices';
 import { useSelector } from 'react-redux';
@@ -23,10 +22,12 @@ import { fonts } from '../../assets/fonts/Fonts';
 import { Card } from '../../components/common';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { showMessage } from 'react-native-flash-message';
+import { CommonStyles } from '../../styles/GlobalStyle';
 
 type Zone = {
   id: string;
   zone: string;
+  zmName: string;
   instTotalAmount: string | number;
   instRecAmount: string | number;
   instDueAmount: string | number;
@@ -51,9 +52,10 @@ export const ZoneList: React.FC = () => {
 
   const getAllZones = async () => {
     try {
+      
+      setLoading(true);
       const response = await API_Config.getZones({ ID: Id, Region: data });
       if (response?.success) {
-        setLoading(true);
         if (response?.success) {
           setZoneData(response.data.data);
         }
@@ -62,6 +64,7 @@ export const ZoneList: React.FC = () => {
           message: 'Error',
           description: response.data.message,
           type: 'danger',
+          style: CommonStyles.error,
         });
       }
     } catch (error) {
@@ -85,16 +88,34 @@ export const ZoneList: React.FC = () => {
         <Header title="Zones" subtitle="Region's Zones" showBackButton />
 
         {loading ? (
-          <Loader />
+          <Loader title={'Loading Zones...'} />
         ) : (
           <FlatList
             data={zoneData}
+            onRefresh={() => getAllZones()}
+            refreshing={loading}
             keyExtractor={item => item.id}
             ListEmptyComponent={() => (
-              <View style={{ alignItems: 'center', marginTop: 20 }}>
-                <Text style={{ color: theme.colors.white }}>No Item Found</Text>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: 20,
+                }}
+              >
+                <Text
+                  style={{
+                    color: theme.colors.white,
+                    fontFamily: fonts.extraBoldItalic,
+                    fontSize: AppSizes.Font_16,
+                  }}
+                >
+                  No Item Found ...
+                </Text>
               </View>
             )}
+            contentContainerStyle={styles.list}
             renderItem={({ item }) => (
               <View
                 style={[{ backgroundColor: theme.colors.surface }, styles.item]}
@@ -103,14 +124,14 @@ export const ZoneList: React.FC = () => {
                   style={[
                     styles.title,
                     {
-                      color: theme.colors.secondary,
+                      color: theme.colors.secondaryDark,
                       fontFamily: fonts.extraBoldItalic,
                       fontSize: AppSizes.Font_20,
                       marginVertical: AppSizes.Margin_Vertical_10,
                     },
                   ]}
                 >
-                  {item.zmName}
+                  {item.zmName || 'N/A'}
                 </Text>
 
                 <View style={styles.row}>
@@ -199,7 +220,6 @@ export const ZoneList: React.FC = () => {
                 <View style={styles.divider} />
               </View>
             )}
-            contentContainerStyle={styles.list}
           />
         )}
       </View>

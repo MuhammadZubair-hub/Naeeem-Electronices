@@ -18,20 +18,9 @@ import {
   useRoute,
   NavigationProp,
 } from '@react-navigation/native';
-import { RootState, AppDispatch } from '../../redux/store';
-import {
-  clearData,
-  fetchDashboardData,
-} from '../../redux/slices/dashboardSlice';
+import { RootState } from '../../redux/store';
 import { useTheme } from '../../hooks/useTheme';
-import { usePermissions } from '../../hooks/usePermissions';
-import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
-import { InputField } from '../../components/common/InputField';
-import { formatCurrency, formatNumber } from '../../utils/formatters';
-import { Role } from '../../types';
-import { mockDataService, Branch } from '../../services/mock/mockDataService';
-import { screenName } from '../../navigation/ScreenName';
 import { Header } from '../../components/common/Header';
 import { API_Config } from '../../services/apiServices';
 import { fonts } from '../../assets/fonts/Fonts';
@@ -39,6 +28,7 @@ import { AppSizes } from '../../utils/AppSizes';
 import Loader from '../../components/common/Loader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { showMessage } from 'react-native-flash-message';
+import { CommonStyles } from '../../styles/GlobalStyle';
 
 const { width } = Dimensions.get('window');
 
@@ -53,68 +43,10 @@ export const BranchList: React.FC = () => {
   const { theme } = useTheme();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [loading, setLoading] = useState(false);
-  // const dispatch = useDispatch<AppDispatch>();
-  // const permissions = usePermissions();
-  // const { user } = useSelector((state: RootState) => state.auth);
-  // const {
-  //   data: dashboardData,
-  //   isLoading,
-  //   error,
-  // } = useSelector((state: RootState) => state.dashboard);
+
 
   const [branches, setBranches] = useState();
   const Id = useSelector((state: RootState) => state.auth.user?.empId);
-
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     console.log('user?.role', user);
-  //     console.log(user.designation, 'user?.designation');
-  //     // Refresh data when screen is focused
-  //   }, []),
-  // );
-
-  // useEffect(() => {
-  //   dispatch(fetchDashboardData());
-  // }, [dispatch]);
-
-  // useEffect(() => {
-  //   // Filter branches based on user role and search query
-  //   let accessibleBranches = branches;
-
-  //   // Apply role-based filtering
-  //   if (user?.role === Role.RM || user?.role === Role.ZM) {
-  //     accessibleBranches = branches.filter(
-  //       branch => branch.regionId === user.regionId,
-  //     );
-  //   } else if (user?.role === Role.BR) {
-  //     accessibleBranches = branches.filter(
-  //       branch => branch.id === user.branchId,
-  //     );
-  //   }
-
-  //   // Apply search filter
-  //   if (searchQuery.trim()) {
-  //     accessibleBranches = accessibleBranches.filter(
-  //       branch =>
-  //         branch.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //         branch.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //         branch.managerName.toLowerCase().includes(searchQuery.toLowerCase()),
-  //     );
-  //   }
-
-  //   setFilteredBranches(accessibleBranches);
-  // }, [searchQuery, user]);
-
-  // const onRefresh = () => {
-  //   dispatch(fetchDashboardData());
-  // };
-
-  // const handleBranchPress = (branch: Branch) => {
-  //   console.log('branch.name issss', branch);
-  //   (navigation as any).navigate(screenName.BranchDetail, {
-  //     branchId: branch.id,
-  //   });
-  // };
 
   useEffect(() => {
     getAllBranches();
@@ -134,130 +66,11 @@ export const BranchList: React.FC = () => {
         message: 'Error',
         description: response.data.message,
         type: 'danger',
+        style : CommonStyles.error
       });
       console.log('response erro', response.message);
     }
   };
-
-  // const renderBranchCard = (branch: Branch) => (
-  //   <TouchableOpacity
-  //     key={branch.id}
-  //     onPress={() => {
-  //       handleBranchPress(branch);
-  //       console.log('branch.name', branch);
-  //     }}
-  //     activeOpacity={0.7}
-  //   >
-  //     <Card style={styles.branchCard} padding="lg">
-  //       <View style={styles.branchHeader}>
-  //         <View style={styles.branchInfo}>
-  //           <Text
-  //             style={[styles.branchName, { color: theme.colors.textPrimary }]}
-  //           >
-  //             {branch.name}
-  //           </Text>
-  //           <Text
-  //             style={[
-  //               styles.branchAddress,
-  //               { color: theme.colors.textSecondary },
-  //             ]}
-  //           >
-  //             📍 {branch.address}
-  //           </Text>
-  //           <Text
-  //             style={[
-  //               styles.branchManager,
-  //               { color: theme.colors.textSecondary },
-  //             ]}
-  //           >
-  //             👤 Manager: {branch.managerName}
-  //           </Text>
-  //         </View>
-  //         <View
-  //           style={[
-  //             styles.statusBadge,
-  //             {
-  //               backgroundColor: branch.isActive
-  //                 ? theme.colors.success + '20'
-  //                 : theme.colors.error + '20',
-  //             },
-  //           ]}
-  //         >
-  //           <Text
-  //             style={[
-  //               styles.statusText,
-  //               {
-  //                 color: branch.isActive
-  //                   ? theme.colors.success
-  //                   : theme.colors.error,
-  //               },
-  //             ]}
-  //           >
-  //             {branch.isActive ? 'Active' : 'Inactive'}
-  //           </Text>
-  //         </View>
-  //       </View>
-
-  //       <View style={styles.branchStats}>
-  //         <View style={styles.statItem}>
-  //           <Text style={[styles.statValue, { color: theme.colors.primary }]}>
-  //             {formatCurrency(branch.totalRevenue)}
-  //           </Text>
-  //           <Text
-  //             style={[styles.statLabel, { color: theme.colors.textSecondary }]}
-  //           >
-  //             Revenue
-  //           </Text>
-  //         </View>
-  //         <View style={styles.statItem}>
-  //           <Text style={[styles.statValue, { color: theme.colors.success }]}>
-  //             {formatNumber(branch.totalCustomers)}
-  //           </Text>
-  //           <Text
-  //             style={[styles.statLabel, { color: theme.colors.textSecondary }]}
-  //           >
-  //             Customers
-  //           </Text>
-  //         </View>
-  //         <View style={styles.statItem}>
-  //           <Text style={[styles.statValue, { color: theme.colors.warning }]}>
-  //             {formatNumber(branch.totalStaff)}
-  //           </Text>
-  //           <Text
-  //             style={[styles.statLabel, { color: theme.colors.textSecondary }]}
-  //           >
-  //             Staff
-  //           </Text>
-  //         </View>
-  //       </View>
-
-  //       {/* <View style={styles.branchActions}>
-  //         <Button
-  //           title="View Customers"
-  //           onPress={() => {
-  //             (navigation as any).navigate(screenName.CustomerList, {
-  //               branchId: branch.id,
-  //             });
-  //           }}
-  //           variant="outline"
-  //           size="sm"
-  //           style={styles.actionButton}
-  //         />
-  //         <Button
-  //           title="View Sales"
-  //           onPress={() => {
-  //             (navigation as any).navigate(screenName.InvoiceList, {
-  //               branchId: branch.id,
-  //             });
-  //           }}
-  //           variant="outline"
-  //           size="sm"
-  //           style={styles.actionButton}
-  //         />
-  //       </View> */}
-  //     </Card>
-  //   </TouchableOpacity>
-  // );
 
   const handleBranchPress = (item: any) => {
     console.log('itme passsing is ', item);
@@ -274,14 +87,17 @@ export const BranchList: React.FC = () => {
         <Header title="Branches" subtitle="Zone's Branches" showBackButton />
 
         {loading ? (
-          <Loader />
+          <Loader title={'Loading Branches...'} />
         ) : (
           <FlatList
             data={branches}
             keyExtractor={item => item.id}
+            contentContainerStyle={styles.list}
+            onRefresh={() => getAllBranches()}
+            refreshing={loading}
             ListEmptyComponent={() => (
-              <View style={{ alignItems: 'center', marginTop: 20 }}>
-                <Text style={{ color: theme.colors.white }}>No Item Found</Text>
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
+                <Text style={{ color: theme.colors.white,fontFamily: fonts.extraBoldItalic,fontSize: AppSizes.Font_16 }}>No Item Found ...</Text>
               </View>
             )}
             renderItem={({ item }) => (
@@ -299,7 +115,7 @@ export const BranchList: React.FC = () => {
                     style={[
                       styles.title,
                       {
-                        color: theme.colors.secondary,
+                        color: theme.colors.secondaryDark,
                         fontFamily: fonts.extraBoldItalic,
                         fontSize: AppSizes.Font_20,
                         marginVertical: AppSizes.Margin_Vertical_10,
@@ -369,7 +185,7 @@ export const BranchList: React.FC = () => {
                 <View style={styles.divider} />
               </View>
             )}
-            contentContainerStyle={styles.list}
+           
           />
         )}
       </View>

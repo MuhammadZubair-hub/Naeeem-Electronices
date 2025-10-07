@@ -4,7 +4,7 @@ import LottieView from 'lottie-react-native';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-const Loader = () => {
+const Loader = ({ title }) => {
   const { theme } = useTheme();
 
   return (
@@ -20,11 +20,12 @@ const Loader = () => {
         style={{
           marginTop: 12,
           fontSize: AppSizes.Font_20,
-          fontWeight: 'bold',
+          fontFamily: 'Poppins-Medium',
+          //fontWeight: 'bold',
           color: theme.colors.secondary,
         }}
       >
-        Loading App Data
+        {title || 'Loading...'}
       </Text>
     </View>
   );

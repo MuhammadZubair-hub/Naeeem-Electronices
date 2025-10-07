@@ -38,9 +38,10 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
             color: theme.colors.secondaryDark,
             fontSize: AppSizes.Font_18,
             fontFamily: fonts.extraBold,
+            marginTop: AppSizes.Margin_Vertical_10,
           }}
         >
-          Regions List{' '}
+          Regions List
         </Text>
       )}
       ListHeaderComponentStyle={{ padding: AppSizes.Padding_Vertical_10 }}
@@ -54,6 +55,7 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
         rowGap: AppSizes.Gap_30,
         marginHorizontal: AppSizes.Margin_Horizontal_20,
         borderRadius: theme.borderRadius.lg,
+        marginBottom: AppSizes.Margin_Vertical_40,
       }}
       renderItem={({ item }) => (
         <View
@@ -61,7 +63,9 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
             {
               // backgroundColor: theme.colors.surface,
               borderRadius: theme.borderRadius.lg,
-              padding: AppSizes.Gap_10,
+              // padding: AppSizes.Gap_10,
+              rowGap: AppSizes.Margin_Vertical_10,
+              padding: 16,
             },
             styles.item,
           ]}
@@ -70,10 +74,10 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
             style={[
               styles.title,
               {
-                color: theme.colors.secondary,
+                color: theme.colors.secondaryDark,
                 fontFamily: fonts.extraBoldItalic,
                 fontSize: AppSizes.Font_20,
-                // marginVertical: AppSizes.Margin_Vertical_10,
+                // marginTop: AppSizes.Margin_Vertical_10,
               },
             ]}
           >
@@ -210,9 +214,9 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
           />
           <View
             style={{
-              marginVertical: 12,
+              marginBottom: 12,
               marginHorizontal: AppSizes.Gap_30,
-              marginTop: AppSizes.Margin_Vertical_20,
+              // marginTop: AppSizes.Margin_Vertical_20,
               borderWidth: 0.5,
               borderTopColor: theme.colors.secondary,
             }}

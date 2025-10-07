@@ -50,5 +50,19 @@ export const API_Config = {
     });
   },
 
+  getAllCustomers: async (param: any) => {
+    return apicall_new({
+      endpoint: `${baseUrl}${endPoints.getallcustomers}`,
+      method: 'GET',
+      params: param,
+    });
+  },
 
+  getCustomerDetails: async (param: any) => {
+    return apicall_new({
+      endpoint: `${baseUrl}${endPoints.getcustomerdetails}`,
+      method: 'GET',
+      params: param,
+    });
+  },
 };

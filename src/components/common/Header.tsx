@@ -54,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* <Text style={[styles.backText, { color: theme.colors.primary }]}>←</Text> */}
             <Ionicons
               name="arrow-back-circle"
-              size={34}
+              size={AppSizes.Icon_Height_35}
               color={theme.colors.white}
             />
           </TouchableOpacity>
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     fontFamily: 'Poppins-Regular',
-    marginTop: 2,
+    //marginTop: 2,
   },
   rightSection: {
     marginLeft: 12,

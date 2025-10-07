@@ -5,7 +5,7 @@ import { combineReducers } from '@reduxjs/toolkit';
 
 import authSlice from './slices/authSlice';
 import themeSlice from './slices/themeSlice';
-import dashboardSlice from './slices/dashboardSlice';
+// import dashboardSlice from './slices/dashboardSlice';
 
 const persistConfig = {
   key: 'root',
@@ -16,7 +16,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   auth: authSlice,
   theme: themeSlice,
-  dashboard: dashboardSlice,
+  // dashboard: dashboardSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

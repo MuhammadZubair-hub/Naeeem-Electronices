@@ -5,6 +5,8 @@ export const endPoints = {
   region: 'Common/GetRegion',
   zone: 'Common/GetZone',
   zonebranches: 'Common/GetZonewithBranches',
-  branchAvos :'Common/GetAVOWithBranchCode',
+  branchAvos: 'Common/GetAVOWithBranchCode',
+  getallcustomers: 'Common/GetCustWithAVOCode',
+  getcustomerdetails: 'Common/GetCustomerDetail',
   regioncount: 'Dashboard/GetTotalofRegions',
 };

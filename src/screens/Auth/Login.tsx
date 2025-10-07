@@ -28,8 +28,6 @@ export const Login: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [showPswd, setShowPswd] = useState<boolean>(true);
 
-  
-
   const loginData = useLoginUser();
 
   return (

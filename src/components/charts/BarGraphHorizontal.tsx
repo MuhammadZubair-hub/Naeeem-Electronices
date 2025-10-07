@@ -8,6 +8,7 @@ import { fonts } from '../../assets/fonts/Fonts';
 const chartHeight = 200;
 const chartWidth = 60;
 const spacing = 16;
+const threshold = 20; // minimum height to display text inside
 
 export const HorizontalStackedBarGraph = ({ data }: any) => {
   const { theme } = useTheme();
@@ -24,11 +25,17 @@ export const HorizontalStackedBarGraph = ({ data }: any) => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       data.forEach((item: any, index: number) => {
-        const stackHeight =
+        const rawHeight =
           ((item.total + item.paid + item.due) / maxValue) * chartHeight;
 
+        // Apply min/max height limits (5%–33%)
+        const limitedHeight = Math.min(
+          chartHeight * 0.99,
+          Math.max(chartHeight * 0.5, rawHeight),
+        );
+
         Animated.timing(animatedStacks[index], {
-          toValue: stackHeight,
+          toValue: limitedHeight,
           duration: 800,
           useNativeDriver: false,
         }).start();
@@ -46,7 +53,7 @@ export const HorizontalStackedBarGraph = ({ data }: any) => {
 
   return (
     <Card style={styles.card}>
-      <Text style={[styles.title, { color: theme.colors.secondary }]}>
+      <Text style={[styles.title, { color: theme.colors.secondaryDark }]}>
         Regional Stats
       </Text>
 
@@ -61,7 +68,7 @@ export const HorizontalStackedBarGraph = ({ data }: any) => {
         </View>
 
         {/* Scrollable chart */}
-        <ScrollView horizontal contentContainerStyle={styles.scroll}>
+        <ScrollView showsHorizontalScrollIndicator={false} horizontal contentContainerStyle={styles.scroll}>
           {/* Grid lines */}
           <View style={StyleSheet.absoluteFill} pointerEvents="none">
             {yAxisLabels.map((_, idx) => (
@@ -81,9 +88,24 @@ export const HorizontalStackedBarGraph = ({ data }: any) => {
           <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
             {data.map((item: any, index: number) => {
               const totalProp =
-                item.total / (item.total + item.paid + item.due);
-              const paidProp = item.paid / (item.total + item.paid + item.due);
-              const dueProp = item.due / (item.total + item.paid + item.due);
+                item.total / (item.total + item.paid + item.due || 1);
+              const paidProp =
+                item.paid / (item.total + item.paid + item.due || 1);
+              const dueProp =
+                item.due / (item.total + item.paid + item.due || 1);
+
+              const totalHeight = Animated.multiply(
+                animatedStacks[index],
+                totalProp,
+              );
+              const paidHeight = Animated.multiply(
+                animatedStacks[index],
+                paidProp,
+              );
+              const dueHeight = Animated.multiply(
+                animatedStacks[index],
+                dueProp,
+              );
 
               return (
                 <View
@@ -95,42 +117,80 @@ export const HorizontalStackedBarGraph = ({ data }: any) => {
                       width: chartWidth,
                       height: chartHeight,
                       justifyContent: 'flex-end',
+                      alignItems: 'center',
+                      position: 'relative',
                     }}
                   >
-                    {/* Blue - Total */}
+                    {/* Total Segment */}
                     <Animated.View
                       style={{
-                        height: Animated.multiply(
-                          animatedStacks[index],
-                          totalProp,
-                        ),
+                        height: totalHeight,
                         width: '100%',
                         backgroundColor: theme.colors.secondaryDark,
+                        justifyContent: 'center',
+                        alignItems: 'center',
                       }}
-                    />
-                    {/* Green - Paid */}
+                    >
+                      <Animated.Text
+                        style={{
+                          color: 'white',
+                          fontSize: 10,
+                          opacity: totalHeight.interpolate({
+                            inputRange: [0, threshold],
+                            outputRange: [0, 1],
+                          }),
+                        }}
+                      >
+                        {item.total}
+                      </Animated.Text>
+                    </Animated.View>
+
+                    {/* Always-visible fallback */}
+                    {item.total > 0 && (
+                      <Text
+                        style={{
+                          position: 'absolute',
+                          top: -12,
+                          fontSize: 10,
+                          color: theme.colors.secondaryDark,
+                        }}
+                      >
+                        {item.total}
+                      </Text>
+                    )}
+
+                    {/* Paid Segment */}
                     <Animated.View
                       style={{
-                        height: Animated.multiply(
-                          animatedStacks[index],
-                          paidProp,
-                        ),
+                        height: paidHeight,
                         width: '100%',
                         backgroundColor: theme.colors.success,
+                        justifyContent: 'center',
+                        alignItems: 'center',
                       }}
-                    />
-                    {/* Yellow - Due */}
+                    >
+                      <Text style={{ fontSize: 10, color: 'white' }}>
+                        {item.paid}
+                      </Text>
+                    </Animated.View>
+
+                    {/* Due Segment */}
                     <Animated.View
                       style={{
-                        height: Animated.multiply(
-                          animatedStacks[index],
-                          dueProp,
-                        ),
+                        height: dueHeight,
                         width: '100%',
                         backgroundColor: theme.colors.warning,
+                        justifyContent: 'center',
+                        alignItems: 'center',
                       }}
-                    />
+                    >
+                      <Text style={{ fontSize: 10, color: 'white' }}>
+                        {item.due}
+                      </Text>
+                    </Animated.View>
                   </View>
+
+                  {/* Region Label */}
                   <Text style={styles.regionLabel}>{item.region}</Text>
                 </View>
               );
@@ -169,7 +229,7 @@ const styles = StyleSheet.create({
     marginBottom: AppSizes.Margin_Vertical_20,
   },
   yAxis: { width: 50, justifyContent: 'space-between', height: chartHeight },
-  yAxisLabel: { fontSize: 12, textAlign: 'right' },
+  yAxisLabel: { fontSize: 12, textAlign: 'center' },
   scroll: { paddingLeft: 16, paddingRight: 16 },
   gridLine: { position: 'absolute', left: 0, width: '100%', borderTopWidth: 1 },
   regionLabel: { marginTop: 4, fontSize: 12 },

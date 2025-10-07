@@ -11,8 +11,8 @@ import { showMessage } from 'react-native-flash-message';
 import { CommonStyles } from '../../styles/GlobalStyle';
 
 interface MainHeaderProps {
-  title: string;
-  subTitle: string;
+  title: string | undefined;
+  subTitle: string | undefined;
 }
 
 const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {

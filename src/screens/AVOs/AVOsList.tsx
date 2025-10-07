@@ -12,7 +12,6 @@ import { Button } from '../../components/common/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../hooks/useTheme';
 import { Header } from '../../components/common/Header';
-import { mockDataService } from '../../services/mock/mockDataService';
 import { screenName } from '../../navigation/ScreenName';
 import { API_Config } from '../../services/apiServices';
 import { useSelector } from 'react-redux';
@@ -22,20 +21,16 @@ import { AppSizes } from '../../utils/AppSizes';
 import Loader from '../../components/common/Loader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { showMessage } from 'react-native-flash-message';
+import { CommonStyles } from '../../styles/GlobalStyle';
 
 export const AVOsList: React.FC = () => {
   const { theme } = useTheme();
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const { branch } = route.params;
-  const zones = mockDataService.getAVOsByBranch('0');
 
   const Id = useSelector((state: RootState) => state.auth.user?.empId);
 
-  const handleAVOPress = (avo: any) => {
-    // navigation.navigate(screenName.BranchList, { zoneId: zone.id });
-    navigation.navigate(screenName.CustomerList, { zoneId: avo.id });
-  };
   const [avos, setAvos] = React.useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
@@ -52,8 +47,9 @@ export const AVOsList: React.FC = () => {
     });
 
     if (response.success) {
-      console.log(response.data.data);
+      //console.log(response.data.data);
       setAvos(response.data.data);
+      console.log('data is : ', response.data.data);
       setLoading(false);
     } else {
       setLoading(false);
@@ -61,11 +57,29 @@ export const AVOsList: React.FC = () => {
         message: 'Error',
         description: response.data.message,
         type: 'danger',
+        style: CommonStyles.error,
       });
 
-      console.log('the error is : ', response.message);
+      //console.log('the error is : ', response.message);
       return;
     }
+  };
+
+  const handleAVOPress = (item: any) => {
+    // navigation.navigate(screenName.BranchList, { zoneId: zone.id });
+    console.log('navigating items are', item);
+    if (item?.assigenedId == '') {
+      showMessage({
+        message: 'Error',
+        description: 'Please Assign data to AVO',
+        type: 'danger',
+        style: CommonStyles.error,
+      });
+      return;
+    }
+    console.log('navigating to the customers list', item?.assigenedId);
+
+    navigation.navigate(screenName.CustomerList, { AvoId: item?.assigenedId });
   };
 
   return (
@@ -77,16 +91,34 @@ export const AVOsList: React.FC = () => {
       <View style={styles.safeArea}>
         <Header title="AVO's" subtitle="Branch's AVOs" showBackButton />
         {loading ? (
-          <Loader />
+          <Loader title={'Loading AVOs...'} />
         ) : (
           <FlatList
             data={avos}
             keyExtractor={item => item.id}
+            onRefresh={() => getAVos()}
+            refreshing={loading}
             ListEmptyComponent={() => (
-              <View>
-                <Text>No Item Found</Text>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: 20,
+                }}
+              >
+                <Text
+                  style={{
+                    color: theme.colors.white,
+                    fontFamily: fonts.extraBoldItalic,
+                    fontSize: AppSizes.Font_16,
+                  }}
+                >
+                  No Item Found ...
+                </Text>
               </View>
             )}
+            contentContainerStyle={styles.list}
             renderItem={({ item }) => (
               <View
                 style={[{ backgroundColor: theme.colors.surface }, styles.item]}
@@ -95,14 +127,14 @@ export const AVOsList: React.FC = () => {
                   style={[
                     styles.title,
                     {
-                      color: theme.colors.secondary,
-                      fontFamily: fonts.extraBoldItalic,
-                      fontSize: AppSizes.Font_20,
+                      color: theme.colors.secondaryDark,
+                      fontFamily: fonts.bold,
+                      // fontSize: AppSizes.Font_20,
                       marginVertical: AppSizes.Margin_Vertical_10,
                     },
                   ]}
                 >
-                  {item.assignedName}
+                  {item.assignedName || 'N/A'}
                 </Text>
 
                 <View
@@ -209,7 +241,7 @@ export const AVOsList: React.FC = () => {
 
                 <Button
                   title="View AVO"
-                  onPress={() => {}}
+                  onPress={() => handleAVOPress(item)}
                   variant="secondary"
                   size="sm"
                   style={{ marginTop: 22 }}
@@ -224,7 +256,6 @@ export const AVOsList: React.FC = () => {
                 ></View>
               </View>
             )}
-            contentContainerStyle={styles.list}
           />
         )}
       </View>
@@ -242,6 +273,6 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, paddingBottom: 20 },
   list: { padding: 20, rowGap: AppSizes.Padding_Horizontal_20 },
   item: { borderRadius: 12, padding: 16, elevation: 10 },
-  title: { fontSize: 18, fontWeight: 'bold' },
+  title: { fontSize: AppSizes.Font_18 },
   subtitle: { fontSize: 14, marginTop: 4 },
 });

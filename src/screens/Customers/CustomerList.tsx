@@ -1,739 +1,342 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
-  RefreshControl,
-  TouchableOpacity,
-  Dimensions,
   FlatList,
+  TextInput,
+  TouchableOpacity,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { RootState, AppDispatch } from '../../redux/store';
-import { fetchDashboardData } from '../../redux/slices/dashboardSlice';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { showMessage } from 'react-native-flash-message';
 import { useTheme } from '../../hooks/useTheme';
-import { usePermissions } from '../../hooks/usePermissions';
-import { Card } from '../../components/common/Card';
-import { Button } from '../../components/common/Button';
-import { InputField } from '../../components/common/InputField';
-// import {
-//   formatCurrency,
-//   formatNumber,
-//   formatPhoneNumber,
-// } from '../../utils/formatters';
-import { Role } from '../../types';
-import { mockDataService, Customer } from '../../services/mock/mockDataService';
-import { screenName } from '../../navigation/ScreenName';
 import { Header } from '../../components/common/Header';
+import { Button } from '../../components/common/Button';
+import { API_Config } from '../../services/apiServices';
+import { fonts } from '../../assets/fonts/Fonts';
+import { AppSizes } from '../../utils/AppSizes';
+import { CommonStyles } from '../../styles/GlobalStyle';
+import Loader from '../../components/common/Loader';
+import { screenName } from '../../navigation/ScreenName';
+import { debounce } from 'lodash';
+import Ionicons from '@react-native-vector-icons/ionicons';
 
-const { width } = Dimensions.get('window');
-
-// Customer interface is now imported from mockDataService
-
-interface CustomerListProps {
-  route?: {
-    params?: {
-      branchId?: string;
-    };
-  };
-}
-
-export const CustomerList: React.FC<CustomerListProps> = ({ route }) => {
+export const CustomerList: React.FC = () => {
   const { theme } = useTheme();
-  const dispatch = useDispatch<AppDispatch>();
-  const navigation = useNavigation();
-  const permissions = usePermissions();
+  const navigation = useNavigation<any>();
+  const route = useRoute<any>();
+  const { AvoId } = route.params;
 
-  const { user } = useSelector((state: RootState) => state.auth);
-  const {
-    data: dashboardData,
-    isLoading,
-    error,
-  } = useSelector((state: RootState) => state.dashboard);
-
+  const [customers, setCustomers] = useState<any[]>([]);
+  const [filteredCustomers, setFilteredCustomers] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState<
-    'all' | 'active' | 'inactive' | 'overdue'
-  >('all');
+  const [loading, setLoading] = useState(false);
+  const [expandedCustomerCode, setExpandedCustomerCode] = useState<
+    string | null
+  >(null);
 
-  // Get customers from mock data service
-  const customers = mockDataService.getCustomers();
+  /** ------------------ Fetch Customers ------------------ **/
+  const getAllCustomers = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await API_Config.getAllCustomers({ AssignedID: AvoId });
+      if (response?.success) {
+        const data = response?.data?.data || [];
+        console.log('All customers are : ', data);
+        setCustomers(data);
+        setFilteredCustomers(data);
+        // setSearchQuery('');
+        // debouncedSearch('');
+      } else {
+        showMessage({
+          message: 'Error',
+          description: response?.data?.message || 'Failed to load customers',
+          type: 'danger',
+          style: CommonStyles.error,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching customers:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [AvoId]);
 
   useEffect(() => {
-    dispatch(fetchDashboardData());
-  }, [dispatch]);
+    getAllCustomers();
+  }, [getAllCustomers]);
 
-  useEffect(() => {
-    // Filter customers based on user role, branch filter, search query, and status filter
-    let accessibleCustomers = customers;
+  /** ------------------ Search Optimization ------------------ **/
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((text: string) => {
+        if (!Array.isArray(customers) || customers.length === 0) {
+          setFilteredCustomers([]);
+          return;
+        }
 
-    // Apply role-based filtering
-    if (user?.role === Role.RM || user?.role === Role.ZM) {
-      accessibleCustomers = customers.filter(
-        customer => customer.regionId === user.regionId,
-      );
-    } else if (user?.role === Role.BR) {
-      accessibleCustomers = customers.filter(
-        customer => customer.branchId === user.branchId,
-      );
-    } else if (user?.role === Role.AVO) {
-      accessibleCustomers = customers.filter(
-        customer => customer.assignedTo === user.id,
-      );
-    }
+        if (!text) {
+          setFilteredCustomers(customers);
+          return;
+        }
 
-    // Apply branch filter if specified
-    if (route?.params?.branchId) {
-      accessibleCustomers = accessibleCustomers.filter(
-        customer => customer.branchId === route?.params?.branchId,
-      );
-    }
-
-    // Apply status filter
-    switch (selectedFilter) {
-      case 'active':
-        accessibleCustomers = accessibleCustomers.filter(
-          customer => customer.isActive,
+        const lowerText = text.toLowerCase();
+        const filtered = customers.filter(customer =>
+          customer?.customerName?.toLowerCase().includes(lowerText),
         );
-        break;
-      case 'inactive':
-        accessibleCustomers = accessibleCustomers.filter(
-          customer => !customer.isActive,
-        );
-        break;
-      case 'overdue':
-        accessibleCustomers = accessibleCustomers.filter(
-          customer => customer.totalDue > 0,
-        );
-        break;
-    }
+        setFilteredCustomers(filtered);
+      }, 300),
+    [customers],
+  );
 
-    // Apply search filter
-    if (searchQuery.trim()) {
-      accessibleCustomers = accessibleCustomers.filter(
-        customer =>
-          customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          customer.phone.includes(searchQuery) ||
-          customer.address.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
-    }
-
-    setFilteredCustomers(accessibleCustomers);
-  }, [searchQuery, selectedFilter, user, route?.params?.branchId]);
-
-  const onRefresh = () => {
-    dispatch(fetchDashboardData());
+  const handleSearchChange = (text: string) => {
+    setSearchQuery(text);
+    debouncedSearch(text);
   };
 
-  const handleCustomerPress = (customer: Customer) => {
-    (navigation as any).navigate(screenName.CustomerDetail, {
-      customerId: customer.id,
-    });
-  };
+  /** ------------------ Customer Navigation ------------------ **/
+  const handleCustomerPress = useCallback(
+    (item: any) => {
+      navigation.navigate(screenName.CustomerDetail, {
+        CustomerCode: item?.invDocEntry,
+      });
+    },
+    [navigation],
+  );
 
-  const getFilterButtonStyle = (filter: string) => {
-    const isSelected = selectedFilter === filter;
-    return {
-      backgroundColor: isSelected
-        ? theme.colors.primary
-        : theme.colors.surfaceVariant,
-      borderColor: isSelected ? theme.colors.primary : theme.colors.border,
-    };
-  };
+  const handleToggle = useCallback((code: string) => {
+    setExpandedCustomerCode(prev => (prev === code ? null : code));
+  }, []);
 
-  const getFilterTextStyle = (filter: string) => {
-    const isSelected = selectedFilter === filter;
-    return {
-      color: isSelected ? theme.colors.white : theme.colors.textPrimary,
-    };
-  };
+  const renderItem = useCallback(
+    ({ item }: { item: any }) => {
+      const isExpanded = expandedCustomerCode === item.customerCode;
 
-  const renderCustomerCard = (customer: Customer) => (
-    <TouchableOpacity
-      key={customer.id}
-      onPress={() => handleCustomerPress(customer)}
-      activeOpacity={0.7}
-    >
-      <Card style={styles.customerCard} padding="lg">
-        <View style={styles.customerHeader}>
-          <View style={styles.customerInfo}>
-            <Text
-              style={[styles.customerName, { color: theme.colors.textPrimary }]}
-            >
-              {customer.name}
-            </Text>
-            <Text
-              style={[
-                styles.customerType,
-                { color: theme.colors.textSecondary },
-              ]}
-            >
-              {customer.customerType === 'business'
-                ? '🏢 Business'
-                : '👤 Individual'}
-            </Text>
-            <Text
-              style={[
-                styles.customerContact,
-                { color: theme.colors.textSecondary },
-              ]}
-            >
-              📧 {customer.email}
-            </Text>
-            <Text
-              style={[
-                styles.customerContact,
-                { color: theme.colors.textSecondary },
-              ]}
-            >
-              {/* 📞 {formatPhoneNumber(customer.phone)} */}
-              phone number
-            </Text>
-            <Text
-              style={[
-                styles.customerAddress,
-                { color: theme.colors.textSecondary },
-              ]}
-            >
-              📍 {customer.address}
-            </Text>
-          </View>
-          <View
+      return (
+        <TouchableOpacity
+          key={item.customerCode}
+          onPress={() => handleCustomerPress(item)}
+          activeOpacity={0.9}
+          style={[styles.item, { backgroundColor: theme.colors.surface }]}
+        >
+          <Text
             style={[
-              styles.statusBadge,
+              styles.title,
               {
-                backgroundColor: customer.isActive
-                  ? theme.colors.success + '20'
-                  : theme.colors.error + '20',
+                color: theme.colors.secondaryDark,
+                fontFamily: fonts.bold,
+                marginVertical: AppSizes.Margin_Vertical_10,
               },
             ]}
           >
-            <Text
-              style={[
-                styles.statusText,
-                {
-                  color: customer.isActive
-                    ? theme.colors.success
-                    : theme.colors.error,
-                },
-              ]}
-            >
-              {customer.isActive ? 'Active' : 'Inactive'}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.customerStats}>
-          <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: theme.colors.primary }]}>
-              {/* {formatCurrency(customer.totalPurchases)} */}
-            </Text>
-            <Text
-              style={[styles.statLabel, { color: theme.colors.textSecondary }]}
-            >
-              Total Purchases
-            </Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text
-              style={[
-                styles.statValue,
-                {
-                  color:
-                    customer.totalDue > 0
-                      ? theme.colors.error
-                      : theme.colors.success,
-                },
-              ]}
-            >
-              {/* {formatCurrency(customer.totalDue)} */}
-            </Text>
-            <Text
-              style={[styles.statLabel, { color: theme.colors.textSecondary }]}
-            >
-              Outstanding Due
-            </Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: theme.colors.warning }]}>
-              {/* {formatCurrency(customer.creditLimit)} */}
-            </Text>
-            <Text
-              style={[styles.statLabel, { color: theme.colors.textSecondary }]}
-            >
-              Credit Limit
-            </Text>
-          </View>
-        </View>
-
-        {/* <View style={styles.customerFooter}>
-          <Text
-            style={[styles.lastPurchase, { color: theme.colors.textTertiary }]}
-          >
-            Last Purchase:{' '}
-            {new Date(customer.lastPurchaseDate).toLocaleDateString()}
+            {item.customerName || 'N/A'}
           </Text>
-          <View style={styles.customerActions}>
-            <TouchableOpacity
-              onPress={e => {
-                e.stopPropagation();
-                (navigation as any).navigate(screenName.CustomerDetail, {
-                  customerId: customer.id,
-                });
-              }}
-              style={[
-                styles.actionButton,
-                { backgroundColor: theme.colors.success + '20' },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.actionButtonText,
-                  { color: theme.colors.success },
-                ]}
-              >
-                View Details
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={e => {
-                e.stopPropagation();
-                (navigation as any).navigate(screenName.CustomerTransactions, {
-                  customerId: customer.id,
-                });
-              }}
-              style={[
-                styles.actionButton,
-                { backgroundColor: theme.colors.primary + '20' },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.actionButtonText,
-                  { color: theme.colors.primary },
-                ]}
-              >
-                View Transactions
-              </Text>
-            </TouchableOpacity>
+
+          {/* BASIC INFO */}
+          <View style={styles.row}>
+            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
+              Customer Code :
+            </Text>
+            <Text style={[styles.value, { color: theme.colors.black }]}>
+              {item.customerCode || 'N/A'}
+            </Text>
           </View>
-        </View> */}
-      </Card>
-    </TouchableOpacity>
-  );
 
-  if (error) {
-    return (
-      <View
-        style={[
-          styles.container,
-          styles.centerContent,
-          { backgroundColor: theme.colors.background },
-        ]}
-      >
-        <Text style={[styles.errorText, { color: theme.colors.error }]}>
-          Failed to load customer data
-        </Text>
-        <Button title="Retry" onPress={onRefresh} style={styles.retryButton} />
-      </View>
-    );
-  }
+          <View style={styles.row}>
+            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
+              Customer Status :
+            </Text>
+            <Text style={[styles.value, { color: theme.colors.warning }]}>
+              {item.instStatus || 'N/A'}
+            </Text>
+          </View>
 
-  return (
-    <View
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-    >
-      <Header title="Customers" subtitle="Customer List" showBackButton />
-      <ScrollView
-        style={styles.scrollView}
-        refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
-        }
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
-            Customer Management
-          </Text>
-          <Text
-            style={[styles.subtitle, { color: theme.colors.textSecondary }]}
-          >
-            {user?.role === Role.CEO || user?.role === Role.GM
-              ? 'All Customers'
-              : user?.role === Role.RM || user?.role === Role.ZM
-              ? 'Regional Customers'
-              : user?.role === Role.BR
-              ? 'Branch Customers'
-              : 'My Customers'}
-          </Text>
-        </View>
+          <View style={styles.separator} />
 
-        {/* Search */}
-        <View style={styles.searchContainer}>
-          <InputField
-            label="Search Customers"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Search by name, email, phone, or address..."
-            containerStyle={styles.searchInput}
-          />
-        </View>
-
-        {/* Filters */}
-        <View style={styles.filtersContainer}>
-          <Text
-            style={[styles.filtersLabel, { color: theme.colors.textSecondary }]}
-          >
-            Filter by Status:
-          </Text>
-          <View style={styles.filtersRow}>
-            {['all', 'active', 'inactive', 'overdue'].map(filter => (
-              <TouchableOpacity
-                key={filter}
-                style={[styles.filterButton, getFilterButtonStyle(filter)]}
-                onPress={() => setSelectedFilter(filter as any)}
-              >
-                <Text style={[styles.filterText, getFilterTextStyle(filter)]}>
-                  {filter.charAt(0).toUpperCase() + filter.slice(1)}
+          {/* EXPANDED VIEW */}
+          {isExpanded && (
+            <View style={{ marginTop: 10 }}>
+              <View style={styles.row}>
+                <Text
+                  style={[styles.label, { color: theme.colors.textSecondary }]}
+                >
+                  Invoice No :
                 </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+                <Text style={[styles.value, { color: theme.colors.black }]}>
+                  {item.invoiceNo || 'N/A'}
+                </Text>
+              </View>
 
-        {/* Summary Stats */}
-        <Card style={styles.summaryCard} padding="lg">
-          <Text
-            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
-          >
-            Customer Overview
-          </Text>
-          <View style={styles.summaryGrid}>
-            <View style={styles.summaryItem}>
-              <Text
-                style={[styles.summaryValue, { color: theme.colors.primary }]}
-              >
-                {/* {formatNumber(filteredCustomers.length)} */}
-              </Text>
-              <Text
-                style={[
-                  styles.summaryLabel,
-                  { color: theme.colors.textSecondary },
-                ]}
-              >
-                Total Customers
-              </Text>
-            </View>
-            <View style={styles.summaryItem}>
-              <Text
-                style={[styles.summaryValue, { color: theme.colors.success }]}
-              >
-                {/* {formatCurrency(
-                  filteredCustomers.reduce(
-                    (sum, customer) => sum + customer.totalPurchases,
-                    0,
-                  ),
-                )} */}
-              </Text>
-              <Text
-                style={[
-                  styles.summaryLabel,
-                  { color: theme.colors.textSecondary },
-                ]}
-              >
-                Total Purchases
-              </Text>
-            </View>
-            <View style={styles.summaryItem}>
-              <Text
-                style={[styles.summaryValue, { color: theme.colors.error }]}
-              >
-                {/* {formatCurrency(
-                  filteredCustomers.reduce(
-                    (sum, customer) => sum + customer.totalDue,
-                    0,
-                  ),
-                )} */}
-              </Text>
-              <Text
-                style={[
-                  styles.summaryLabel,
-                  { color: theme.colors.textSecondary },
-                ]}
-              >
-                Outstanding Due
-              </Text>
-            </View>
-            <View style={styles.summaryItem}>
-              <Text
-                style={[styles.summaryValue, { color: theme.colors.warning }]}
-              >
-                {/* {formatNumber(filteredCustomers.filter(c => c.isActive).length)} */}
-              </Text>
-              <Text
-                style={[
-                  styles.summaryLabel,
-                  { color: theme.colors.textSecondary },
-                ]}
-              >
-                Active Customers
-              </Text>
-            </View>
-          </View>
-        </Card>
+              <View style={styles.row}>
+                <Text
+                  style={[styles.label, { color: theme.colors.textSecondary }]}
+                >
+                  Product :
+                </Text>
+                <Text style={[styles.value, { color: theme.colors.black }]}>
+                  {item.product || 'N/A'}
+                </Text>
+              </View>
 
-        {/* Customer List */}
-        <View style={styles.customerList}>
-          <Text
-            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
-          >
-            Customers ({filteredCustomers.length})
-          </Text>
-          {filteredCustomers.length === 0 ? (
-            <Card style={styles.emptyCard} padding="lg">
-              <Text
-                style={[
-                  styles.emptyText,
-                  { color: theme.colors.textSecondary },
-                ]}
-              >
-                {searchQuery
-                  ? 'No customers found matching your search.'
-                  : 'No customers available.'}
-              </Text>
-            </Card>
-          ) : (
-            // filteredCustomers.map(renderCustomerCard)
-            <FlatList
-              data={filteredCustomers}
-              keyExtractor={item => item.id.toString()}
-              renderItem={renderCustomerCard}
-              initialNumToRender={20}
-              maxToRenderPerBatch={20}
-              updateCellsBatchingPeriod={50}
-              windowSize={5}
-              removeClippedSubviews={true}
-              showsVerticalScrollIndicator={false}
+              <View style={styles.row}>
+                <Text
+                  style={[styles.label, { color: theme.colors.textSecondary }]}
+                >
+                  Installment Amount :
+                </Text>
+                <Text style={[styles.value, { color: theme.colors.black }]}>
+                  {item.installment || 'N/A'}
+                </Text>
+              </View>
+
+              <Ionicons
+                name="chevron-up"
+                size={22}
+                color={theme.colors.secondaryDark}
+                style={{ alignSelf: 'center', marginTop: 8 }}
+                onPress={() => handleToggle(item.customerCode)}
+              />
+            </View>
+          )}
+
+          {/* COLLAPSED STATE BUTTON */}
+          {!isExpanded && (
+            <Button
+              title="View Detail"
+              textStyle={{ color: theme.colors.secondaryDark, padding: 0 }}
+              onPress={() => handleToggle(item.customerCode)}
+              style={{
+                paddingHorizontal: theme.spacing.md,
+                paddingVertical: 6,
+                minHeight: 22,
+                marginTop: 10,
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.secondaryDark,
+                borderWidth: 1,
+              }}
             />
           )}
-        </View>
+        </TouchableOpacity>
+      );
+    },
+    [theme, expandedCustomerCode, handleToggle],
+  );
 
-        {/* Bottom Spacing */}
-        <View style={styles.bottomSpacing} />
-      </ScrollView>
-    </View>
+  /** ------------------ Key Extractor ------------------ **/
+  const keyExtractor = useCallback(
+    (item: any) => String(item.id || item.invDocEntry),
+    [],
+  );
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <Header title="Customers" subtitle="AVO's Customers" showBackButton />
+
+      {loading ? (
+        <Loader title="Loading Customers..." />
+      ) : (
+        <>
+          <View style={styles.searchContainer}>
+            <TextInput
+              placeholder="Search Customers..."
+              placeholderTextColor={theme.colors.textSecondary}
+              value={searchQuery}
+              onChangeText={handleSearchChange}
+              style={[
+                styles.searchInput,
+                {
+                  backgroundColor: theme.colors.surface,
+                  color: theme.colors.textPrimary,
+                },
+              ]}
+            />
+
+            {searchQuery.length > 0 ? (
+              <TouchableOpacity
+                style={{
+                  position: 'absolute',
+                  right: AppSizes.Margin_Horizontal_10,
+                  marginTop: AppSizes.Margin_Vertical_10,
+                }}
+                onPress={() => {
+                  setSearchQuery('');
+                  debouncedSearch('');
+                }}
+              >
+                <Ionicons
+                  name="close-circle-outline"
+                  size={24}
+                  color={theme.colors.secondaryDark}
+                />
+              </TouchableOpacity>
+            ) : null}
+          </View>
+
+          <FlatList
+            data={filteredCustomers}
+            keyExtractor={item => item.customerCode.toString()}
+            renderItem={renderItem}
+            refreshing={loading}
+            onRefresh={getAllCustomers}
+            contentContainerStyle={styles.listContainer}
+            ListEmptyComponent={() => (
+              <View style={styles.emptyContainer}>
+                <Text
+                  style={{
+                    color: theme.colors.textSecondary,
+                    fontFamily: fonts.extraBoldItalic,
+                  }}
+                >
+                  No Customers Found
+                </Text>
+              </View>
+            )}
+            initialNumToRender={15}
+            maxToRenderPerBatch={30}
+            windowSize={15}
+            removeClippedSubviews
+            showsVerticalScrollIndicator={false}
+          />
+        </>
+      )}
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  centerContent: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 10,
-  },
-  title: {
-    fontSize: 28,
-    fontFamily: 'Poppins-Bold',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 16,
-    fontFamily: 'Poppins-Regular',
-  },
+  container: { flex: 1 },
   searchContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
+    marginHorizontal: AppSizes.Margin_Horizontal_20,
+    marginVertical: AppSizes.Margin_Vertical_20,
   },
   searchInput: {
-    marginBottom: 0,
-  },
-  filtersContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  filtersLabel: {
-    fontSize: 14,
-    fontFamily: 'Poppins-Medium',
-    marginBottom: 8,
-  },
-  filtersRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  filterButton: {
+    borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-  },
-  filterText: {
-    fontSize: 12,
-    fontFamily: 'Poppins-Medium',
-  },
-  summaryCard: {
-    marginHorizontal: 20,
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontFamily: 'Poppins-SemiBold',
-    marginBottom: 16,
-  },
-  summaryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  summaryItem: {
-    width: '48%',
-    marginBottom: 16,
-  },
-  summaryValue: {
-    fontSize: 20,
-    fontFamily: 'Poppins-Bold',
-    marginBottom: 4,
-  },
-  summaryLabel: {
-    fontSize: 12,
-    fontFamily: 'Poppins-Regular',
-  },
-  customerList: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  customerCard: {
-    marginBottom: 16,
+    paddingVertical: 10,
+    fontSize: AppSizes.Font_16,
     elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
   },
-  customerHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 16,
+  listContainer: {
+    padding: 20,
+    rowGap: AppSizes.Padding_Horizontal_20,
   },
-  customerInfo: {
-    flex: 1,
+  item: {
+    borderRadius: 12,
+    padding: 16,
+    elevation: 5,
+    marginBottom: 12,
   },
-  customerName: {
-    fontSize: 18,
-    fontFamily: 'Poppins-SemiBold',
-    marginBottom: 4,
+  title: { fontSize: AppSizes.Font_18 },
+  subtitle: { fontSize: AppSizes.Font_14, marginTop: 4 },
+  label: { fontSize: AppSizes.Font_14, fontWeight: 'bold' },
+  value: { fontSize: AppSizes.Font_14, fontWeight: 'bold' },
+  row: { flexDirection: 'row', justifyContent: 'space-between' },
+  separator: {
+    marginVertical: 12,
+    // marginHorizontal: AppSizes.Gap_30,
+    borderWidth: 0.5,
+    borderTopColor: '#ccc',
   },
-  customerType: {
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-    marginBottom: 2,
-  },
-  customerContact: {
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-    marginBottom: 2,
-  },
-  customerAddress: {
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-  },
-  statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  statusText: {
-    fontSize: 12,
-    fontFamily: 'Poppins-SemiBold',
-  },
-  customerStats: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  statItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  statValue: {
-    fontSize: 16,
-    fontFamily: 'Poppins-Bold',
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 12,
-    fontFamily: 'Poppins-Regular',
-  },
-  customerFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  lastPurchase: {
-    fontSize: 12,
-    fontFamily: 'Poppins-Regular',
-    flex: 1,
-  },
-  customerActions: {
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 8,
-  },
-  actionButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    flex: 1,
-  },
-  actionButtonText: {
-    fontSize: 12,
-    fontFamily: 'Poppins-SemiBold',
-    textAlign: 'center',
-  },
-  viewTransactionsButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  viewTransactionsText: {
-    fontSize: 12,
-    fontFamily: 'Poppins-SemiBold',
-  },
-  emptyCard: {
-    alignItems: 'center',
-    paddingVertical: 40,
-  },
-  emptyText: {
-    fontSize: 16,
-    fontFamily: 'Poppins-Regular',
-    textAlign: 'center',
-  },
-  errorText: {
-    fontSize: 16,
-    fontFamily: 'Poppins-SemiBold',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  retryButton: {
-    marginTop: 8,
-  },
-  bottomSpacing: {
-    height: 20,
-  },
+  emptyContainer: { flex: 1, alignItems: 'center', marginTop: 40 },
 });

@@ -11,11 +11,10 @@ import {
   Dimensions,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { RootState, AppDispatch } from '../../redux/store';
-import { fetchDashboardData } from '../../redux/slices/dashboardSlice';
 import { useTheme } from '../../hooks/useTheme';
 import { Card } from '../../components/common/Card';
 import Loader from '../../components/common/Loader';
@@ -29,6 +28,8 @@ import { BarGraph } from '../../components/charts/BarGraph';
 import { colors } from '../../styles/theme';
 import { HorizontalStackedBarGraph } from '../../components/charts/BarGraphHorizontal';
 import { showMessage } from 'react-native-flash-message';
+import Ionicons from '@react-native-vector-icons/ionicons';
+import { CommonStyles } from '../../styles/GlobalStyle';
 
 const { width } = Dimensions.get('window');
 
@@ -54,7 +55,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
   const [allRegionsTotal, setAllRegionsTotal] = useState<Region[]>([]);
   const [showGraph, setShowGraph] = useState(false);
 
-  const { isLoading } = useSelector((state: RootState) => state.dashboard);
+  // const { isLoading } = useSelector((state: RootState) => state.dashboard);
   const Id = useSelector((state: RootState) => state.auth.user?.empId);
 
   // ✅ Random color generator (optimized)
@@ -92,7 +93,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
 
         console.log('Regions total : ', data);
       } else {
-        Alert.alert('Error in Fetching API', response.data.message);
+        //Alert.alert('Error in Fetching API', response.data.message);
         //console.log('Login failed. Please check your credentials.');
       }
     } catch (error) {
@@ -122,11 +123,13 @@ export const CEO_GM_Dashboard: React.FC = () => {
         setAllRegionsTotal(formatted);
 
         setShowGraph(true);
-      } else {showMessage({
-        message: 'Error',
-        description: response.data.message,
-        type: 'danger',
-      });
+      } else {
+        // showMessage({
+        //   message: 'Error',
+        //   description: response.data.message,
+        //   type: 'danger',
+        //   style: CommonStyles.error,
+        // });
       }
     } catch (error) {
       console.error('Error fetching regions:', error);
@@ -136,13 +139,14 @@ export const CEO_GM_Dashboard: React.FC = () => {
   const getAllDashboardData = useCallback(async () => {
     try {
       setLoader(true);
-      await Promise.all([getAllRegions()]);
+      await Promise.all([getAllRegions(), getAllRegionsCount()]);
     } catch (e) {
-      Alert.alert(
-        'Error',
-        'Something went wrong while fetching dashboard data',
-      );
-      console.log('in else');
+      showMessage({
+        message: 'Error',
+        description: `${e || 'Error in fetching API'}`,
+        type: 'danger',
+        style: CommonStyles.error,
+      });
     } finally {
       setLoader(false);
     }
@@ -152,60 +156,43 @@ export const CEO_GM_Dashboard: React.FC = () => {
     getAllDashboardData();
   }, [getAllDashboardData]);
 
-  useEffect(() => {
-    const backAction = () => true; // disable hardware back
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
-    return () => backHandler.remove();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      const backAction = () => {
+        Alert.alert(
+          'Hold on!',
+          'Do you want to exit the app?',
+          [
+            {
+              text: 'Cancel',
+              onPress: () => null,
+              style: 'cancel',
+            },
+            {
+              text: 'YES',
+              onPress: () => BackHandler.exitApp(),
+            },
+          ],
+          { cancelable: true },
+        );
+        return true; // prevent default back behavior
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction,
+      );
+
+      // Cleanup when leaving the screen
+      return () => backHandler.remove();
+    }, []),
+  );
 
   const onRefresh = useCallback(() => {
-    dispatch(fetchDashboardData());
-  }, [dispatch]);
+    getAllDashboardData();
+  }, []);
 
   const users = useSelector((state: RootState) => state.auth.user);
-
-  // const data = [
-  //   { week: 'Total Outstanding', blue: regionsCountData.totalCount },
-  //   { week: 'Total Paid', blue: regionsCountData.paidCount },
-  //   { week: 'Total Due', blue: regionsCountData.dueCount },
-  // ];
-
-  const dataHorizontal = [
-    { region: 'Region 1', total: 120, paid: 80, due: 40 },
-    { region: 'Region 2', total: 100, paid: 50, due: 50 },
-    { region: 'Region 3', total: 200, paid: 120, due: 80 },
-    { region: 'Region 4', total: 150, paid: 100, due: 50 },
-    { region: 'Region 5', total: 90, paid: 60, due: 30 },
-    { region: 'Region 6', total: 120, paid: 80, due: 40 },
-    { region: 'Region 7', total: 100, paid: 50, due: 50 },
-    { region: 'Region 8', total: 200, paid: 120, due: 80 },
-    { region: 'Region 9', total: 150, paid: 100, due: 50 },
-    { region: 'Region 10', total: 90, paid: 60, due: 30 },
-
-    // … up to 10+
-  ];
-
-  const data = [
-    {
-      week: 'Outstand',
-      blue: parseInt(String(regionsCountData.totalCount).replace(/,/g, ''), 10),
-
-      color: theme.colors.secondaryDark,
-    },
-    {
-      week: ' Paid',
-      blue: parseInt(String(regionsCountData.paidCount).replace(/,/g, ''), 10),
-      color: theme.colors.success,
-    },
-    {
-      week: ' Due',
-      blue: parseInt(String(regionsCountData.dueCount).replace(/,/g, ''), 10),
-      color: theme.colors.warning,
-    },
-  ];
 
   return (
     <View style={styles.container}>
@@ -218,12 +205,12 @@ export const CEO_GM_Dashboard: React.FC = () => {
         <MainHeader title={users?.firstName} subTitle={users?.designation} />
 
         {loader ? (
-          <Loader />
+          <Loader title={'Loading Dashboard...'} />
         ) : (
           <ScrollView
             style={styles.scrollView}
             refreshControl={
-              <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
+              <RefreshControl refreshing={loader} onRefresh={onRefresh} />
             }
             showsVerticalScrollIndicator={false}
           >
@@ -237,13 +224,58 @@ export const CEO_GM_Dashboard: React.FC = () => {
                   purple={false}
                 /> */}
 
+                <Card
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-around',
+                    marginHorizontal: AppSizes.Margin_Horizontal_20,
+                    elevation: 12,
+                    marginTop: AppSizes.Margin_Vertical_20,
+                  }}
+                >
+                  <View
+                    style={[
+                      styles.cardtitle,
+                      { backgroundColor: colors.secondaryDark },
+                    ]}
+                  >
+                    <Text style={styles.cardSubtitle}>Total</Text>
+                    <Text style={{ color: 'white' }}>
+                      {regionsCountData.totalCount}
+                    </Text>
+                  </View>
+                  <View
+                    style={[
+                      styles.cardtitle,
+                      { backgroundColor: theme.colors.success },
+                    ]}
+                  >
+                    <Text style={styles.cardSubtitle}>Paid</Text>
+                    <Text style={{ color: 'white' }}>
+                      {regionsCountData.paidCount}
+                    </Text>
+                  </View>
+
+                  <View
+                    style={[
+                      styles.cardtitle,
+                      { backgroundColor: theme.colors.warning },
+                    ]}
+                  >
+                    <Text style={styles.cardSubtitle}>Due</Text>
+                    <Text style={{ color: 'white' }}>
+                      {regionsCountData.dueCount}
+                    </Text>
+                  </View>
+                </Card>
+
                 <HorizontalStackedBarGraph data={allRegionsTotal} />
+
+                <RegionList data={regionsData} />
               </>
             )}
 
-            <RegionList data={regionsData} />
-
-            <View style={styles.bottomSpacing} />
+            {/* <View style={styles.bottomSpacing} /> */}
           </ScrollView>
         )}
       </SafeAreaView>
@@ -259,12 +291,26 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.4)',
     zIndex: 1,
   },
-  scrollView: { flex: 1 },
+  scrollView: {
+    flex: 1,
+  },
   sectionTitle: {
     fontSize: 18,
     fontFamily: 'Poppins-SemiBold',
-    marginBottom: 16,
   },
   navigationCard: { marginHorizontal: 20, marginBottom: 10, elevation: 5 },
-  bottomSpacing: { marginBottom: AppSizes.Margin_Vertical_40 },
+  bottomSpacing: { marginBottom: 60 },
+  cardtitle: {
+    alignItems: 'center',
+
+    padding: AppSizes.Padding_Vertical_10,
+    borderRadius: AppSizes.Radius_8,
+    paddingHorizontal: AppSizes.Padding_Horizontal_20,
+    rowGap: AppSizes.Gap_10,
+  },
+  cardSubtitle: {
+    fontSize: AppSizes.Font_16,
+    fontWeight: 'bold',
+    color: 'white',
+  },
 });

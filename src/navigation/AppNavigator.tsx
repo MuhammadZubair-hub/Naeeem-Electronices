@@ -14,17 +14,17 @@ import BR_AVO_Dashboard from '../screens/Dashboard/BR_AVO_Dashboard';
 import { AVO_AllCustomers } from '../screens/Dashboard/AVO_AllCustomers';
 import { BranchList } from '../screens/Branch/BranchList';
 import { BranchDetail } from '../screens/Branch/BranchDetail';
-import { BranchPerformance } from '../screens/Branch/BranchPerformance';
+// import { BranchPerformance } from '../screens/Branch/BranchPerformance';
 import { CustomerList } from '../screens/Customers/CustomerList';
 import { CustomerDetail } from '../screens/Customers/CustomerDetail';
-import { CustomerTransactions } from '../screens/Customers/CustomerTransactions';
-import { InvoiceList } from '../screens/Sales/InvoiceList';
-import { InvoiceDetail } from '../screens/Sales/InvoiceDetail';
-import { NewSale } from '../screens/Sales/NewSale';
-import { BranchComparison } from '../screens/Reports/BranchComparison';
-import { StaffPerformance } from '../screens/Reports/StaffPerformance';
-import { RevenueTrends } from '../screens/Reports/RevenueTrends';
-import { RecoveryReport } from '../screens/Reports/RecoveryReport';
+// import { CustomerTransactions } from '../screens/Customers/CustomerTransactions';
+// import { InvoiceList } from '../screens/Sales/InvoiceList';
+// import { InvoiceDetail } from '../screens/Sales/InvoiceDetail';
+// import { NewSale } from '../screens/Sales/NewSale';
+// import { BranchComparison } from '../screens/Reports/BranchComparison';
+// import { StaffPerformance } from '../screens/Reports/StaffPerformance';
+// import { RevenueTrends } from '../screens/Reports/RevenueTrends';
+// import { RecoveryReport } from '../screens/Reports/RecoveryReport';
 import { ZoneList } from '../screens/Zones/ZoneList';
 import { AVOsList } from '../screens/AVOs/AVOsList';
 import { RegionList } from '../screens/Regions/RegionList';
@@ -118,7 +118,7 @@ const DashboardStack = () => (
         Role.BR,
       ])}
     />
-    <Stack.Screen
+    {/* <Stack.Screen
       name={screenName.BranchPerformance}
       component={RoleGuard(BranchPerformance, [
         Role.CEO,
@@ -127,7 +127,7 @@ const DashboardStack = () => (
         Role.ZM,
         Role.BR,
       ])}
-    />
+    /> */}
     <Stack.Screen
       name={screenName.CustomerList}
       component={RoleGuard(CustomerList, [
@@ -150,7 +150,7 @@ const DashboardStack = () => (
         Role.AVO,
       ])}
     />
-    <Stack.Screen
+    {/*  <Stack.Screen
       name={screenName.CustomerTransactions}
       component={RoleGuard(CustomerTransactions, [
         Role.CEO,
@@ -161,7 +161,7 @@ const DashboardStack = () => (
         Role.AVO,
       ])}
     />
-    <Stack.Screen
+   <Stack.Screen
       name={screenName.InvoiceList}
       component={RoleGuard(InvoiceList, [
         Role.CEO,
@@ -186,7 +186,7 @@ const DashboardStack = () => (
     <Stack.Screen
       name={screenName.NewSale}
       component={RoleGuard(NewSale, [Role.BR, Role.AVO])}
-    />
+    /> 
     <Stack.Screen
       name={screenName.BranchComparison}
       component={RoleGuard(BranchComparison, [
@@ -225,7 +225,7 @@ const DashboardStack = () => (
         Role.ZM,
         Role.BR,
       ])}
-    />
+    />*/}
   </Stack.Navigator>
 );
 
