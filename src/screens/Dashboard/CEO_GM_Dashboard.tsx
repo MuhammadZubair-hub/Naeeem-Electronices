@@ -224,13 +224,16 @@ export const CEO_GM_Dashboard: React.FC = () => {
                   purple={false}
                 /> */}
 
+                
+
+                <HorizontalStackedBarGraph data={allRegionsTotal} />
                 <Card
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-around',
                     marginHorizontal: AppSizes.Margin_Horizontal_20,
                     elevation: 12,
-                    marginTop: AppSizes.Margin_Vertical_20,
+                    //marginTop: AppSizes.Margin_Vertical_20,
                   }}
                 >
                   <View
@@ -240,7 +243,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
                     ]}
                   >
                     <Text style={styles.cardSubtitle}>Total</Text>
-                    <Text style={{ color: 'white' }}>
+                    <Text style={{ color: 'white',fontFamily:fonts.medium }}>
                       {regionsCountData.totalCount}
                     </Text>
                   </View>
@@ -251,7 +254,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
                     ]}
                   >
                     <Text style={styles.cardSubtitle}>Paid</Text>
-                    <Text style={{ color: 'white' }}>
+                    <Text style={{ color: 'white',fontFamily:fonts.medium }}>
                       {regionsCountData.paidCount}
                     </Text>
                   </View>
@@ -263,13 +266,11 @@ export const CEO_GM_Dashboard: React.FC = () => {
                     ]}
                   >
                     <Text style={styles.cardSubtitle}>Due</Text>
-                    <Text style={{ color: 'white' }}>
+                    <Text style={{ color: 'white',fontFamily:fonts.medium }}>
                       {regionsCountData.dueCount}
                     </Text>
                   </View>
                 </Card>
-
-                <HorizontalStackedBarGraph data={allRegionsTotal} />
 
                 <RegionList data={regionsData} />
               </>
@@ -310,7 +311,8 @@ const styles = StyleSheet.create({
   },
   cardSubtitle: {
     fontSize: AppSizes.Font_16,
-    fontWeight: 'bold',
+    fontFamily:fonts.medium,
+    // fontWeight: 'bold',
     color: 'white',
   },
 });

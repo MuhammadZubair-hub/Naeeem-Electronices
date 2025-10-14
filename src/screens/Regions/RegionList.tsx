@@ -23,6 +23,8 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
   return (
     <FlatList
       data={data}
+      nestedScrollEnabled
+      scrollEnabled={false}
       ListHeaderComponent={() => (
         <Text
           style={{
