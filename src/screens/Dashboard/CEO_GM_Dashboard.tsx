@@ -58,26 +58,26 @@ export const CEO_GM_Dashboard: React.FC = () => {
   // const { isLoading } = useSelector((state: RootState) => state.dashboard);
   const Id = useSelector((state: RootState) => state.auth.user?.empId);
 
-  // ✅ Random color generator (optimized)
-  const getRandomColor = useCallback(() => {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-  }, []);
+  // // ✅ Random color generator (optimized)
+  // const getRandomColor = useCallback(() => {
+  //   const letters = '0123456789ABCDEF';
+  //   let color = '#';
+  //   for (let i = 0; i < 6; i++) {
+  //     color += letters[Math.floor(Math.random() * 16)];
+  //   }
+  //   return color;
+  // }, []);
 
-  const generateUniqueColors = useCallback(
-    (count: number) => {
-      const colors = new Set<string>();
-      while (colors.size < count) {
-        colors.add(getRandomColor());
-      }
-      return Array.from(colors);
-    },
-    [getRandomColor],
-  );
+  // const generateUniqueColors = useCallback(
+  //   (count: number) => {
+  //     const colors = new Set<string>();
+  //     while (colors.size < count) {
+  //       colors.add(getRandomColor());
+  //     }
+  //     return Array.from(colors);
+  //   },
+  //   [getRandomColor],
+  // );
 
   // ✅ API Calls
   const getAllRegionsCount = useCallback(async () => {
@@ -134,7 +134,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
     } catch (error) {
       console.error('Error fetching regions:', error);
     }
-  }, [Id, generateUniqueColors]);
+  }, [Id]);
 
   const getAllDashboardData = useCallback(async () => {
     try {
