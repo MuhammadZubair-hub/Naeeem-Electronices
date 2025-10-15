@@ -114,10 +114,8 @@ export const CustomerList: React.FC = () => {
       const isExpanded = expandedCustomerCode === item.customerCode;
 
       return (
-        <TouchableOpacity
+        <View
           key={item.customerCode}
-          onPress={() => handleCustomerPress(item)}
-          activeOpacity={0.9}
           style={[styles.item, { backgroundColor: theme.colors.surface }]}
         >
           <Text
@@ -200,8 +198,22 @@ export const CustomerList: React.FC = () => {
             </View>
           )}
 
+          <Button
+            title="View Detail"
+            //textStyle={{ color: theme.colors.secondaryDark, padding: 0 }}
+            onPress={() => handleCustomerPress(item)}
+            style={{
+              paddingHorizontal: theme.spacing.md,
+              paddingVertical: 6,
+              minHeight: 22,
+              marginTop: 10,
+              backgroundColor: theme.colors.secondaryDark,
+              borderColor: theme.colors.secondaryDark,
+              borderWidth: 1,
+            }}
+          />
           {/* COLLAPSED STATE BUTTON */}
-          {!isExpanded && (
+          {/* {!isExpanded && (
             <Button
               title="View Detail"
               textStyle={{ color: theme.colors.secondaryDark, padding: 0 }}
@@ -216,8 +228,8 @@ export const CustomerList: React.FC = () => {
                 borderWidth: 1,
               }}
             />
-          )}
-        </TouchableOpacity>
+          )} */}
+        </View>
       );
     },
     [theme, expandedCustomerCode, handleToggle],
@@ -290,6 +302,8 @@ export const CustomerList: React.FC = () => {
                 >
                   No Customers Found
                 </Text>
+
+                
               </View>
             )}
             initialNumToRender={15}

@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { Header } from '../../components/common/Header';
 import { API_Config } from '../../services/apiServices';
@@ -12,14 +19,16 @@ import { Button } from '../../components/common/Button';
 import { Card } from '../../components/common';
 import { useTheme } from '../../hooks/useTheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Ionicons from '@react-native-vector-icons/ionicons';
 
 export const CustomerDetail: React.FC = () => {
   const { theme } = useTheme();
   const route = useRoute<any>();
   const { CustomerCode } = route.params;
 
-  const [customerDetails, setCustomerDetails] = useState<any>(null);
+  const [customerDetails, setCustomerDetails] = useState<any>([]);
   const [loading, setLoading] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     getCustomerDetails();
@@ -32,8 +41,8 @@ export const CustomerDetail: React.FC = () => {
         docEntry: CustomerCode,
       });
       if (response?.success) {
-        setCustomerDetails(response.data.data[0]);
-        console.log('customer detail is: ', response.data.data[0]);
+        setCustomerDetails(response.data.data);
+        console.log('customer detail is: ', response.data.data);
       } else {
         showMessage({
           message: 'Error',
@@ -51,19 +60,69 @@ export const CustomerDetail: React.FC = () => {
 
   const renderItem = ({ item }: { item: any }) => (
     <View style={[{ backgroundColor: theme.colors.surface }, styles.item]}>
-      <Text
-        style={[
-          styles.title,
-          {
-            color: theme.colors.secondaryDark,
-            fontFamily: fonts.bold,
-            // fontSize: AppSizes.Font_20,
-            marginVertical: AppSizes.Margin_Vertical_10,
-          },
-        ]}
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginBottom: 10,
+        }}
       >
-        {item?.customerName || 'N/A'}
-      </Text>
+        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+          <Text
+            style={[
+              styles.title,
+              {
+                color: theme.colors.secondaryDark,
+                fontFamily: fonts.bold,
+                // fontSize: AppSizes.Font_20,
+                // marginVertical: AppSizes.Margin_Vertical_10,
+              },
+            ]}
+          >
+            {item?.customerName || 'N/A'}
+          </Text>
+          <Text
+            style={[
+              // styles.title,
+              {
+                color: theme.colors.textSecondary,
+                fontFamily: fonts.bold,
+                alignSelf: 'center',
+                // fontSize: AppSizes.Font_20,
+                // marginVertical: AppSizes.Margin_Vertical_10,
+              },
+            ]}
+          >
+            s/o
+          </Text>
+          <Text
+            style={[
+              styles.title,
+              {
+                color: theme.colors.secondaryDark,
+                fontFamily: fonts.bold,
+                // fontSize: AppSizes.Font_20,
+                // marginVertical: AppSizes.Margin_Vertical_10,
+              },
+            ]}
+          >
+            {item?.FatherName || 'Shoaib Hashim'}
+          </Text>
+        </View>
+
+        <Image
+          height={100}
+          width={100}
+          borderRadius={10}
+          source={{
+            uri: item.custPic
+              ? `data:image/jpeg;base64,${item?.custPic}`
+              : 'https://24newshd.tv/digital_images/large/2023-12-31/chahat-fateh-ali-khan-begs-for-new-laws-after-rejection-of-nomination-papers-1731428057-6778.webp',
+          }}
+          alt="Customer Image"
+          resizeMode="cover"
+        />
+      </View>
 
       <View
         style={{
@@ -98,7 +157,7 @@ export const CustomerDetail: React.FC = () => {
           {item?.customerCode || 'N/A'}
         </Text>
       </View>
- <View
+      <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
@@ -114,7 +173,7 @@ export const CustomerDetail: React.FC = () => {
             },
           ]}
         >
-          Invoice No :
+          Processing No :
         </Text>
         <Text
           style={[
@@ -122,17 +181,16 @@ export const CustomerDetail: React.FC = () => {
             {
               color: theme.colors.black,
               fontWeight: 'bold',
-              //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+              //backgroundColor: theme.colors.white,
               padding: AppSizes.Padding_Horizontal_5,
               borderRadius: AppSizes.Radius_15,
             },
           ]}
         >
-          {item?.invoiceNo || 'N/A'}
+          {item?.processingNo || 'N/A'}
         </Text>
       </View>
-      
-       {/* <View
+      <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
@@ -148,7 +206,7 @@ export const CustomerDetail: React.FC = () => {
             },
           ]}
         >
-          Married :
+          CNIC :
         </Text>
         <Text
           style={[
@@ -162,10 +220,9 @@ export const CustomerDetail: React.FC = () => {
             },
           ]}
         >
-          {item?.u_Mstatus || 'N/A'}
+          {item?.product || 'N/A'}
         </Text>
-      </View> */}
-
+      </View>
       <View
         style={{
           flexDirection: 'row',
@@ -199,8 +256,39 @@ export const CustomerDetail: React.FC = () => {
           {item?.product || 'N/A'}
         </Text>
       </View>
-
-     
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Text
+          style={[
+            styles.subtitle,
+            {
+              color: theme.colors.textSecondary,
+              fontSize: AppSizes.Font_14,
+              fontWeight: 'bold',
+            },
+          ]}
+        >
+          Invoice No :
+        </Text>
+        <Text
+          style={[
+            styles.subtitle,
+            {
+              color: theme.colors.black,
+              fontWeight: 'bold',
+              //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+              padding: AppSizes.Padding_Horizontal_5,
+              borderRadius: AppSizes.Radius_15,
+            },
+          ]}
+        >
+          {item?.invoiceNo || 'N/A'}
+        </Text>
+      </View>
 
       <View
         style={{
@@ -300,7 +388,120 @@ export const CustomerDetail: React.FC = () => {
           {item?.balance || 'N/A'}
         </Text>
       </View>
- 
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Text
+          style={[
+            styles.subtitle,
+            {
+              color: theme.colors.textSecondary,
+              fontSize: AppSizes.Font_14,
+              fontWeight: 'bold',
+            },
+          ]}
+        >
+          Occupation :
+        </Text>
+        <Text
+          style={[
+            styles.subtitle,
+            {
+              color: theme.colors.black,
+              fontWeight: 'bold',
+              //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+              padding: AppSizes.Padding_Horizontal_5,
+              borderRadius: AppSizes.Radius_15,
+            },
+          ]}
+        >
+          {item?.Occ || 'N/A'}
+        </Text>
+      </View>
+
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Text
+            style={[
+              styles.subtitle,
+              {
+                color: theme.colors.textSecondary,
+                fontSize: AppSizes.Font_14,
+                fontWeight: 'bold',
+                textAlign: 'center',
+              },
+            ]}
+          >
+            Married :
+          </Text>
+          <Text
+            style={[
+              styles.subtitle,
+              {
+                color: theme.colors.black,
+                fontWeight: 'bold',
+                //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                padding: AppSizes.Padding_Horizontal_5,
+                borderRadius: AppSizes.Radius_15,
+                textAlign: 'center',
+              },
+            ]}
+          >
+            {item?.u_Mstatus || 'N/A'}
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Text
+            style={[
+              styles.subtitle,
+              {
+                color: theme.colors.textSecondary,
+                fontSize: AppSizes.Font_14,
+                fontWeight: 'bold',
+              },
+            ]}
+          >
+            House Owner :
+          </Text>
+          <Text
+            style={[
+              styles.subtitle,
+              {
+                color: theme.colors.black,
+                fontWeight: 'bold',
+                //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                padding: AppSizes.Padding_Horizontal_5,
+                borderRadius: AppSizes.Radius_15,
+                textAlign: 'center',
+              },
+            ]}
+          >
+            {item?.u_Mstatus || 'N/A'}
+          </Text>
+        </View>
+      </View>
+
       <View
         style={{
           flexDirection: 'row',
@@ -366,24 +567,616 @@ export const CustomerDetail: React.FC = () => {
         >
           {item?.phone2 || 'N/A'}
         </Text>
-      </View> 
-    </View>
-  );
+      </View>
 
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Text
+          style={[
+            styles.subtitle,
+            {
+              color: theme.colors.textSecondary,
+              fontSize: AppSizes.Font_14,
+              fontWeight: 'bold',
+            },
+          ]}
+        >
+          Location Res :
+        </Text>
+        <Text
+          style={[
+            styles.subtitle,
+            {
+              color: theme.colors.black,
+              fontWeight: 'bold',
+              //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+              padding: AppSizes.Padding_Horizontal_5,
+              borderRadius: AppSizes.Radius_15,
+            },
+          ]}
+        >
+          {item?.due || 'N/A'}
+        </Text>
+      </View>
 
-  const downloadPDF = ({ item }: { item: any }) => (
-    <View>
-      <h1>Customer</h1>
-      <p><strong>Name:</strong> ${item.customerName || 'N/A'}</p>
-      <p><strong>Customer Code:</strong> ${item.customerCode || 'N/A'}</p>
-      <p><strong>Invoice No:</strong> ${item.invoiceNo || 'N/A'}</p>
-      <p><strong>Married:</strong> ${item.u_Mstatus || 'N/A'}</p>
-      <p><strong>Product:</strong> ${item.product || 'N/A'}</p>
-      <p><strong>Installment Amount:</strong> ${item.installment || 'N/A'}</p>
-      <p><strong>Due Amount:</strong> ${item.due || 'N/A'}</p>
-      <p><strong>Balance:</strong> ${item.balance || 'N/A'}</p>
-      <p><strong>Phone 1:</strong> ${item.phone || 'N/A'}</p>
-      <p><strong>Phone 2:</strong> ${item.phone2 || 'N/A'}</p>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Text
+          style={[
+            styles.subtitle,
+            {
+              color: theme.colors.textSecondary,
+              fontSize: AppSizes.Font_14,
+              fontWeight: 'bold',
+            },
+          ]}
+        >
+          Location Offc :
+        </Text>
+        <Text
+          style={[
+            styles.subtitle,
+            {
+              color: theme.colors.black,
+              fontWeight: 'bold',
+              //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+              padding: AppSizes.Padding_Horizontal_5,
+              borderRadius: AppSizes.Radius_15,
+            },
+          ]}
+        >
+          {item?.due || 'N/A'}
+        </Text>
+      </View>
+
+      <View style={styles.separator} />
+
+      {/* COLLAPSED STATE BUTTON */}
+      {!isExpanded ? (
+        <Button
+          title="Customer Detail"
+          textStyle={{ color: theme.colors.secondaryDark, padding: 0 }}
+          onPress={() => setIsExpanded(true)}
+          style={{
+            paddingHorizontal: theme.spacing.md,
+            paddingVertical: 6,
+            minHeight: 22,
+            marginTop: 10,
+            backgroundColor: theme.colors.surface,
+            borderColor: theme.colors.secondaryDark,
+            borderWidth: 1,
+          }}
+        />
+      ) : (
+        <View>
+          <View
+            style={{
+              paddingHorizontal: theme.spacing.md,
+
+              paddingVertical: 6,
+              minHeight: 22,
+              marginTop: 10,
+              backgroundColor: theme.colors.surface,
+              borderColor: theme.colors.secondaryDark,
+              borderRadius: AppSizes.Radius_10,
+              marginBottom: AppSizes.Margin_Vertical_10,
+              borderWidth: 1,
+            }}
+          >
+            <Text
+              style={{
+                alignSelf: 'center',
+                color: theme.colors.secondaryDark,
+                fontFamily: fonts.medium,
+              }}
+            >
+              G1 Details
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.textSecondary,
+                  fontSize: AppSizes.Font_14,
+                  fontWeight: 'bold',
+                },
+              ]}
+            >
+              Name s/o Father Name :
+            </Text>
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.black,
+                  fontWeight: 'bold',
+                  //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                  padding: AppSizes.Padding_Horizontal_5,
+                  borderRadius: AppSizes.Radius_15,
+                },
+              ]}
+            >
+              {item?.phone || 'N/A'}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.textSecondary,
+                  fontSize: AppSizes.Font_14,
+                  fontWeight: 'bold',
+                },
+              ]}
+            >
+              CNIC :
+            </Text>
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.black,
+                  fontWeight: 'bold',
+                  //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                  padding: AppSizes.Padding_Horizontal_5,
+                  borderRadius: AppSizes.Radius_15,
+                },
+              ]}
+            >
+              {item?.phone || 'N/A'}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.textSecondary,
+                  fontSize: AppSizes.Font_14,
+                  fontWeight: 'bold',
+                },
+              ]}
+            >
+              Occupation :
+            </Text>
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.black,
+                  fontWeight: 'bold',
+                  //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                  padding: AppSizes.Padding_Horizontal_5,
+                  borderRadius: AppSizes.Radius_15,
+                },
+              ]}
+            >
+              {item?.Occupation || 'N/A'}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.textSecondary,
+                  fontSize: AppSizes.Font_14,
+                  fontWeight: 'bold',
+                },
+              ]}
+            >
+              Location Res :
+            </Text>
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.black,
+                  fontWeight: 'bold',
+                  //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                  padding: AppSizes.Padding_Horizontal_5,
+                  borderRadius: AppSizes.Radius_15,
+                },
+              ]}
+            >
+              {item?.phone || 'N/A'}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.textSecondary,
+                  fontSize: AppSizes.Font_14,
+                  fontWeight: 'bold',
+                },
+              ]}
+            >
+              Location Offc :
+            </Text>
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.black,
+                  fontWeight: 'bold',
+                  //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                  padding: AppSizes.Padding_Horizontal_5,
+                  borderRadius: AppSizes.Radius_15,
+                },
+              ]}
+            >
+              {item?.phone || 'N/A'}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.textSecondary,
+                  fontSize: AppSizes.Font_14,
+                  fontWeight: 'bold',
+                },
+              ]}
+            >
+              Phone 1 :
+            </Text>
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.black,
+                  fontWeight: 'bold',
+                  //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                  padding: AppSizes.Padding_Horizontal_5,
+                  borderRadius: AppSizes.Radius_15,
+                },
+              ]}
+            >
+              {item?.phone || 'N/A'}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.textSecondary,
+                  fontSize: AppSizes.Font_14,
+                  fontWeight: 'bold',
+                },
+              ]}
+            >
+              Phone 2 :
+            </Text>
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.black,
+                  fontWeight: 'bold',
+                  //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                  padding: AppSizes.Padding_Horizontal_5,
+                  borderRadius: AppSizes.Radius_15,
+                },
+              ]}
+            >
+              {item?.phone || 'N/A'}
+            </Text>
+          </View>
+          {/* // G1 ending */}
+          <View
+            style={{
+              paddingHorizontal: theme.spacing.md,
+
+              paddingVertical: 6,
+              minHeight: 22,
+              marginTop: 10,
+              backgroundColor: theme.colors.surface,
+              borderColor: theme.colors.secondaryDark,
+              borderRadius: AppSizes.Radius_10,
+              marginBottom: AppSizes.Margin_Vertical_10,
+              borderWidth: 1,
+            }}
+          >
+            <Text
+              style={{
+                alignSelf: 'center',
+                color: theme.colors.secondaryDark,
+                fontFamily: fonts.medium,
+              }}
+            >
+              G2 Details
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.textSecondary,
+                  fontSize: AppSizes.Font_14,
+                  fontWeight: 'bold',
+                },
+              ]}
+            >
+              Name s/o Father Name :
+            </Text>
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.black,
+                  fontWeight: 'bold',
+                  //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                  padding: AppSizes.Padding_Horizontal_5,
+                  borderRadius: AppSizes.Radius_15,
+                },
+              ]}
+            >
+              {item?.phone || 'N/A'}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.textSecondary,
+                  fontSize: AppSizes.Font_14,
+                  fontWeight: 'bold',
+                },
+              ]}
+            >
+              CNIC :
+            </Text>
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.black,
+                  fontWeight: 'bold',
+                  //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                  padding: AppSizes.Padding_Horizontal_5,
+                  borderRadius: AppSizes.Radius_15,
+                },
+              ]}
+            >
+              {item?.phone || 'N/A'}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.textSecondary,
+                  fontSize: AppSizes.Font_14,
+                  fontWeight: 'bold',
+                },
+              ]}
+            >
+              Occupation :
+            </Text>
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.black,
+                  fontWeight: 'bold',
+                  //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                  padding: AppSizes.Padding_Horizontal_5,
+                  borderRadius: AppSizes.Radius_15,
+                },
+              ]}
+            >
+              {item?.phone || 'N/A'}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.textSecondary,
+                  fontSize: AppSizes.Font_14,
+                  fontWeight: 'bold',
+                },
+              ]}
+            >
+              Location Res :
+            </Text>
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.black,
+                  fontWeight: 'bold',
+                  //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                  padding: AppSizes.Padding_Horizontal_5,
+                  borderRadius: AppSizes.Radius_15,
+                },
+              ]}
+            >
+              {item?.phone || 'N/A'}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.textSecondary,
+                  fontSize: AppSizes.Font_14,
+                  fontWeight: 'bold',
+                },
+              ]}
+            >
+              Location Offc :
+            </Text>
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.black,
+                  fontWeight: 'bold',
+                  //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                  padding: AppSizes.Padding_Horizontal_5,
+                  borderRadius: AppSizes.Radius_15,
+                },
+              ]}
+            >
+              {item?.phone || 'N/A'}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.textSecondary,
+                  fontSize: AppSizes.Font_14,
+                  fontWeight: 'bold',
+                },
+              ]}
+            >
+              Phone 1 :
+            </Text>
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.black,
+                  fontWeight: 'bold',
+                  //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                  padding: AppSizes.Padding_Horizontal_5,
+                  borderRadius: AppSizes.Radius_15,
+                },
+              ]}
+            >
+              {item?.phone || 'N/A'}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.textSecondary,
+                  fontSize: AppSizes.Font_14,
+                  fontWeight: 'bold',
+                },
+              ]}
+            >
+              Phone 2 :
+            </Text>
+            <Text
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.colors.black,
+                  fontWeight: 'bold',
+                  //backgroundColor: 'rgba(109, 207, 18, 0.12)',
+                  padding: AppSizes.Padding_Horizontal_5,
+                  borderRadius: AppSizes.Radius_15,
+                },
+              ]}
+            >
+              {item?.phone || 'N/A'}
+            </Text>
+          </View>
+          <Ionicons
+            name="chevron-up"
+            size={22}
+            color={theme.colors.secondaryDark}
+            style={{ alignSelf: 'center', marginTop: 8 }}
+            onPress={() => setIsExpanded(false)}
+          />
+        </View>
+      )}
     </View>
   );
 
@@ -401,8 +1194,10 @@ export const CustomerDetail: React.FC = () => {
           <Loader title="Loading Customer details..." />
         ) : (
           <FlatList
-            data={customerDetails ? [customerDetails] : []}
+            data={customerDetails}
             keyExtractor={item => item.id}
+            refreshing={loading}
+            onRefresh={() => getCustomerDetails()}
             contentContainerStyle={styles.list}
             renderItem={item => renderItem(item)}
             ListEmptyComponent={
@@ -453,4 +1248,10 @@ const styles = StyleSheet.create({
   },
   subtitle: { fontSize: 14, marginTop: 4 },
   title: { fontSize: AppSizes.Font_18 },
+  separator: {
+    marginVertical: 12,
+    // marginHorizontal: AppSizes.Gap_30,
+    borderWidth: 0.5,
+    borderTopColor: '#ccc',
+  },
 });

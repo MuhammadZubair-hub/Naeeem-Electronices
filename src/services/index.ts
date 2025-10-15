@@ -7,7 +7,6 @@ export interface ApiCallOptions {
   data?: Record<string, any>;
 }
 
-
 export interface ApiCallResponse<T = any> {
   success: boolean;
   status: number;
