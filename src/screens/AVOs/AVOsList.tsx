@@ -129,8 +129,6 @@ export const AVOsList: React.FC = () => {
                     {
                       color: theme.colors.secondaryDark,
                       fontFamily: fonts.bold,
-                      // fontSize: AppSizes.Font_20,
-                      marginVertical: AppSizes.Margin_Vertical_10,
                     },
                   ]}
                 >
@@ -148,8 +146,6 @@ export const AVOsList: React.FC = () => {
                       styles.subtitle,
                       {
                         color: theme.colors.textSecondary,
-                        fontSize: AppSizes.Font_14,
-                        fontWeight: 'bold',
                       },
                     ]}
                   >
@@ -160,10 +156,6 @@ export const AVOsList: React.FC = () => {
                       styles.subtitle,
                       {
                         color: theme.colors.black,
-                        fontWeight: 'bold',
-                        //backgroundColor: theme.colors.white,
-                        padding: AppSizes.Padding_Horizontal_5,
-                        borderRadius: AppSizes.Radius_15,
                       },
                     ]}
                   >
@@ -182,8 +174,6 @@ export const AVOsList: React.FC = () => {
                       styles.subtitle,
                       {
                         color: theme.colors.textSecondary,
-                        fontSize: AppSizes.Font_14,
-                        fontWeight: 'bold',
                       },
                     ]}
                   >
@@ -194,10 +184,6 @@ export const AVOsList: React.FC = () => {
                       styles.subtitle,
                       {
                         color: theme.colors.success,
-                        fontWeight: 'bold',
-                        //backgroundColor: 'rgba(109, 207, 18, 0.12)',
-                        padding: AppSizes.Padding_Horizontal_5,
-                        borderRadius: AppSizes.Radius_15,
                       },
                     ]}
                   >
@@ -216,8 +202,6 @@ export const AVOsList: React.FC = () => {
                       styles.subtitle,
                       {
                         color: theme.colors.textSecondary,
-                        fontSize: AppSizes.Font_14,
-                        fontWeight: 'bold',
                       },
                     ]}
                   >
@@ -228,10 +212,6 @@ export const AVOsList: React.FC = () => {
                       styles.subtitle,
                       {
                         color: theme.colors.warning,
-                        fontWeight: 'bold',
-                        //backgroundColor: 'rgba(109, 207, 18, 0.12)',
-                        padding: AppSizes.Padding_Horizontal_5,
-                        borderRadius: AppSizes.Radius_15,
                       },
                     ]}
                   >
@@ -248,10 +228,10 @@ export const AVOsList: React.FC = () => {
                 />
                 <View
                   style={{
-                    marginVertical: 12,
+                    // marginBottom: 12,
                     marginHorizontal: AppSizes.Gap_30,
+                    // marginTop: AppSizes.Margin_Vertical_20,
                     borderWidth: 0.5,
-                    borderTopColor: '#ccc',
                   }}
                 ></View>
               </View>
@@ -264,15 +244,24 @@ export const AVOsList: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
   backgroundImage: { flex: 1, width: '100%', height: '100%' },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    // ...StyleSheet.absoluteFillObject,
     backgroundColor: 'white',
   },
   safeArea: { flex: 1, paddingBottom: 20 },
-  list: { padding: 20, rowGap: AppSizes.Padding_Horizontal_20 },
-  item: { borderRadius: 12, padding: 16, elevation: 10 },
-  title: { fontSize: AppSizes.Font_18 },
-  subtitle: { fontSize: 14, marginTop: 4 },
+  list: {
+    paddingVertical: AppSizes.Margin_Vertical_20,
+    rowGap: AppSizes.Gap_20,
+  },
+  item: {
+    marginHorizontal: AppSizes.Margin_Horizontal_20,
+    elevation: 14,
+    backgroundColor: 'white',
+    padding: 16,
+    rowGap: AppSizes.Margin_Vertical_10,
+    borderRadius: 12,
+  },
+  title: { fontSize: AppSizes.Font_20, fontFamily: fonts.semiBold },
+  subtitle: { fontSize: AppSizes.Font_14, fontFamily: fonts.semiBold },
 });

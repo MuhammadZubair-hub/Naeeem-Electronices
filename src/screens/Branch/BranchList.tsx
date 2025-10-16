@@ -44,7 +44,6 @@ export const BranchList: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [loading, setLoading] = useState(false);
 
-
   const [branches, setBranches] = useState();
   const Id = useSelector((state: RootState) => state.auth.user?.empId);
 
@@ -66,7 +65,7 @@ export const BranchList: React.FC = () => {
         message: 'Error',
         description: response.data.message,
         type: 'danger',
-        style : CommonStyles.error
+        style: CommonStyles.error,
       });
       console.log('response erro', response.message);
     }
@@ -80,7 +79,7 @@ export const BranchList: React.FC = () => {
   return (
     <SafeAreaView style={styles.backgroundImage}>
       {/* Overlay for dark shade */}
-      <View style={styles.overlay} />
+      {/* <View style={styles.overlay} /> */}
 
       {/* Main Screen Content */}
       <View style={styles.safeArea}>
@@ -96,8 +95,23 @@ export const BranchList: React.FC = () => {
             onRefresh={() => getAllBranches()}
             refreshing={loading}
             ListEmptyComponent={() => (
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
-                <Text style={{ color: theme.colors.white,fontFamily: fonts.extraBoldItalic,fontSize: AppSizes.Font_16 }}>No Item Found ...</Text>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: 20,
+                }}
+              >
+                <Text
+                  style={{
+                    color: theme.colors.white,
+                    fontFamily: fonts.extraBoldItalic,
+                    fontSize: AppSizes.Font_16,
+                  }}
+                >
+                  No Item Found ...
+                </Text>
               </View>
             )}
             renderItem={({ item }) => (
@@ -105,27 +119,22 @@ export const BranchList: React.FC = () => {
                 style={[{ backgroundColor: theme.colors.surface }, styles.item]}
               >
                 <View
-                  style={{
-                    justifyContent: 'space-between',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}
+                  style={styles.row}
                 >
                   <Text
                     style={[
                       styles.title,
                       {
                         color: theme.colors.secondaryDark,
-                        fontFamily: fonts.extraBoldItalic,
+                        fontFamily: fonts.bold,
                         fontSize: AppSizes.Font_20,
-                        marginVertical: AppSizes.Margin_Vertical_10,
                       },
                     ]}
                   >
                     {item.branchName}
                   </Text>
                   <Text
-                    style={[styles.value, { color: theme.colors.secondary }]}
+                    style={[styles.subtitle, { color: theme.colors.secondary }]}
                   >
                     ( {item?.branchCode || 'N/A'})
                   </Text>
@@ -181,11 +190,9 @@ export const BranchList: React.FC = () => {
                   size="sm"
                   style={{ marginTop: 22 }}
                 />
-
                 <View style={styles.divider} />
               </View>
             )}
-           
           />
         )}
       </View>
@@ -194,66 +201,37 @@ export const BranchList: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingBottom: 100 },
+  container: { flex: 1 },
   backgroundImage: { flex: 1, width: '100%', height: '100%' },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'white',
-  },
-  safeArea: { flex: 1, paddingBottom: 20 },
-  list: { padding: AppSizes.Padding_Vertical_15, rowGap: AppSizes.Gap_20 },
-  item: {
-    borderRadius: 12,
-    padding: 16,
-    elevation: 10,
-  },
-  title: { fontSize: 18, fontWeight: 'bold' },
-  subtitle: { fontSize: 14, marginTop: 4,fontWeight: 'bold' },
 
-  summaryCard: {
-    marginHorizontal: 20,
-    marginBottom: 20,
+  safeArea: { flex: 1 },
+  list: {
+    paddingVertical: AppSizes.Padding_Vertical_20,
+    rowGap: AppSizes.Gap_20,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontFamily: 'Poppins-SemiBold',
-    marginBottom: 16,
+  item: {
+    marginHorizontal: AppSizes.Margin_Horizontal_20,
+    elevation: 14,
+    backgroundColor: 'white',
+    padding: 16,
+    rowGap: AppSizes.Margin_Vertical_10,
+    borderRadius: 12,
   },
-  summaryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  summaryItem: {
-    width: '48%',
-    marginBottom: 16,
-  },
-  summaryValue: {
-    fontSize: 20,
-    fontFamily: 'Poppins-Bold',
-    marginBottom: 4,
-  },
-  summaryLabel: {
-    fontSize: 12,
-    fontFamily: 'Poppins-Regular',
-  },
-  branchList: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
+
+  title: { fontSize: AppSizes.Font_20, fontFamily: fonts.semiBold },
+  subtitle: { fontSize: AppSizes.Font_14, fontFamily: fonts.semiBold },
 
   value: {
-    fontWeight: 'bold',
-    padding: AppSizes.Padding_Horizontal_5,
-    borderRadius: AppSizes.Radius_15,
+    fontFamily: fonts.semiBold,
+    fontSize: AppSizes.Font_14,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginVertical: 2,
+    alignItems:'center'
   },
   divider: {
-    marginVertical: 12,
+    // marginVertical: 12,
     marginHorizontal: AppSizes.Gap_30,
     borderWidth: 0.5,
     borderTopColor: '#ccc',

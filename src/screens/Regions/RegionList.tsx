@@ -48,8 +48,23 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
       )}
       ListHeaderComponentStyle={{ padding: AppSizes.Padding_Vertical_10 }}
       ListEmptyComponent={() => (
-        <View>
-          <Text>No Item Found</Text>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: 20,
+          }}
+        >
+          <Text
+            style={{
+              color: theme.colors.white,
+              fontFamily: fonts.extraBoldItalic,
+              fontSize: AppSizes.Font_16,
+            }}
+          >
+            No Item Found ...
+          </Text>
         </View>
       )}
       keyExtractor={item => item.id}
@@ -77,7 +92,7 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
               styles.title,
               {
                 color: theme.colors.secondaryDark,
-                fontFamily: fonts.extraBoldItalic,
+                fontFamily: fonts.bold,
                 fontSize: AppSizes.Font_20,
                 // marginTop: AppSizes.Margin_Vertical_10,
               },
@@ -95,7 +110,7 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
                 {
                   color: theme.colors.textSecondary,
                   fontSize: AppSizes.Font_14,
-                  fontWeight: 'bold',
+                  fontFamily: fonts.semiBold,
                 },
               ]}
             >
@@ -103,11 +118,11 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
             </Text>
             <Text
               style={[
-                styles.subtitle,
+                styles.subtitle2,
                 {
                   color: theme.colors.secondaryDark,
                   fontFamily: fonts.semiBold,
-                  paddingHorizontal: AppSizes.Padding_Horizontal_5,
+                  // paddingHorizontal: AppSizes.Padding_Horizontal_5,
                   borderRadius: AppSizes.Radius_15,
                 },
               ]}
@@ -124,7 +139,7 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
                 {
                   color: theme.colors.textSecondary,
                   fontSize: AppSizes.Font_14,
-                  fontWeight: 'bold',
+                  fontFamily: fonts.semiBold,
                 },
               ]}
             >
@@ -132,11 +147,11 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
             </Text>
             <Text
               style={[
-                styles.subtitle,
+                styles.subtitle2,
                 {
                   color: theme.colors.secondary,
-                  fontWeight: 'bold',
-                  paddingHorizontal: AppSizes.Padding_Horizontal_5,
+                  fontFamily: fonts.semiBold,
+                  // paddingHorizontal: AppSizes.Padding_Horizontal_5,
                   borderRadius: AppSizes.Radius_15,
                 },
               ]}
@@ -154,7 +169,7 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
                 {
                   color: theme.colors.textSecondary,
                   fontSize: AppSizes.Font_14,
-                  fontWeight: 'bold',
+                  fontFamily: fonts.semiBold,
                 },
               ]}
             >
@@ -162,12 +177,12 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
             </Text>
             <Text
               style={[
-                styles.subtitle,
+                styles.subtitle2,
                 {
                   color: theme.colors.success,
-                  fontWeight: 'bold',
+                  fontFamily: fonts.semiBold,
                   //backgroundColor: 'rgba(109, 207, 18, 0.12)',
-                  paddingHorizontal: AppSizes.Padding_Horizontal_5,
+                  // paddingHorizontal: AppSizes.Padding_Horizontal_5,
                   borderRadius: AppSizes.Radius_15,
                 },
               ]}
@@ -185,7 +200,7 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
                 {
                   color: theme.colors.textSecondary,
                   fontSize: AppSizes.Font_14,
-                  fontWeight: 'bold',
+                  fontFamily: fonts.semiBold,
                 },
               ]}
             >
@@ -193,12 +208,12 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
             </Text>
             <Text
               style={[
-                styles.subtitle,
+                styles.subtitle2,
                 {
                   color: theme.colors.warning,
-                  fontWeight: 'bold',
+                  fontFamily: fonts.semiBold,
                   //backgroundColor: 'rgba(255, 238, 0, 0.12)',
-                  paddingHorizontal: AppSizes.Padding_Horizontal_5,
+                  // paddingHorizontal: AppSizes.Padding_Horizontal_5,
                   borderRadius: AppSizes.Radius_15,
                 },
               ]}
@@ -216,7 +231,7 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
           />
           <View
             style={{
-              marginBottom: 12,
+              // marginBottom: 12,
               marginHorizontal: AppSizes.Gap_30,
               // marginTop: AppSizes.Margin_Vertical_20,
               borderWidth: 0.5,
@@ -238,6 +253,7 @@ const styles = StyleSheet.create({
     elevation: 14,
     backgroundColor: 'white',
   },
-  title: { fontSize: 18, fontWeight: 'bold' },
-  subtitle: { fontSize: 14, marginTop: 4 },
+  title: { fontSize: AppSizes.Font_20 },
+  subtitle: { fontSize: AppSizes.Font_14, flex: 1.5 },
+  subtitle2: { fontSize: AppSizes.Font_14, flex: 1.5, textAlign: 'right' },
 });

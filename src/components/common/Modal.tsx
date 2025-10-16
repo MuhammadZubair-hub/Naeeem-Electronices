@@ -7,8 +7,10 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Dimensions,
+  ScrollView,
 } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
+import { AppSizes } from '../../utils/AppSizes';
 
 const { height } = Dimensions.get('window');
 
@@ -40,31 +42,25 @@ export const Modal: React.FC<ModalProps> = ({
       animationType={animationType}
       onRequestClose={onClose}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay}>
-          <TouchableWithoutFeedback>
-            <View style={[styles.modal, { backgroundColor: theme.colors.surface }]}>
-              {title && (
-                <View style={styles.header}>
-                  <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
-                    {title}
-                  </Text>
-                  {showCloseButton && (
-                    <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                      <Text style={[styles.closeText, { color: theme.colors.textSecondary }]}>
-                        ✕
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
+      <View style={styles.overlay}>
+        <View style={[styles.modal, { backgroundColor: theme.colors.surface }]}>
+          {title && (
+            <View style={styles.header}>
+              <Text style={[styles.title, { color: theme.colors.textPrimary }]}>
+                {title}
+              </Text>
+              {showCloseButton && (
+                <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                  <Text style={[styles.closeText, { color: 'red' }]}>✕</Text>
+                </TouchableOpacity>
               )}
-              <View style={styles.content}>
-                {children}
-              </View>
             </View>
-          </TouchableWithoutFeedback>
+          )}
+          <ScrollView nestedScrollEnabled  style={styles.content}>
+            {children}
+          </ScrollView>
         </View>
-      </TouchableWithoutFeedback>
+      </View>
     </RNModal>
   );
 };
@@ -73,13 +69,13 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
-    padding: 20,
+    //padding: 10,
   },
   modal: {
     width: '100%',
-    maxHeight: height * 0.8,
+    maxHeight: '80%',
     borderRadius: 12,
     elevation: 5,
     shadowColor: '#000',
@@ -108,6 +104,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Bold',
   },
   content: {
-    padding: 20,
+    paddingVertical: AppSizes.Padding_Horizontal_10,
+    paddingHorizontal: AppSizes.Padding_Horizontal_10,
   },
 });

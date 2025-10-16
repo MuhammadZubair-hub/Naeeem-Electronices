@@ -82,8 +82,15 @@ export const CustomerList: React.FC = () => {
         }
 
         const lowerText = text.toLowerCase();
-        const filtered = customers.filter(customer =>
-          customer?.customerName?.toLowerCase().includes(lowerText),
+        const filtered = customers.filter(
+          customer =>
+            customer?.customerName?.toLowerCase().includes(lowerText) ||
+            customer?.customerCode?.toLowerCase().includes(lowerText) ||
+            customer?.invDocNo?.toLowerCase().includes(lowerText) ||
+            customer?.product?.toLowerCase().includes(lowerText) ||
+            customer?.phone1?.toLowerCase().includes(lowerText) ||
+            customer?.phone2?.toLowerCase().includes(lowerText) ||
+            customer?.cnic?.toLowerCase().includes(lowerText),
         );
         setFilteredCustomers(filtered);
       }, 300),
@@ -124,7 +131,7 @@ export const CustomerList: React.FC = () => {
               {
                 color: theme.colors.secondaryDark,
                 fontFamily: fonts.bold,
-                marginVertical: AppSizes.Margin_Vertical_10,
+                // marginVertical: AppSizes.Margin_Vertical_10,
               },
             ]}
           >
@@ -136,23 +143,97 @@ export const CustomerList: React.FC = () => {
             <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
               Customer Code :
             </Text>
+
             <Text style={[styles.value, { color: theme.colors.black }]}>
               {item.customerCode || 'N/A'}
             </Text>
           </View>
 
+          {/* BASIC INFO */}
           <View style={styles.row}>
             <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
-              Customer Status :
+              CNIC No. :
             </Text>
-            <Text style={[styles.value, { color: theme.colors.warning }]}>
-              {item.instStatus || 'N/A'}
+
+            <Text style={[styles.value, { color: theme.colors.black }]}>
+              {item.cnic || 'N/A'}
             </Text>
           </View>
 
-          <View style={styles.separator} />
+          <View style={styles.row}>
+            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
+              Phone No. 1 :
+            </Text>
+            <Text style={[styles.value, { color: theme.colors.black }]}>
+              {item.phone1 || 'N/A'}
+            </Text>
+          </View>
 
-          {/* EXPANDED VIEW */}
+          <View style={styles.row}>
+            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
+              Phone No. 2 :
+            </Text>
+            <Text style={[styles.value, { color: theme.colors.black }]}>
+              {item.phone2 || 'N/A'}
+            </Text>
+          </View>
+
+          <View style={styles.row}>
+            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
+              Invoice No :
+            </Text>
+            <Text style={[styles.value, { color: theme.colors.black }]}>
+              {item.invDocNo || 'N/A'}
+              {/* {String(item?.invDocNo || '').replace(/,/g, '')} */}
+            </Text>
+          </View>
+
+          <View style={styles.row}>
+            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
+              Invoice Date :
+            </Text>
+            <Text style={[styles.value, { color: theme.colors.black }]}>
+              {item.invDocDate || 'N/A'}
+            </Text>
+          </View>
+
+          <View style={styles.row}>
+            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
+              Product :
+            </Text>
+            <Text style={[styles.value, { color: theme.colors.black }]}>
+              {item.product || 'N/A'}
+            </Text>
+          </View>
+
+          <View style={styles.row}>
+            <Text style={[styles.label, { color: theme.colors.textSecondary, flex:1.5 }]}>
+              Installment Amount :
+            </Text>
+            <Text style={[styles.value, { color: theme.colors.black }]}>
+              {item.instTotalAmount || 'N/A'}
+            </Text>
+          </View>
+
+          <View style={styles.row}>
+            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
+              Due Amount :
+            </Text>
+            <Text style={[styles.value, { color: theme.colors.black }]}>
+              {item.instDueAmount || 'N/A'}
+            </Text>
+          </View>
+
+          <View style={styles.row}>
+            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
+              Balance :
+            </Text>
+            <Text style={[styles.value, { color: theme.colors.black }]}>
+              {item.balance || 'N/A'}
+            </Text>
+          </View>
+
+          {/* EXPANDED VIEW 
           {isExpanded && (
             <View style={{ marginTop: 10 }}>
               <View style={styles.row}>
@@ -196,7 +277,7 @@ export const CustomerList: React.FC = () => {
                 onPress={() => handleToggle(item.customerCode)}
               />
             </View>
-          )}
+          )}*/}
 
           <Button
             title="View Detail"
@@ -212,6 +293,8 @@ export const CustomerList: React.FC = () => {
               borderWidth: 1,
             }}
           />
+
+          <View style={styles.separator} />
           {/* COLLAPSED STATE BUTTON */}
           {/* {!isExpanded && (
             <Button
@@ -302,8 +385,6 @@ export const CustomerList: React.FC = () => {
                 >
                   No Customers Found
                 </Text>
-
-                
               </View>
             )}
             initialNumToRender={15}
@@ -322,14 +403,15 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   searchContainer: {
     marginHorizontal: AppSizes.Margin_Horizontal_20,
-    marginVertical: AppSizes.Margin_Vertical_20,
+    marginTop: AppSizes.Margin_Vertical_20,
   },
   searchInput: {
     borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 10,
-    fontSize: AppSizes.Font_16,
+    // paddingVertical: 10,
+    fontSize: AppSizes.Font_14,
     elevation: 3,
+    fontFamily: fonts.medium,
   },
   listContainer: {
     padding: 20,
@@ -338,16 +420,30 @@ const styles = StyleSheet.create({
   item: {
     borderRadius: 12,
     padding: 16,
-    elevation: 5,
-    marginBottom: 12,
+    elevation: 14,
+
+    rowGap: AppSizes.Margin_Vertical_10,
   },
-  title: { fontSize: AppSizes.Font_18 },
-  subtitle: { fontSize: AppSizes.Font_14, marginTop: 4 },
-  label: { fontSize: AppSizes.Font_14, fontWeight: 'bold' },
-  value: { fontSize: AppSizes.Font_14, fontWeight: 'bold' },
-  row: { flexDirection: 'row', justifyContent: 'space-between' },
+  title: {
+    fontSize: AppSizes.Font_20,
+    fontFamily: fonts.medium,
+  },
+  subtitle: { fontSize: AppSizes.Font_14 },
+  label: { fontSize: AppSizes.Font_14, fontFamily: fonts.semiBold, flex: 1.5 },
+  value: {
+    fontSize: AppSizes.Font_14,
+    fontFamily: fonts.semiBold,
+    flex: 1.5,
+    textAlign: 'right',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    // marginVertical: AppSizes.Radius_8,
+  },
   separator: {
-    marginVertical: 12,
+    // marginVertical: 12,
+    marginHorizontal: AppSizes.Gap_30,
     // marginHorizontal: AppSizes.Gap_30,
     borderWidth: 0.5,
     borderTopColor: '#ccc',
