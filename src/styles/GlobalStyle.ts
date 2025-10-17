@@ -1,3 +1,4 @@
+import { fonts } from '../assets/fonts/Fonts';
 import { AppSizes } from './../utils/AppSizes';
 import { StyleSheet } from "react-native";
 
@@ -6,6 +7,21 @@ export const CommonStyles = StyleSheet.create({
  
   error: {
     backgroundColor: 'red',
+    //height: 60,
+    width: '90%',
+    alignSelf: 'center',
+    marginTop: AppSizes.Margin_Vertical_40,
+    borderRadius: AppSizes.Radius_10,
+    paddingHorizontal: AppSizes.Padding_Horizontal_15,
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.45,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  warning: {
+    backgroundColor: '#e3ac05ff',
     //height: 60,
     width: '90%',
     alignSelf: 'center',

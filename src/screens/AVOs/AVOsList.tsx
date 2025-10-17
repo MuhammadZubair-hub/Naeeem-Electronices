@@ -67,8 +67,9 @@ export const AVOsList: React.FC = () => {
 
   const handleAVOPress = (item: any) => {
     // navigation.navigate(screenName.BranchList, { zoneId: zone.id });
-    console.log('navigating items are', item);
+    // console.log('navigating items are', item);
     if (item?.assigenedId == '') {
+
       showMessage({
         message: 'Error',
         description: 'Please Assign data to AVO',
@@ -77,7 +78,20 @@ export const AVOsList: React.FC = () => {
       });
       return;
     }
-    console.log('navigating to the customers list', item?.assigenedId);
+
+
+    if (item?.instDueAmount == '0') {
+      showMessage({
+        message: 'Error',
+        description: 'No dues are pending against this AVO.',
+        type: 'danger',
+        style: CommonStyles.error,
+      });
+      return;
+    }
+
+
+    //console.log('navigating to the customers list', item?.assigenedId);
 
     navigation.navigate(screenName.CustomerList, { AvoId: item?.assigenedId });
   };
@@ -232,6 +246,7 @@ export const AVOsList: React.FC = () => {
                     marginHorizontal: AppSizes.Gap_30,
                     // marginTop: AppSizes.Margin_Vertical_20,
                     borderWidth: 0.5,
+                   borderTopColor: '#ccc',
                   }}
                 ></View>
               </View>

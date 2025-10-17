@@ -235,7 +235,7 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
               marginHorizontal: AppSizes.Gap_30,
               // marginTop: AppSizes.Margin_Vertical_20,
               borderWidth: 0.5,
-              borderTopColor: theme.colors.secondary,
+            borderTopColor: '#ccc',
             }}
           ></View>
         </View>
