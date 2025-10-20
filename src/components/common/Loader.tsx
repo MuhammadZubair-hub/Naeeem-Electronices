@@ -4,7 +4,11 @@ import LottieView from 'lottie-react-native';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-const Loader = ({ title }) => {
+interface LoaderProps {
+  title?: string
+}
+
+const Loader = ({ title }: LoaderProps) => {
   const { theme } = useTheme();
 
   return (

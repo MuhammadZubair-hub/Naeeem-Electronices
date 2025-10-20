@@ -21,6 +21,33 @@ import Loader from '../../components/common/Loader';
 import { screenName } from '../../navigation/ScreenName';
 import { debounce } from 'lodash';
 import Ionicons from '@react-native-vector-icons/ionicons';
+import EmptyComponents from '../../components/common/EmptyComponents';
+
+const InfoRow = ({
+  label,
+  value,
+  color,
+  secondaryColor,
+  labelFlex,
+}: {
+  label: string;
+  value: any;
+  color: string;
+  secondaryColor: string;
+  labelFlex?: number;
+}) => (
+  <View style={CommonStyles.row}>
+    <Text
+      style={[
+        CommonStyles.subtitle,
+        { color: secondaryColor, flex: labelFlex || undefined },
+      ]}
+    >
+      {label}
+    </Text>
+    <Text style={[CommonStyles.value, { color }]}>{value || 'N/A'}</Text>
+  </View>
+);
 
 export const CustomerList: React.FC = () => {
   const { theme } = useTheme();
@@ -32,9 +59,6 @@ export const CustomerList: React.FC = () => {
   const [filteredCustomers, setFilteredCustomers] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
-  const [expandedCustomerCode, setExpandedCustomerCode] = useState<
-    string | null
-  >(null);
 
   /** ------------------ Fetch Customers ------------------ **/
   const getAllCustomers = useCallback(async () => {
@@ -46,8 +70,6 @@ export const CustomerList: React.FC = () => {
         console.log('All customers are : ', data);
         setCustomers(data);
         setFilteredCustomers(data);
-        // setSearchQuery('');
-        // debouncedSearch('');
       } else {
         showMessage({
           message: 'Error',
@@ -67,7 +89,6 @@ export const CustomerList: React.FC = () => {
     getAllCustomers();
   }, [getAllCustomers]);
 
-  /** ------------------ Search Optimization ------------------ **/
   const debouncedSearch = useMemo(
     () =>
       debounce((text: string) => {
@@ -102,7 +123,6 @@ export const CustomerList: React.FC = () => {
     debouncedSearch(text);
   };
 
-  /** ------------------ Customer Navigation ------------------ **/
   const handleCustomerPress = useCallback(
     (item: any) => {
       navigation.navigate(screenName.CustomerDetail, {
@@ -112,226 +132,118 @@ export const CustomerList: React.FC = () => {
     [navigation],
   );
 
-  const handleToggle = useCallback((code: string) => {
-    setExpandedCustomerCode(prev => (prev === code ? null : code));
-  }, []);
-
   const renderItem = useCallback(
-    ({ item }: { item: any }) => {
-      const isExpanded = expandedCustomerCode === item.customerCode;
-
-      return (
-        <View
-          key={item.customerCode}
-          style={[styles.item, { backgroundColor: theme.colors.surface }]}
+    ({ item }: { item: any }) => (
+      <View
+        key={item.customerCode}
+        style={[CommonStyles.item, { backgroundColor: theme.colors.surface }]}
+      >
+        <Text
+          style={[
+            CommonStyles.title,
+            {
+              color: theme.colors.secondaryDark,
+              fontFamily: fonts.bold,
+            },
+          ]}
         >
-          <Text
-            style={[
-              styles.title,
-              {
-                color: theme.colors.secondaryDark,
-                fontFamily: fonts.bold,
-                // marginVertical: AppSizes.Margin_Vertical_10,
-              },
-            ]}
-          >
-            {item.customerName || 'N/A'}
-          </Text>
+          {item.customerName || 'N/A'}
+        </Text>
 
-          {/* BASIC INFO */}
-          <View style={styles.row}>
-            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
-              Customer Code :
-            </Text>
+        <InfoRow
+          label="Customer Code :"
+          value={item.customerCode}
+          color={theme.colors.black}
+          secondaryColor={theme.colors.textSecondary}
+        />
+        <InfoRow
+          label="CNIC No. :"
+          value={item.cnic}
+          color={theme.colors.black}
+          secondaryColor={theme.colors.textSecondary}
+        />
+        <InfoRow
+          label="Phone No. 1 :"
+          value={item.phone1}
+          color={theme.colors.black}
+          secondaryColor={theme.colors.textSecondary}
+        />
+        <InfoRow
+          label="Phone No. 2 :"
+          value={item.phone2}
+          color={theme.colors.black}
+          secondaryColor={theme.colors.textSecondary}
+        />
+        <InfoRow
+          label="Invoice No :"
+          value={item.invDocNo}
+          color={theme.colors.black}
+          secondaryColor={theme.colors.textSecondary}
+        />
+        <InfoRow
+          label="Invoice Date :"
+          value={item.invDocDate}
+          color={theme.colors.black}
+          secondaryColor={theme.colors.textSecondary}
+        />
+        <InfoRow
+          label="Product :"
+          value={item.product}
+          color={theme.colors.black}
+          secondaryColor={theme.colors.textSecondary}
+          
+        />
+        <InfoRow
+          label="Installment Amount :"
+          value={item.instTotalAmount}
+          color={theme.colors.black}
+          secondaryColor={theme.colors.textSecondary}
+          labelFlex={1.5}
+        />
+        <InfoRow
+          label="Due Amount :"
+          value={item.instDueAmount}
+          color={theme.colors.black}
+          secondaryColor={theme.colors.textSecondary}
+        />
+        <InfoRow
+          label="Balance :"
+          value={item.balance}
+          color={theme.colors.black}
+          secondaryColor={theme.colors.textSecondary}
+        />
 
-            <Text style={[styles.value, { color: theme.colors.black }]}>
-              {item.customerCode || 'N/A'}
-            </Text>
-          </View>
+        <Button
+          title="View Detail"
+          onPress={() => handleCustomerPress(item)}
+          style={{
+            paddingHorizontal: theme.spacing.md,
+            paddingVertical: 6,
+            minHeight: 22,
+            marginTop: 10,
+            backgroundColor: theme.colors.secondaryDark,
+            borderColor: theme.colors.secondaryDark,
+            borderWidth: 1,
+          }}
+        />
 
-          {/* BASIC INFO */}
-          <View style={styles.row}>
-            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
-              CNIC No. :
-            </Text>
-
-            <Text style={[styles.value, { color: theme.colors.black }]}>
-              {item.cnic || 'N/A'}
-            </Text>
-          </View>
-
-          <View style={styles.row}>
-            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
-              Phone No. 1 :
-            </Text>
-            <Text style={[styles.value, { color: theme.colors.black }]}>
-              {item.phone1 || 'N/A'}
-            </Text>
-          </View>
-
-          <View style={styles.row}>
-            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
-              Phone No. 2 :
-            </Text>
-            <Text style={[styles.value, { color: theme.colors.black }]}>
-              {item.phone2 || 'N/A'}
-            </Text>
-          </View>
-
-          <View style={styles.row}>
-            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
-              Invoice No :
-            </Text>
-            <Text style={[styles.value, { color: theme.colors.black }]}>
-              {item.invDocNo || 'N/A'}
-              {/* {String(item?.invDocNo || '').replace(/,/g, '')} */}
-            </Text>
-          </View>
-
-          <View style={styles.row}>
-            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
-              Invoice Date :
-            </Text>
-            <Text style={[styles.value, { color: theme.colors.black }]}>
-              {item.invDocDate || 'N/A'}
-            </Text>
-          </View>
-
-          <View style={styles.row}>
-            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
-              Product :
-            </Text>
-            <Text style={[styles.value, { color: theme.colors.black }]}>
-              {item.product || 'N/A'}
-            </Text>
-          </View>
-
-          <View style={styles.row}>
-            <Text style={[styles.label, { color: theme.colors.textSecondary, flex:1.5 }]}>
-              Installment Amount :
-            </Text>
-            <Text style={[styles.value, { color: theme.colors.black }]}>
-              {item.instTotalAmount || 'N/A'}
-            </Text>
-          </View>
-
-          <View style={styles.row}>
-            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
-              Due Amount :
-            </Text>
-            <Text style={[styles.value, { color: theme.colors.black }]}>
-              {item.instDueAmount || 'N/A'}
-            </Text>
-          </View>
-
-          <View style={styles.row}>
-            <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
-              Balance :
-            </Text>
-            <Text style={[styles.value, { color: theme.colors.black }]}>
-              {item.balance || 'N/A'}
-            </Text>
-          </View>
-
-          {/* EXPANDED VIEW 
-          {isExpanded && (
-            <View style={{ marginTop: 10 }}>
-              <View style={styles.row}>
-                <Text
-                  style={[styles.label, { color: theme.colors.textSecondary }]}
-                >
-                  Invoice No :
-                </Text>
-                <Text style={[styles.value, { color: theme.colors.black }]}>
-                  {item.invoiceNo || 'N/A'}
-                </Text>
-              </View>
-
-              <View style={styles.row}>
-                <Text
-                  style={[styles.label, { color: theme.colors.textSecondary }]}
-                >
-                  Product :
-                </Text>
-                <Text style={[styles.value, { color: theme.colors.black }]}>
-                  {item.product || 'N/A'}
-                </Text>
-              </View>
-
-              <View style={styles.row}>
-                <Text
-                  style={[styles.label, { color: theme.colors.textSecondary }]}
-                >
-                  Installment Amount :
-                </Text>
-                <Text style={[styles.value, { color: theme.colors.black }]}>
-                  {item.installment || 'N/A'}
-                </Text>
-              </View>
-
-              <Ionicons
-                name="chevron-up"
-                size={22}
-                color={theme.colors.secondaryDark}
-                style={{ alignSelf: 'center', marginTop: 8 }}
-                onPress={() => handleToggle(item.customerCode)}
-              />
-            </View>
-          )}*/}
-
-          <Button
-            title="View Detail"
-            //textStyle={{ color: theme.colors.secondaryDark, padding: 0 }}
-            onPress={() => handleCustomerPress(item)}
-            style={{
-              paddingHorizontal: theme.spacing.md,
-              paddingVertical: 6,
-              minHeight: 22,
-              marginTop: 10,
-              backgroundColor: theme.colors.secondaryDark,
-              borderColor: theme.colors.secondaryDark,
-              borderWidth: 1,
-            }}
-          />
-
-          <View style={styles.separator} />
-          {/* COLLAPSED STATE BUTTON */}
-          {/* {!isExpanded && (
-            <Button
-              title="View Detail"
-              textStyle={{ color: theme.colors.secondaryDark, padding: 0 }}
-              onPress={() => handleToggle(item.customerCode)}
-              style={{
-                paddingHorizontal: theme.spacing.md,
-                paddingVertical: 6,
-                minHeight: 22,
-                marginTop: 10,
-                backgroundColor: theme.colors.surface,
-                borderColor: theme.colors.secondaryDark,
-                borderWidth: 1,
-              }}
-            />
-          )} */}
-        </View>
-      );
-    },
-    [theme, expandedCustomerCode, handleToggle],
-  );
-
-  /** ------------------ Key Extractor ------------------ **/
-  const keyExtractor = useCallback(
-    (item: any) => String(item.id || item.invDocEntry),
-    [],
+        <View style={CommonStyles.divider} />
+      </View>
+    ),
+    [theme, handleCustomerPress],
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+    edges={['top']}
+    style={CommonStyles.mainContainer}>
       <Header title="Customers" subtitle="AVO's Customers" showBackButton />
 
       {loading ? (
         <Loader title="Loading Customers..." />
       ) : (
         <>
+          {/* Search Box */}
           <View style={styles.searchContainer}>
             <TextInput
               placeholder="Search Customers..."
@@ -346,14 +258,9 @@ export const CustomerList: React.FC = () => {
                 },
               ]}
             />
-
-            {searchQuery.length > 0 ? (
+            {searchQuery.length > 0 && (
               <TouchableOpacity
-                style={{
-                  position: 'absolute',
-                  right: AppSizes.Margin_Horizontal_10,
-                  marginTop: AppSizes.Margin_Vertical_10,
-                }}
+                style={styles.clearButton}
                 onPress={() => {
                   setSearchQuery('');
                   debouncedSearch('');
@@ -365,27 +272,22 @@ export const CustomerList: React.FC = () => {
                   color={theme.colors.secondaryDark}
                 />
               </TouchableOpacity>
-            ) : null}
+            )}
           </View>
 
+          {/* Customer List */}
           <FlatList
             data={filteredCustomers}
             keyExtractor={item => item.customerCode.toString()}
             renderItem={renderItem}
             refreshing={loading}
             onRefresh={getAllCustomers}
-            contentContainerStyle={styles.listContainer}
+            contentContainerStyle={{
+              paddingBottom:AppSizes.Padding_Horizontal_20,
+              rowGap:AppSizes.Margin_Vertical_20
+            }}
             ListEmptyComponent={() => (
-              <View style={styles.emptyContainer}>
-                <Text
-                  style={{
-                    color: theme.colors.textSecondary,
-                    fontFamily: fonts.extraBoldItalic,
-                  }}
-                >
-                  No Customers Found
-                </Text>
-              </View>
+              <EmptyComponents emptyMessage="Not any customer found..." />
             )}
             initialNumToRender={15}
             maxToRenderPerBatch={30}
@@ -400,53 +302,20 @@ export const CustomerList: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
   searchContainer: {
     marginHorizontal: AppSizes.Margin_Horizontal_20,
-    marginTop: AppSizes.Margin_Vertical_20,
+    marginVertical: AppSizes.Margin_Vertical_20,
   },
   searchInput: {
     borderRadius: 12,
     paddingHorizontal: 16,
-    // paddingVertical: 10,
     fontSize: AppSizes.Font_14,
     elevation: 3,
     fontFamily: fonts.medium,
   },
-  listContainer: {
-    padding: 20,
-    rowGap: AppSizes.Padding_Horizontal_20,
+  clearButton: {
+    position: 'absolute',
+    right: AppSizes.Margin_Horizontal_10,
+    marginTop: AppSizes.Margin_Vertical_10,
   },
-  item: {
-    borderRadius: 12,
-    padding: 16,
-    elevation: 14,
-
-    rowGap: AppSizes.Margin_Vertical_10,
-  },
-  title: {
-    fontSize: AppSizes.Font_20,
-    fontFamily: fonts.medium,
-  },
-  subtitle: { fontSize: AppSizes.Font_14 },
-  label: { fontSize: AppSizes.Font_14, fontFamily: fonts.semiBold, flex: 1.5 },
-  value: {
-    fontSize: AppSizes.Font_14,
-    fontFamily: fonts.semiBold,
-    flex: 1.5,
-    textAlign: 'right',
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    // marginVertical: AppSizes.Radius_8,
-  },
-  separator: {
-    // marginVertical: 12,
-    marginHorizontal: AppSizes.Gap_30,
-    // marginHorizontal: AppSizes.Gap_30,
-    borderWidth: 0.5,
-    borderTopColor: '#ccc',
-  },
-  emptyContainer: { flex: 1, alignItems: 'center', marginTop: 40 },
 });

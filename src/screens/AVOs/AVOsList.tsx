@@ -15,13 +15,14 @@ import { Header } from '../../components/common/Header';
 import { screenName } from '../../navigation/ScreenName';
 import { API_Config } from '../../services/apiServices';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
+import { RootState } from '../../redux/store';
 import { fonts } from '../../assets/fonts/Fonts';
 import { AppSizes } from '../../utils/AppSizes';
 import Loader from '../../components/common/Loader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { showMessage } from 'react-native-flash-message';
 import { CommonStyles } from '../../styles/GlobalStyle';
+import EmptyComponents from '../../components/common/EmptyComponents';
 
 export const AVOsList: React.FC = () => {
   const { theme } = useTheme();
@@ -97,186 +98,132 @@ export const AVOsList: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.backgroundImage}>
-      {/* Overlay for dark shade */}
-      <View style={styles.overlay} />
+    <SafeAreaView
+    edges={['top']}
+    style={CommonStyles.mainContainer}>
 
-      {/* Main Screen Content */}
-      <View style={styles.safeArea}>
-        <Header title="AVO's" subtitle="Branch's AVOs" showBackButton />
-        {loading ? (
-          <Loader title={'Loading AVOs...'} />
-        ) : (
-          <FlatList
-            data={avos}
-            keyExtractor={item => item.id}
-            onRefresh={() => getAVos()}
-            refreshing={loading}
-            ListEmptyComponent={() => (
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 20,
-                }}
+      <Header title="AVO's" subtitle="Branch's AVOs" showBackButton />
+      {loading ? (
+        <Loader title={'Loading AVOs...'} />
+      ) : (
+        <FlatList
+          data={avos}
+          keyExtractor={item => item.id}
+          onRefresh={() => getAVos()}
+          refreshing={loading}
+          ListEmptyComponent={() => (<EmptyComponents emptyMessage='Not any AVO found...' />)}
+          contentContainerStyle={CommonStyles.list}
+          renderItem={({ item }) => (
+            <View
+              style={[{ backgroundColor: theme.colors.surface }, CommonStyles.item]}
+            >
+              <Text
+                style={[
+                  CommonStyles.title,
+                  {
+                    color: theme.colors.secondaryDark,
+                    fontFamily: fonts.bold,
+                  },
+                ]}
               >
-                <Text
-                  style={{
-                    color: theme.colors.white,
-                    fontFamily: fonts.extraBoldItalic,
-                    fontSize: AppSizes.Font_16,
-                  }}
-                >
-                  No Item Found ...
-                </Text>
-              </View>
-            )}
-            contentContainerStyle={styles.list}
-            renderItem={({ item }) => (
+                {item.assignedName || 'N/A'}
+              </Text>
+
               <View
-                style={[{ backgroundColor: theme.colors.surface }, styles.item]}
+                style={CommonStyles.row}
               >
                 <Text
                   style={[
-                    styles.title,
+                    CommonStyles.subtitle,
                     {
-                      color: theme.colors.secondaryDark,
-                      fontFamily: fonts.bold,
+                      color: theme.colors.textSecondary,
                     },
                   ]}
                 >
-                  {item.assignedName || 'N/A'}
+                  Total Outstand :
                 </Text>
-
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}
+                <Text
+                  style={[
+                    CommonStyles.value,
+                    {
+                      color: theme.colors.black,
+                    },
+                  ]}
                 >
-                  <Text
-                    style={[
-                      styles.subtitle,
-                      {
-                        color: theme.colors.textSecondary,
-                      },
-                    ]}
-                  >
-                    Total Outstand :
-                  </Text>
-                  <Text
-                    style={[
-                      styles.subtitle,
-                      {
-                        color: theme.colors.black,
-                      },
-                    ]}
-                  >
-                    {item.instTotalAmount || 'N/A'}
-                  </Text>
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.subtitle,
-                      {
-                        color: theme.colors.textSecondary,
-                      },
-                    ]}
-                  >
-                    Total Paid :
-                  </Text>
-                  <Text
-                    style={[
-                      styles.subtitle,
-                      {
-                        color: theme.colors.success,
-                      },
-                    ]}
-                  >
-                    {item.instRecAmount || 'N/A'}
-                  </Text>
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.subtitle,
-                      {
-                        color: theme.colors.textSecondary,
-                      },
-                    ]}
-                  >
-                    Total Due :
-                  </Text>
-                  <Text
-                    style={[
-                      styles.subtitle,
-                      {
-                        color: theme.colors.warning,
-                      },
-                    ]}
-                  >
-                    {item.instDueAmount || 'N/A'}
-                  </Text>
-                </View>
-
-                <Button
-                  title="View AVO"
-                  onPress={() => handleAVOPress(item)}
-                  variant="secondary"
-                  size="sm"
-                  style={{ marginTop: 22 }}
-                />
-                <View
-                  style={{
-                    // marginBottom: 12,
-                    marginHorizontal: AppSizes.Gap_30,
-                    // marginTop: AppSizes.Margin_Vertical_20,
-                    borderWidth: 0.5,
-                   borderTopColor: '#ccc',
-                  }}
-                ></View>
+                  {item.instTotalAmount || 'N/A'}
+                </Text>
               </View>
-            )}
-          />
-        )}
-      </View>
+
+              <View
+                style={CommonStyles.row}
+              >
+                <Text
+                  style={[
+                    CommonStyles.subtitle,
+                    {
+                      color: theme.colors.textSecondary,
+                    },
+                  ]}
+                >
+                  Total Paid :
+                </Text>
+                <Text
+                  style={[
+                    CommonStyles.value,
+                    {
+                      color: theme.colors.success,
+                    },
+                  ]}
+                >
+                  {item.instRecAmount || 'N/A'}
+                </Text>
+              </View>
+
+              <View style={CommonStyles.row} >
+                <Text style={[CommonStyles.subtitle, { color: theme.colors.textSecondary, },]} >
+                  Total Due :
+                </Text>
+                <Text style={[CommonStyles.value, { color: theme.colors.warning, },]}>
+                  {item.instDueAmount || 'N/A'}
+                </Text>
+              </View>
+
+              <Button
+                title="View AVO"
+                onPress={() => handleAVOPress(item)}
+                variant="secondary"
+                size="sm"
+                style={{ marginTop: 22 }}
+              />
+              <View style={CommonStyles.divider}></View>
+            </View>
+          )}
+        />
+      )}
+
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  backgroundImage: { flex: 1, width: '100%', height: '100%' },
-  overlay: {
-    // ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'white',
-  },
-  safeArea: { flex: 1, paddingBottom: 20 },
-  list: {
-    paddingVertical: AppSizes.Margin_Vertical_20,
-    rowGap: AppSizes.Gap_20,
-  },
-  item: {
-    marginHorizontal: AppSizes.Margin_Horizontal_20,
-    elevation: 14,
-    backgroundColor: 'white',
-    padding: 16,
-    rowGap: AppSizes.Margin_Vertical_10,
-    borderRadius: 12,
-  },
-  title: { fontSize: AppSizes.Font_20, fontFamily: fonts.semiBold },
-  subtitle: { fontSize: AppSizes.Font_14, fontFamily: fonts.semiBold },
-});
+// const styles = StyleSheet.create({
+//   backgroundImage: { flex: 1, width: '100%', height: '100%' },
+//   overlay: {
+//     // ...StyleSheet.absoluteFillObject,
+//     backgroundColor: 'white',
+//   },
+//   safeArea: { flex: 1, paddingBottom: 20 },
+//   list: {
+//     paddingVertical: AppSizes.Margin_Vertical_20,
+//     rowGap: AppSizes.Gap_20,
+//   },
+//   item: {
+//     marginHorizontal: AppSizes.Margin_Horizontal_20,
+//     elevation: 14,
+//     backgroundColor: 'white',
+//     padding: 16,
+//     rowGap: AppSizes.Margin_Vertical_10,
+//     borderRadius: 12,
+//   },
+//   title: { fontSize: AppSizes.Font_20, fontFamily: fonts.semiBold },
+//   subtitle: { fontSize: AppSizes.Font_14, fontFamily: fonts.semiBold },
+// });

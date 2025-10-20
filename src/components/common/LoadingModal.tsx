@@ -1,9 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Modal } from 'react-native';
+import { View,  Modal } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
-import Loader from './Loader';
-import { AppSizes } from '@/utils/AppSizes';
 import LottieView from 'lottie-react-native';
 
 interface LoadingModalProps {
@@ -47,11 +45,10 @@ export const LoadingModal: React.FC<LoadingModalProps> = ({
             style={{ width: 100, height: 100, alignSelf: 'center' }}
           />
 
-          {/* <ActivityIndicator size={'large'} color={theme.colors.secondary} style={{ width: 100, height: 100,alignSelf:'center' }}/> */}
-        </View>
+           </View>
       </View>
     </Modal>
   );
 };
 
-const styles = StyleSheet.create({});
+

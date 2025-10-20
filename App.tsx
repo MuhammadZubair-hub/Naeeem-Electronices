@@ -138,6 +138,18 @@ import FlashMessage from 'react-native-flash-message';
 import { logout } from './src/redux/slices/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
+const App = () => (
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <SafeAreaProvider>
+        <AppContent />
+        <FlashMessage position="top" />
+      </SafeAreaProvider>
+    </PersistGate>
+  </Provider>
+);
+
 const IDLE_TIMEOUT = 10 * 60 * 1000; 
 
 const AppContent = () => {
@@ -154,7 +166,7 @@ const AppContent = () => {
   };
 
   const resetIdleTimer = () => {
-    console.log('👆 Timer reset!');
+    //console.log('👆 Timer reset!');
     if (idleTimer.current) clearTimeout(idleTimer.current);
     idleTimer.current = setTimeout(handleLogout, IDLE_TIMEOUT);
   };
@@ -229,15 +241,5 @@ const AppContent = () => {
   );
 };
 
-const App = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <SafeAreaProvider>
-        <AppContent />
-        <FlashMessage position="top" />
-      </SafeAreaProvider>
-    </PersistGate>
-  </Provider>
-);
 
 export default App;

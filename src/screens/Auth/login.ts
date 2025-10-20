@@ -37,6 +37,7 @@ export const useLoginUser = () => {
           type: 'success',
           style: CommonStyles.sucsses,
         });
+        setCredentials({ empId: '', password: '' });
         //console.log('Login successfulss:', response.data.designation);
       } else {
         showMessage({
@@ -51,7 +52,7 @@ export const useLoginUser = () => {
       console.error('Login error:', error);
     } finally {
       setIsLoading(false);
-      setCredentials({ empId: '', password: '' });
+      
     }
   };
 

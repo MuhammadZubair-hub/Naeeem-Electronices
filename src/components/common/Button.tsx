@@ -76,9 +76,10 @@ export const Button: React.FC<ButtonProps> = ({
         borderWidth: 0,
       },
       outline: {
-        backgroundColor: 'transparent',
+        
         borderWidth: 1,
-        borderColor: disabled ? theme.colors.gray300 : theme.colors.primary,
+        backgroundColor: theme.colors.white,
+                borderColor: theme.colors.secondaryDark,
       },
       ghost: {
         backgroundColor: 'transparent',

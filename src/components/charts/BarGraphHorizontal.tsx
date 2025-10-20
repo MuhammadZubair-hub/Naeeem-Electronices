@@ -279,7 +279,7 @@ const groupSpacing = AppSizes.Gap_10;
 const barSpacing = 4;
 const threshold = 20;
 
-export const HorizontalStackedBarGraph = ({ data }: any) => {
+export const HorizontalStackedBarGraph = ({ data ,title}: any ) => {
   const { theme } = useTheme();
 
   // Compute max value for scaling
@@ -333,7 +333,7 @@ export const HorizontalStackedBarGraph = ({ data }: any) => {
   return (
     <Card style={styles.card}>
       <Text style={[styles.title, { color: theme.colors.secondaryDark }]}>
-        Regional Stats
+        {title}
       </Text>
 
       <View style={{ flexDirection: 'row' }}>

@@ -23,7 +23,7 @@ import { fonts } from '../../assets/fonts/Fonts';
 import { colors } from '../../styles/theme';
 // import { BlurView } from '@react-native-community/blur';
 
-export const Login: React.FC = () => {
+const LoginScreen = () => {
   const { theme } = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const [showPswd, setShowPswd] = useState<boolean>(true);
@@ -172,6 +172,9 @@ export const Login: React.FC = () => {
     </View>
   );
 };
+
+
+export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {

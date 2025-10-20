@@ -196,8 +196,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.overlay} />
-
+     
       <SafeAreaView
         edges={['top']}
         style={[styles.safeArea, { backgroundColor: theme.colors.surface }]}
@@ -226,7 +225,9 @@ export const CEO_GM_Dashboard: React.FC = () => {
 
                 
 
-                <HorizontalStackedBarGraph data={allRegionsTotal} />
+                <HorizontalStackedBarGraph
+                title={'Regional Stats'}
+                data={allRegionsTotal} />
                 <Card
                   style={{
                     flexDirection: 'row',

@@ -222,6 +222,7 @@ interface User {
   designation: string;
   loginDateTime: string;
   avatar?: string; // optional
+  region : string;
 }
 
 interface AuthState {
@@ -248,6 +249,7 @@ const authSlice = createSlice({
       state.user = action.payload.data.data;
       state.token = action.payload.token;
       state.isAuthenticated = true;
+      
     },
     logout: state => {
       state.user = null;
