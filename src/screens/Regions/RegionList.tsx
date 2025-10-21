@@ -45,7 +45,7 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
             marginTop: AppSizes.Margin_Vertical_10,
           }}
         >
-          Regions List
+          Regional List
         </Text>
       )}
       ListHeaderComponentStyle={{ padding: AppSizes.Padding_Vertical_10 }}

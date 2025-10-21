@@ -5,7 +5,8 @@ export enum Role {
   RM = 'RM', // Regional Manager
   ZM = 'ZM', // Zone Manager
   BR = 'BR', // Branch Manager
-  AVO = 'AVO', // Area Sales Officer
+  AVO = 'AVO',
+  AVM = 'AVM' // Area Sales Officer
 }
 
 export interface User {
@@ -178,7 +179,7 @@ export type DashboardStackParamList = {
   BR_AVO_Dashboard: undefined;
   AVO_AllCustomers: undefined;
   CustomerDetails: { customerId: string };
-  BranchDetails: { branchId: string };
+  // BranchDetails: { branchId: string };
   RegionDetails: { regionId: string };
   ZoneDetails: { zoneId: string };
   SalesReport: undefined;

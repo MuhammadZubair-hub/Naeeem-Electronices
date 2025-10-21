@@ -1,5 +1,5 @@
 // ScreenNames.ts
-import { AppStackParamList } from './AppNavigator';
+// import { AppStackParamList } from './AppNavigator';
 
 // Centralized screen names
 export const screenName: { [K in keyof AppStackParamList]: K } = {
@@ -13,7 +13,7 @@ export const screenName: { [K in keyof AppStackParamList]: K } = {
   BR_AVO_Dashboard: 'BR_AVO_Dashboard',
   AVO_AllCustomers: 'AVO_AllCustomers',
   BranchList: 'BranchList',
-  BranchDetail: 'BranchDetail',
+  // BranchDetail: 'BranchDetail',
   BranchPerformance: 'BranchPerformance',
   CustomerList: 'CustomerList',
   CustomerDetail: 'CustomerDetail',

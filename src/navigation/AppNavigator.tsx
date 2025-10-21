@@ -13,7 +13,6 @@
 // import BR_AVO_Dashboard from '../screens/Dashboard/BR_AVO_Dashboard';
 // import { AVO_AllCustomers } from '../screens/Dashboard/AVO_AllCustomers';
 // import { BranchList } from '../screens/Branch/BranchList';
-// import { BranchDetail } from '../screens/Branch/BranchDetail';
 // // import { BranchPerformance } from '../screens/Branch/BranchPerformance';
 // import { CustomerList } from '../screens/Customers/CustomerList';
 // import { CustomerDetail } from '../screens/Customers/CustomerDetail';
@@ -186,7 +185,7 @@
 //     <Stack.Screen
 //       name={screenName.NewSale}
 //       component={RoleGuard(NewSale, [Role.BR, Role.AVO])}
-//     /> 
+//     />
 //     <Stack.Screen
 //       name={screenName.BranchComparison}
 //       component={RoleGuard(BranchComparison, [
@@ -231,12 +230,10 @@
 
 // export const AppNavigator: React.FC = () => (
 
-
 //   <Stack.Navigator screenOptions={{ headerShown: false }}>
 //     <Stack.Screen name="Main" component={DashboardStack} />
 //   </Stack.Navigator>
 // );
-
 
 //   // <Drawer.Navigator
 //   //   screenOptions={{
@@ -248,10 +245,7 @@
 //   //   <Drawer.Screen name="Main" component={DashboardStack} />
 //   // </Drawer.Navigator>
 
-
-
-
-// new logic 
+// new logic
 
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -278,12 +272,11 @@ import { AVO_AllCustomers } from '../screens/Dashboard/AVO_AllCustomers';
 // import AVOsList from '../screens/AVOsList';
 
 import { BranchList } from '../screens/Branch/BranchList';
-import { BranchDetail } from '../screens/Branch/BranchDetail';
 import { CustomerList } from '../screens/Customers/CustomerList';
 import { CustomerDetail } from '../screens/Customers/CustomerDetail';
 import { ZoneList } from '../screens/Zones/ZoneList';
 import { AVOsList } from '../screens/AVOs/AVOsList';
-import { RegionList } from '../screens/Regions/RegionList'
+import { RegionList } from '../screens/Regions/RegionList';
 import { RoleGuard } from './RoleGuard';
 
 const Stack = createNativeStackNavigator();
@@ -299,21 +292,27 @@ const RoleBasedNavigator = () => {
     );
   }
   const designation = user?.designation?.toUpperCase();
+  console.log('desgination',designation);
   let initialScreen;
   switch (designation) {
     case Role.CEO:
     case Role.GM:
       initialScreen = screenName.CEO_GM_Dashboard;
       break;
-    case Role.RM:
-    case Role.ZM:
+    case 'RM':
       initialScreen = screenName.ZoneList;
       break;
-    case Role.BR:
-      initialScreen = screenName.BR_AVO_Dashboard;
+    case Role.ZM:
+      initialScreen = screenName.BranchList;
       break;
-    case Role.AVO:
-      initialScreen = screenName.AVO_AllCustomers;
+    // case Role.BR:
+    //   initialScreen = screenName.AVOsList;
+    //   break;
+    case Role.AVM:
+      initialScreen = screenName.AVOsList;
+      break;
+      case Role.AVO:
+      initialScreen = screenName.CustomerList;
       break;
     default:
       initialScreen = screenName.AVO_AllCustomers;
@@ -324,21 +323,34 @@ const RoleBasedNavigator = () => {
       initialRouteName={initialScreen}
       screenOptions={{ headerShown: false }}
     >
+      <Stack.Screen
+        name={screenName.CEO_GM_Dashboard}
+        component={CEO_GM_Dashboard}
+      />
+      <Stack.Screen
+        name={screenName.RM_ZM_Dashboard}
+        component={RM_ZM_Dashboard}
+      />
+      <Stack.Screen
+        name={screenName.ZM_BR_Dashboard}
+        component={ZM_BR_Dashboard}
+      />
+      <Stack.Screen
+        name={screenName.BR_AVO_Dashboard}
+        component={BR_AVO_Dashboard}
+      />
+      <Stack.Screen
+        name={screenName.AVO_AllCustomers}
+        component={AVO_AllCustomers}
+      />
 
-      <Stack.Screen name={screenName.CEO_GM_Dashboard} component={CEO_GM_Dashboard} />
-      <Stack.Screen name={screenName.RM_ZM_Dashboard} component={RM_ZM_Dashboard} />
-      <Stack.Screen name={screenName.ZM_BR_Dashboard} component={ZM_BR_Dashboard} />
-      <Stack.Screen name={screenName.BR_AVO_Dashboard} component={BR_AVO_Dashboard} />
-      <Stack.Screen name={screenName.AVO_AllCustomers} component={AVO_AllCustomers} />
-
-    
       <Stack.Screen
         name="RegionList"
         component={RoleGuard(RegionList, [Role.CEO, Role.GM, Role.RM, Role.ZM])}
       />
       <Stack.Screen
         name="ZoneList"
-        component={RoleGuard(ZoneList, [Role.CEO, Role.GM, Role.RM, Role.ZM])}
+        component={RoleGuard(ZoneList, [ Role.RM, Role.ZM])}
       />
       <Stack.Screen
         name="BranchList"
@@ -348,16 +360,7 @@ const RoleBasedNavigator = () => {
           Role.RM,
           Role.ZM,
           Role.BR,
-        ])}
-      />
-      <Stack.Screen
-        name="BranchDetail"
-        component={RoleGuard(BranchDetail, [
-          Role.CEO,
-          Role.GM,
-          Role.RM,
-          Role.ZM,
-          Role.BR,
+          Role.AVM,
         ])}
       />
       <Stack.Screen
@@ -368,6 +371,7 @@ const RoleBasedNavigator = () => {
           Role.RM,
           Role.ZM,
           Role.BR,
+          Role.AVM,
           Role.AVO,
         ])}
       />
@@ -379,12 +383,19 @@ const RoleBasedNavigator = () => {
           Role.RM,
           Role.ZM,
           Role.BR,
+          Role.AVM,
           Role.AVO,
         ])}
       />
       <Stack.Screen
         name="AVOsList"
-        component={RoleGuard(AVOsList, [Role.BR])}
+        component={RoleGuard(AVOsList, [ Role.CEO,
+          Role.GM,
+          Role.RM,
+          Role.ZM,
+          Role.BR,
+          Role.AVM,
+          Role.AVO,])}
       />
     </Stack.Navigator>
   );

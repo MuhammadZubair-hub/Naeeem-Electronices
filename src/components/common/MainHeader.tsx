@@ -22,10 +22,10 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const handleLogout = () => {
-    Alert.alert('Logout', 'Are you sure you want to logout?', [
+    Alert.alert('', 'Are you sure you want to logout?', [
       { text: 'Cancel', style: 'cancel' },
       {
-        text: 'Logout',
+        text: '',
         style: 'destructive',
         onPress: () => {
           dispatch(logout());

@@ -12,7 +12,11 @@ import {
   RefreshControl,
 } from 'react-native';
 import { Button } from '../../components/common/Button';
-import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import { useTheme } from '../../hooks/useTheme';
 import { Header } from '../../components/common/Header';
 import { screenName } from '../../navigation/ScreenName';
@@ -52,26 +56,24 @@ export const ZoneList: React.FC = () => {
   const { theme } = useTheme();
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
-  
-  const users = useSelector((state: RootState) => state.auth.user);
-  
- 
- const data = route?.params?.data ?? users?.region;
 
-  // const newData = data || 'Faisalbad' 
+  const users = useSelector((state: RootState) => state.auth.user);
+
+  const data = route?.params?.data ?? users?.region;
+
+  // const newData = data || 'Faisalbad'
 
   const [zoneData, setZoneData] = useState<Zone[]>([]);
   const [loading, setLoading] = useState(false);
 
   const Id = useSelector((state: RootState) => state.auth.user?.empId);
-  const [allRegionsTotal, setAllRegionsTotal] = useState<Region[]>([]);
-    const [showGraph, setShowGraph] = useState(false);
-    const [ZonesCountData, setZonesCountData] = useState<{
-        totalCount: number;
-        dueCount: number;
-        paidCount: number;
-      }>({ totalCount: 0, dueCount: 0, paidCount: 0 });
-     
+  const [showGraph, setShowGraph] = useState(false);
+  const [allZonesTotal, setAllZoneTotal] = useState<Region[]>([]);
+  const [ZonesCountData, setZonesCountData] = useState<{
+    totalCount: number;
+    dueCount: number;
+    paidCount: number;
+  }>({ totalCount: 0, dueCount: 0, paidCount: 0 });
 
   useEffect(() => {
     getAllZones();
@@ -80,49 +82,52 @@ export const ZoneList: React.FC = () => {
   const getAllZones = async () => {
     try {
       setLoading(true);
-      console.log('the data is : ',Id,data);
+      console.log('the data is : ', Id, data);
       const response = await API_Config.getZones({ ID: Id, Region: data });
-      console.log('zones are ',response);
+      console.log('zones are ', response);
       if (response?.success) {
-        
-          setZoneData(response.data.data);
-           const data = response.data.data;
+        setZoneData(response.data.data);
+        const data = response.data.data;
 
+        if (Array.isArray(data)) {
+          let count = {
+            totalCount: 0,
+            dueCount: 0,
+            paidCount: 0,
+          };
 
-           if (Array.isArray(data)) {
-    let count = {
-      totalCount: 0,
-      dueCount: 0,
-      paidCount: 0,
-    };
+          data.forEach((item: any) => {
+            console.log(
+              item.instTotalAmount,
+              item.instDueAmount,
+              item.instRecAmount,
+            );
+            count.totalCount +=
+              parseInt(String(item.instTotalAmount).replace(/,/g, ''), 10) || 0;
+            count.dueCount +=
+              parseInt(String(item.instDueAmount).replace(/,/g, ''), 10) || 0;
+            count.paidCount +=
+              parseInt(String(item.instRecAmount).replace(/,/g, ''), 10) || 0;
+          });
 
-    data.forEach((item: any) => {
-console.log(item.instTotalAmount,item.instDueAmount,item.instRecAmount);
-      count.totalCount += parseInt(String(item.instTotalAmount).replace(/,/g, ''), 10) || 0;
-      count.dueCount += parseInt(String(item.instDueAmount).replace(/,/g, ''), 10)|| 0;
-      count.paidCount += parseInt(String(item.instRecAmount).replace(/,/g, ''), 10) || 0;
-    });
+          setZonesCountData(count);
+        }
 
-    setZonesCountData(count);
-  }
-          
-  
-          console.log(data, 'horizontal data fetched');
-          const formatted = data.map((item: any, index: number) => ({
-            region: item.zmName,
-            total: parseInt(String(item.instTotalAmount).replace(/,/g, ''), 10),
-  
-            paid: parseInt(String(item.instRecAmount).replace(/,/g, ''), 10),
-            due: parseInt(String(item.instDueAmount).replace(/,/g, ''), 10),
-            // total: parseFloat(item.instTotalAmount),
-            // paid: parseFloat(item.instRecAmount),
-            // due: parseFloat(item.instDueAmount),
-          }));
-  
-          setAllRegionsTotal(formatted);
-  
-          setShowGraph(true);
-        
+        console.log(data, 'horizontal data fetched');
+        const formatted = data.map((item: any, index: number) => ({
+          region: item.zmName,
+          total: parseInt(String(item.instTotalAmount).replace(/,/g, ''), 10),
+
+          paid: parseInt(String(item.instRecAmount).replace(/,/g, ''), 10),
+          due: parseInt(String(item.instDueAmount).replace(/,/g, ''), 10),
+          // total: parseFloat(item.instTotalAmount),
+          // paid: parseFloat(item.instRecAmount),
+          // due: parseFloat(item.instDueAmount),
+        }));
+
+        setAllZoneTotal(formatted);
+
+        setShowGraph(true);
       } else {
         showMessage({
           message: 'Error',
@@ -143,38 +148,38 @@ console.log(item.instTotalAmount,item.instDueAmount,item.instRecAmount);
     //  navigation.navigate(screenName.BranchList,);
   };
 
-  if(users?.region){
+  if (users?.designation == "RM") {
     useFocusEffect(
-        React.useCallback(() => {
-          const backAction = () => {
-            Alert.alert(
-              'Hold on!',
-              'Do you want to exit the app?',
-              [
-                {
-                  text: 'Cancel',
-                  onPress: () => null,
-                  style: 'cancel',
-                },
-                {
-                  text: 'YES',
-                  onPress: () => BackHandler.exitApp(),
-                },
-              ],
-              { cancelable: true },
-            );
-            return true; // prevent default back behavior
-          };
-    
-          const backHandler = BackHandler.addEventListener(
-            'hardwareBackPress',
-            backAction,
+      React.useCallback(() => {
+        const backAction = () => {
+          Alert.alert(
+            '',
+            'Do you want to exit the app?',
+            [
+              {
+                text: 'Cancel',
+                onPress: () => null,
+                style: 'cancel',
+              },
+              {
+                text: 'YES',
+                onPress: () => BackHandler.exitApp(),
+              },
+            ],
+            { cancelable: true },
           );
-    
-          // Cleanup when leaving the screen
-          return () => backHandler.remove();
-        }, []),
-      );
+          return true; // prevent default back behavior
+        };
+
+        const backHandler = BackHandler.addEventListener(
+          'hardwareBackPress',
+          backAction,
+        );
+
+        // Cleanup when leaving the screen
+        return () => backHandler.remove();
+      }, []),
+    );
   }
 
   // const getAllRegions = useCallback(async () => {
@@ -182,22 +187,21 @@ console.log(item.instTotalAmount,item.instDueAmount,item.instRecAmount);
   //       const response = await API_Config.getRegions({ obj: Id });
   //       if (response?.success) {
   //         const data = response.data.data;
-          
-  
+
   //         console.log(data, 'horizontal data fetched');
   //         const formatted = data.map((item: any, index: number) => ({
   //           region: item.region,
   //           total: parseInt(String(item.instTotalAmount).replace(/,/g, ''), 10),
-  
+
   //           paid: parseInt(String(item.instRecAmount).replace(/,/g, ''), 10),
   //           due: parseInt(String(item.instDueAmount).replace(/,/g, ''), 10),
   //           // total: parseFloat(item.instTotalAmount),
   //           // paid: parseFloat(item.instRecAmount),
   //           // due: parseFloat(item.instDueAmount),
   //         }));
-  
-  //         setAllRegionsTotal(formatted);
-  
+
+  //         setAllZoneTotal(formatted);
+
   //         setShowGraph(true);
   //       } else {
   //         // showMessage({
@@ -213,100 +217,90 @@ console.log(item.instTotalAmount,item.instDueAmount,item.instRecAmount);
   //   }, [Id]);
 
   return (
-    <SafeAreaView 
-    edges={['top']}
-    style={CommonStyles.mainContainer}>
-      
-
-    
-     {users?.region ? (
-      <MainHeader 
-      title={users.firstName}
-      subTitle={users.designation}
-      />
-
-      
-     ):(
-         <Header title="Zones" subtitle="Region's Zones" showBackButton />
-
-     )}
-        {loading ? (
-          <Loader title={'Loading Zones...'} />
-        ) : (
-          <ScrollView   
-           refreshControl={
-                        <RefreshControl refreshing={loading} onRefresh={()=>getAllZones()} />
-                      }
-          >
-           {
-            users?.region  &&  
+    <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
+      {users?.region ? (
+        <MainHeader title={users.firstName} subTitle={users.designation} />
+      ) : (
+        <Header title="Zones" subtitle="Region's Zones" showBackButton />
+      )}
+      {loading ? (
+        <Loader title={'Loading Zones...'} />
+      ) : (
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={() => getAllZones()}
+            />
+          }
+        >
+          {users?.region && (
             <>
-             <HorizontalStackedBarGraph
-            title ={'Zone Stats'}
-            data={allRegionsTotal} />    
-            
-            <Card
-                              style={{
-                                flexDirection: 'row',
-                                justifyContent: 'space-around',
-                                marginHorizontal: AppSizes.Margin_Horizontal_20,
-                                elevation: 12,
-                                //marginTop: AppSizes.Margin_Vertical_20,
-                              }}
-                            >
-                              <View
-                                style={[
-                                  CommonStyles.cardtitle,
-                                  { backgroundColor: theme.colors.secondaryDark },
-                                ]}
-                              >
-                                <Text style={CommonStyles.cardSubtitle}>Total</Text>
-                                <Text style={{ color: 'white',fontFamily:fonts.medium }}>
-                                  {ZonesCountData.totalCount.toLocaleString()}
-                                </Text>
-                              </View>
-                              <View
-                                style={[
-                                  CommonStyles.cardtitle,
-                                  { backgroundColor: theme.colors.success },
-                                ]}
-                              >
-                                <Text style={CommonStyles.cardSubtitle}>Paid</Text>
-                                <Text style={{ color: 'white',fontFamily:fonts.medium }}>
-                                  {ZonesCountData.paidCount.toLocaleString()}
-                                </Text>
-                              </View>
-            
-                              <View
-                                style={[
-                                  CommonStyles.cardtitle,
-                                  { backgroundColor: theme.colors.warning },
-                                ]}
-                              >
-                                <Text style={CommonStyles.cardSubtitle}>Due</Text>
-                                <Text style={{ color: 'white',fontFamily:fonts.medium }}>
-                                  {ZonesCountData.dueCount.toLocaleString()}
-                                </Text>
-                              </View>
-                            </Card>
+              <HorizontalStackedBarGraph
+                title={'Zonal stats'}
+                data={allZonesTotal}
+              />
+
+              <Card
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-around',
+                  marginHorizontal: AppSizes.Margin_Horizontal_20,
+                  elevation: 12,
+                }}
+              >
+                <View
+                  style={[
+                    CommonStyles.cardtitle,
+                    { backgroundColor: theme.colors.secondaryDark },
+                  ]}
+                >
+                  <Text style={CommonStyles.cardSubtitle}>Total</Text>
+                  <Text style={{ color: 'white', fontFamily: fonts.medium }}>
+                    {ZonesCountData.totalCount.toLocaleString()}
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    CommonStyles.cardtitle,
+                    { backgroundColor: theme.colors.success },
+                  ]}
+                >
+                  <Text style={CommonStyles.cardSubtitle}>Paid</Text>
+                  <Text style={{ color: 'white', fontFamily: fonts.medium }}>
+                    {ZonesCountData.paidCount.toLocaleString()}
+                  </Text>
+                </View>
+
+                <View
+                  style={[
+                    CommonStyles.cardtitle,
+                    { backgroundColor: theme.colors.warning },
+                  ]}
+                >
+                  <Text style={CommonStyles.cardSubtitle}>Due</Text>
+                  <Text style={{ color: 'white', fontFamily: fonts.medium }}>
+                    {ZonesCountData.dueCount.toLocaleString()}
+                  </Text>
+                </View>
+              </Card>
             </>
-            
-            }
+          )}
 
           <FlatList
             data={zoneData}
             nestedScrollEnabled={false}
             scrollEnabled
-            
             refreshing={loading}
             keyExtractor={item => item.id}
-            ListEmptyComponent={() => (
-              <EmptyComponents />
-            )}
+            ListEmptyComponent={() => <EmptyComponents />}
             contentContainerStyle={CommonStyles.list}
             renderItem={({ item }) => (
               <View
-                style={[{ backgroundColor: theme.colors.surface }, CommonStyles.item]}
+                style={[
+                  { backgroundColor: theme.colors.surface },
+                  CommonStyles.item,
+                ]}
               >
                 <Text
                   style={[
@@ -315,7 +309,6 @@ console.log(item.instTotalAmount,item.instDueAmount,item.instRecAmount);
                       color: theme.colors.secondaryDark,
                       fontFamily: fonts.bold,
                       fontSize: AppSizes.Font_20,
-                      // marginVertical: AppSizes.Margin_Vertical_10,
                     },
                   ]}
                 >
@@ -332,7 +325,10 @@ console.log(item.instTotalAmount,item.instDueAmount,item.instRecAmount);
                     Zone Branches :
                   </Text>
                   <Text
-                    style={[CommonStyles.value, { color: theme.colors.secondary }]}
+                    style={[
+                      CommonStyles.value,
+                      { color: theme.colors.secondary },
+                    ]}
                   >
                     {item.zoneBranches || 'N/A'}
                   </Text>
@@ -348,7 +344,9 @@ console.log(item.instTotalAmount,item.instDueAmount,item.instRecAmount);
                   >
                     Total Outstand :
                   </Text>
-                  <Text style={[CommonStyles.value, { color: theme.colors.black }]}>
+                  <Text
+                    style={[CommonStyles.value, { color: theme.colors.black }]}
+                  >
                     {item?.instTotalAmount || 'N/A'}
                   </Text>
                 </View>
@@ -362,7 +360,12 @@ console.log(item.instTotalAmount,item.instDueAmount,item.instRecAmount);
                   >
                     Total Paid :
                   </Text>
-                  <Text style={[CommonStyles.value, { color: theme.colors.success }]}>
+                  <Text
+                    style={[
+                      CommonStyles.value,
+                      { color: theme.colors.success },
+                    ]}
+                  >
                     {item?.instRecAmount || 'N/A'}
                   </Text>
                 </View>
@@ -376,7 +379,12 @@ console.log(item.instTotalAmount,item.instDueAmount,item.instRecAmount);
                   >
                     Total Due :
                   </Text>
-                  <Text style={[CommonStyles.value, { color: theme.colors.warning }]}>
+                  <Text
+                    style={[
+                      CommonStyles.value,
+                      { color: theme.colors.warning },
+                    ]}
+                  >
                     {item?.instDueAmount || 'N/A'}
                   </Text>
                 </View>
@@ -392,17 +400,16 @@ console.log(item.instTotalAmount,item.instDueAmount,item.instRecAmount);
                 <View style={CommonStyles.divider} />
               </View>
             )}
-          />          
-          </ScrollView>
-        )}
-     
+          />
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
 
 // const styles = StyleSheet.create({
 //   backgroundImage: { flex: 1 },
-  
+
 //   list: {
 //     paddingVertical: AppSizes.Margin_Vertical_20,
 //     rowGap: AppSizes.Gap_20,

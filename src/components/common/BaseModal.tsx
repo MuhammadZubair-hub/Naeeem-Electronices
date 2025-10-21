@@ -6,6 +6,7 @@ import { useTheme } from '../../hooks/useTheme';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { AppSizes } from '../../utils/AppSizes';
 import { fonts } from '../../assets/fonts/Fonts';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 interface BaseModalProps {
@@ -13,7 +14,7 @@ interface BaseModalProps {
   visible: boolean,
   onClose: () => void,
   children: ReactNode,
-  modalHeight?: string,
+  modalHeight?: any,
 
 }
 
@@ -27,11 +28,6 @@ const BaseModal = ({
 }: BaseModalProps) => {
   const { theme } = useTheme();
 
-  // const [showmodal,setShowModal] = useState(false);
-  // const handleShowModal = ( ) =>{
-  //   setShowModal(prev => (!prev));
-  // }
-
   return (
     <Modal
       visible={visible}
@@ -39,7 +35,7 @@ const BaseModal = ({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <View style={[styles.modalOverlay]}>
+      <SafeAreaView  style={[styles.modalOverlay]}>
         <View style={[styles.modalContainer, { backgroundColor: theme.colors.white, borderColor: theme.colors.secondaryDark, maxHeight: modalHeight, }
         ]}>
 
@@ -57,7 +53,7 @@ const BaseModal = ({
 
 
         </View>
-      </View>
+      </SafeAreaView>
     </Modal>
   );
 };
@@ -75,6 +71,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     borderTopLeftRadius: AppSizes.Radius_20,
+    // height:'100%',
 
     borderTopRightRadius: AppSizes.Radius_20,
 

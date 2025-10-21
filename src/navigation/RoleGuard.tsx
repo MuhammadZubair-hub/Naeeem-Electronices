@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { Role } from '../types';
 import { useTheme } from '../hooks/useTheme';
+import MainHeader from '../components/common/MainHeader';
 
 interface RoleGuardProps {
   children: React.ReactNode;
@@ -11,10 +12,11 @@ interface RoleGuardProps {
 
 // Role hierarchy: CEO > GM > RM > ZM > BR > AVO
 const ROLE_HIERARCHY: Record<Role, number> = {
-  [Role.CEO]: 6,
-  [Role.GM]: 5,
-  [Role.RM]: 4,
-  [Role.ZM]: 3,
+  [Role.CEO]: 7,
+  [Role.GM]: 6,
+  [Role.RM]: 5,
+  [Role.ZM]: 4,
+    [Role.AVM]: 3,
   [Role.BR]: 2,
   [Role.AVO]: 1,
 };
@@ -32,6 +34,8 @@ const mapDesignationToRole = (designation: string): Role | null => {
       return Role.ZM;
     case 'BR':
       return Role.BR;
+       case 'AVM':
+      return Role.AVM;
     case 'AVO':
       return Role.AVO;
     default:
@@ -65,12 +69,15 @@ export const RoleGuard = <P extends object>(
     const userRole = mapDesignationToRole(user?.designation);
     if (!userRole) {
       return (
+        
         <View
+
           style={[
             styles.container,
             { backgroundColor: theme.colors.background },
           ]}
         >
+          <MainHeader title='knv' subTitle=';'/>
           <Text style={[styles.errorText, { color: theme.colors.error }]}>
             Invalid role
           </Text>

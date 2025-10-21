@@ -1,11 +1,8 @@
 import { fonts } from '../assets/fonts/Fonts';
-import { StyleSheet } from "react-native";
-import { AppSizes } from "../utils/AppSizes";
+import { StyleSheet } from 'react-native';
+import { AppSizes } from '../utils/AppSizes';
 
 export const CommonStyles = StyleSheet.create({
-
-
-
   mainContainer: { flex: 1 },
 
   list: {
@@ -30,7 +27,11 @@ export const CommonStyles = StyleSheet.create({
     borderRadius: AppSizes.Radius_15,
   },
   title: { fontSize: AppSizes.Font_20, fontFamily: fonts.semiBold },
-  subtitle: { fontSize: AppSizes.Font_14, fontFamily: fonts.semiBold, flex: 1.5 },
+  subtitle: {
+    fontSize: AppSizes.Font_14,
+    fontFamily: fonts.semiBold,
+    flex: 1.5,
+  },
   label: { fontSize: AppSizes.Font_14, fontFamily: fonts.semiBold, flex: 1.3 },
   value: {
     // fontWeight: 'bold',
@@ -38,7 +39,7 @@ export const CommonStyles = StyleSheet.create({
     fontFamily: fonts.semiBold,
     // padding: AppSizes.Padding_Horizontal_5,
     // borderRadius: AppSizes.Radius_15,
-    textAlign: 'right'
+    textAlign: 'right',
   },
   row: {
     flexDirection: 'row',
@@ -60,7 +61,6 @@ export const CommonStyles = StyleSheet.create({
     paddingVertical: 6,
     marginTop: 10,
 
-
     borderRadius: AppSizes.Radius_10,
   },
 
@@ -78,7 +78,6 @@ export const CommonStyles = StyleSheet.create({
     // fontWeight: 'bold',
     color: 'white',
   },
-
 
   error: {
     backgroundColor: 'red',
@@ -125,5 +124,4 @@ export const CommonStyles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-
-})
+});

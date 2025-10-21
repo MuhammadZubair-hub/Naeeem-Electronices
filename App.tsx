@@ -121,9 +121,6 @@
 
 // export default App;
 
-
-
-
 import React, { useEffect, useRef } from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -138,7 +135,6 @@ import FlashMessage from 'react-native-flash-message';
 import { logout } from './src/redux/slices/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 const App = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
@@ -150,7 +146,7 @@ const App = () => (
   </Provider>
 );
 
-const IDLE_TIMEOUT = 10 * 60 * 1000; 
+const IDLE_TIMEOUT = 10 * 60 * 1000;
 
 const AppContent = () => {
   const dispatch = useDispatch();
@@ -181,19 +177,20 @@ const AppContent = () => {
         resetIdleTimer();
         return false;
       },
-    })
+    }),
   ).current;
 
   useEffect(() => {
     console.log('Inactivity timer initialized');
-    
+
     resetIdleTimer();
 
-    
-    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    const subscription = AppState.addEventListener(
+      'change',
+      handleAppStateChange,
+    );
 
     return () => {
-      
       if (idleTimer.current) clearTimeout(idleTimer.current);
       subscription.remove();
     };
@@ -210,19 +207,14 @@ const AppContent = () => {
       const lastActive = await AsyncStorage.getItem('lastActive');
       const now = Date.now();
 
-    
-
       if (lastActive && now - parseInt(lastActive, 10) > SESSION_TIMEOUT) {
-        
         dispatch(logout());
       } else {
-       
-        resetIdleTimer(); 
+        resetIdleTimer();
       }
     } else if (nextAppState === 'background') {
-     
       await AsyncStorage.setItem('lastActive', Date.now().toString());
-      if (idleTimer.current) clearTimeout(idleTimer.current); 
+      if (idleTimer.current) clearTimeout(idleTimer.current);
     }
 
     appState.current = nextAppState;
@@ -240,6 +232,5 @@ const AppContent = () => {
     </View>
   );
 };
-
 
 export default App;

@@ -160,7 +160,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
     React.useCallback(() => {
       const backAction = () => {
         Alert.alert(
-          'Hold on!',
+          '',
           'Do you want to exit the app?',
           [
             {
@@ -196,7 +196,6 @@ export const CEO_GM_Dashboard: React.FC = () => {
 
   return (
     <View style={styles.container}>
-     
       <SafeAreaView
         edges={['top']}
         style={[styles.safeArea, { backgroundColor: theme.colors.surface }]}
@@ -223,11 +222,10 @@ export const CEO_GM_Dashboard: React.FC = () => {
                   purple={false}
                 /> */}
 
-                
-
                 <HorizontalStackedBarGraph
-                title={'Regional Stats'}
-                data={allRegionsTotal} />
+                  title={'Regional Stats'}
+                  data={allRegionsTotal}
+                />
                 <Card
                   style={{
                     flexDirection: 'row',
@@ -244,7 +242,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
                     ]}
                   >
                     <Text style={styles.cardSubtitle}>Total</Text>
-                    <Text style={{ color: 'white',fontFamily:fonts.medium }}>
+                    <Text style={{ color: 'white', fontFamily: fonts.medium }}>
                       {regionsCountData.totalCount}
                     </Text>
                   </View>
@@ -255,7 +253,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
                     ]}
                   >
                     <Text style={styles.cardSubtitle}>Paid</Text>
-                    <Text style={{ color: 'white',fontFamily:fonts.medium }}>
+                    <Text style={{ color: 'white', fontFamily: fonts.medium }}>
                       {regionsCountData.paidCount}
                     </Text>
                   </View>
@@ -267,7 +265,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
                     ]}
                   >
                     <Text style={styles.cardSubtitle}>Due</Text>
-                    <Text style={{ color: 'white',fontFamily:fonts.medium }}>
+                    <Text style={{ color: 'white', fontFamily: fonts.medium }}>
                       {regionsCountData.dueCount}
                     </Text>
                   </View>
@@ -312,7 +310,7 @@ const styles = StyleSheet.create({
   },
   cardSubtitle: {
     fontSize: AppSizes.Font_16,
-    fontFamily:fonts.medium,
+    fontFamily: fonts.medium,
     // fontWeight: 'bold',
     color: 'white',
   },

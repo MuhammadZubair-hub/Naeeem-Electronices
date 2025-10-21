@@ -222,7 +222,10 @@ interface User {
   designation: string;
   loginDateTime: string;
   avatar?: string; // optional
-  region : string;
+  region? : string;
+  zone? :string;
+  branch? :string;
+  assignedId?: string;
 }
 
 interface AuthState {

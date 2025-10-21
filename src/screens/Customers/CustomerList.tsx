@@ -6,8 +6,10 @@ import {
   FlatList,
   TextInput,
   TouchableOpacity,
+  BackHandler,
+  Alert,
 } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { showMessage } from 'react-native-flash-message';
 import { useTheme } from '../../hooks/useTheme';
@@ -22,6 +24,9 @@ import { screenName } from '../../navigation/ScreenName';
 import { debounce } from 'lodash';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import EmptyComponents from '../../components/common/EmptyComponents';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import MainHeader from '../../components/common/MainHeader';
 
 const InfoRow = ({
   label,
@@ -52,14 +57,50 @@ const InfoRow = ({
 export const CustomerList: React.FC = () => {
   const { theme } = useTheme();
   const navigation = useNavigation<any>();
+  const users = useSelector((state: RootState) => state.auth.user);
   const route = useRoute<any>();
-  const { AvoId } = route.params;
+  const  AvoId  = route?.params?.AvoId ?? users?.assignedId;
 
   const [customers, setCustomers] = useState<any[]>([]);
   const [filteredCustomers, setFilteredCustomers] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
 
+
+
+  if (users?.designation == "AVO") {
+    useFocusEffect(
+      React.useCallback(() => {
+        const backAction = () => {
+          Alert.alert(
+            '',
+            'Do you want to exit the app?',
+            [
+              {
+                text: 'Cancel',
+                onPress: () => null,
+                style: 'cancel',
+              },
+              {
+                text: 'YES',
+                onPress: () => BackHandler.exitApp(),
+              },
+            ],
+            { cancelable: true },
+          );
+          return true; // prevent default back behavior
+        };
+
+        const backHandler = BackHandler.addEventListener(
+          'hardwareBackPress',
+          backAction,
+        );
+
+        // Cleanup when leaving the screen
+        return () => backHandler.remove();
+      }, []),
+    );
+  }
   /** ------------------ Fetch Customers ------------------ **/
   const getAllCustomers = useCallback(async () => {
     try {
@@ -124,13 +165,17 @@ export const CustomerList: React.FC = () => {
   };
 
   const handleCustomerPress = useCallback(
+    
     (item: any) => {
+      console.log('i am ', item);
       navigation.navigate(screenName.CustomerDetail, {
         CustomerCode: item?.invDocEntry,
       });
     },
     [navigation],
   );
+
+
 
   const renderItem = useCallback(
     ({ item }: { item: any }) => (
@@ -191,7 +236,6 @@ export const CustomerList: React.FC = () => {
           value={item.product}
           color={theme.colors.black}
           secondaryColor={theme.colors.textSecondary}
-          
         />
         <InfoRow
           label="Installment Amount :"
@@ -234,19 +278,25 @@ export const CustomerList: React.FC = () => {
   );
 
   return (
-    <SafeAreaView
-    edges={['top']}
-    style={CommonStyles.mainContainer}>
-      <Header title="Customers" subtitle="AVO's Customers" showBackButton />
+    <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
+      {
+        users?.designation =='AVO'? (
+
+          <MainHeader title={users.firstName} subTitle={users.designation} />
+
+        ):(
+          <Header title="Customers" subtitle="AVO's Customers" showBackButton />
+        )
+      }
 
       {loading ? (
-        <Loader title="Loading Customers..." />
+        <Loader title="Loading Customers" />
       ) : (
         <>
           {/* Search Box */}
           <View style={styles.searchContainer}>
             <TextInput
-              placeholder="Search Customers..."
+              placeholder="Search Customers"
               placeholderTextColor={theme.colors.textSecondary}
               value={searchQuery}
               onChangeText={handleSearchChange}
@@ -283,8 +333,8 @@ export const CustomerList: React.FC = () => {
             refreshing={loading}
             onRefresh={getAllCustomers}
             contentContainerStyle={{
-              paddingBottom:AppSizes.Padding_Horizontal_20,
-              rowGap:AppSizes.Margin_Vertical_20
+              paddingBottom: AppSizes.Padding_Horizontal_20,
+              rowGap: AppSizes.Margin_Vertical_20,
             }}
             ListEmptyComponent={() => (
               <EmptyComponents emptyMessage="Not any customer found..." />

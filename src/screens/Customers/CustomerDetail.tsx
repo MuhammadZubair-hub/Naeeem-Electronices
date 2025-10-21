@@ -51,6 +51,7 @@ export const CustomerDetail: React.FC = () => {
       });
       if (response?.success) {
         const data = response.data.data;
+        console.log(data);
 
         perviousInsatllment = data.map((item: any) => ({
           receiptDate: item.receiptDate,
@@ -76,7 +77,6 @@ export const CustomerDetail: React.FC = () => {
       setLoading(false);
     }
   };
-
 
   // const renderItem = ({ item }: { item: any }) => (
   //   <View style={[{ backgroundColor: theme.colors.surface }, styles.item]}>
@@ -135,7 +135,7 @@ export const CustomerDetail: React.FC = () => {
 
   //     {/* 🔹 Account Information */}
 
-  //     {/* Account Number 
+  //     {/* Account Number
   //     <View style={styles.rowBetween}>
   //       <Text style={[styles.label, { color: theme.colors.textSecondary }]}>
   //         Acc No :
@@ -608,21 +608,25 @@ export const CustomerDetail: React.FC = () => {
   //   </View>
   // );
 
-
   // Reusable Row Component
-  const InfoRow = ({ label, value, }: any) => (
+
+  const InfoRow = ({ label, value }: any) => (
     <View style={CommonStyles.row}>
       <Text style={[CommonStyles.label, { color: theme.colors.textSecondary }]}>
         {label}
       </Text>
-      <Text style={[CommonStyles.value, { color: theme.colors.black, flex: 1.7 }]}>
+      <Text
+        style={[CommonStyles.value, { color: theme.colors.black, flex: 1.7 }]}
+      >
         {value || 'N/A'}
       </Text>
     </View>
   );
 
   const renderItem = ({ item }: { item: any }) => (
-    <View style={[{ backgroundColor: theme.colors.surface }, CommonStyles.item]}>
+    <View
+      style={[{ backgroundColor: theme.colors.surface }, CommonStyles.item]}
+    >
       <View style={CommonStyles.row}>
         <View style={[styles.centered, { flex: 2 }]}>
           <Text
@@ -689,8 +693,12 @@ export const CustomerDetail: React.FC = () => {
         />
       ) : (
         <View style={{ rowGap: AppSizes.Margin_Vertical_10 }}>
-          <View style={[CommonStyles.divider, { marginHorizontal: AppSizes.Gap_10, }]} />
-
+          <View
+            style={[
+              CommonStyles.divider,
+              { marginHorizontal: AppSizes.Gap_10 },
+            ]}
+          />
 
           <InfoRow label="Model :" value={item?.u_Model} />
           <InfoRow label="Company :" value={item?.company} />
@@ -707,15 +715,36 @@ export const CustomerDetail: React.FC = () => {
           <InfoRow label="House Owner :" value={item?.u_Howner} />
           <InfoRow label="Phone No. 1 :" value={item?.phone} />
           <InfoRow label="Phone No. 2 :" value={item?.phone2} />
-          <InfoRow label="Location Res :" value={item?.u_Raddress || item?.u_ResLoc} />
-          <InfoRow label="Location Offc :" value={item?.u_Offaddress || item?.u_OffLoc} />
+          <InfoRow
+            label="Location Res :"
+            value={item?.u_Raddress || item?.u_ResLoc}
+          />
+          <InfoRow
+            label="Location Offc :"
+            value={item?.u_Offaddress || item?.u_OffLoc}
+          />
 
           <View>
-            <View style={[CommonStyles.divider, { marginVertical: 5, marginHorizontal: AppSizes.Gap_10, }]} />
-            <Text style={[styles.sectionHeader, { color: theme.colors.secondaryDark }]}>
+            <View
+              style={[
+                CommonStyles.divider,
+                { marginVertical: 5, marginHorizontal: AppSizes.Gap_10 },
+              ]}
+            />
+            <Text
+              style={[
+                styles.sectionHeader,
+                { color: theme.colors.secondaryDark },
+              ]}
+            >
               G1 Details
             </Text>
-            <View style={[CommonStyles.divider, { marginVertical: 5, marginHorizontal: AppSizes.Gap_10, }]} />
+            <View
+              style={[
+                CommonStyles.divider,
+                { marginVertical: 5, marginHorizontal: AppSizes.Gap_10 },
+              ]}
+            />
           </View>
 
           <Text
@@ -735,16 +764,36 @@ export const CustomerDetail: React.FC = () => {
           <InfoRow label="Occupation :" value={item?.u_G1Occup} />
           <InfoRow label="Phone 1 :" value={item?.u_G1Restel} />
           <InfoRow label="Phone 2 :" value={item?.u_G1Offtel} />
-          <InfoRow label="Location Res :" value={item?.u_G1ResAdd || item?.u_G1ResLoc} />
-          <InfoRow label="Location Offc :" value={item?.u_G1OffAdd || item?.u_G1OffLoc} />
-
+          <InfoRow
+            label="Location Res :"
+            value={item?.u_G1ResAdd || item?.u_G1ResLoc}
+          />
+          <InfoRow
+            label="Location Offc :"
+            value={item?.u_G1OffAdd || item?.u_G1OffLoc}
+          />
 
           <View>
-            <View style={[CommonStyles.divider, { marginVertical: 5, marginHorizontal: AppSizes.Gap_10, }]} />
-            <Text style={[styles.sectionHeader, { color: theme.colors.secondaryDark }]}>
+            <View
+              style={[
+                CommonStyles.divider,
+                { marginVertical: 5, marginHorizontal: AppSizes.Gap_10 },
+              ]}
+            />
+            <Text
+              style={[
+                styles.sectionHeader,
+                { color: theme.colors.secondaryDark },
+              ]}
+            >
               G2 Details
             </Text>
-            <View style={[CommonStyles.divider, { marginVertical: 5, marginHorizontal: AppSizes.Gap_10, }]} />
+            <View
+              style={[
+                CommonStyles.divider,
+                { marginVertical: 5, marginHorizontal: AppSizes.Gap_10 },
+              ]}
+            />
           </View>
 
           <Text
@@ -764,14 +813,20 @@ export const CustomerDetail: React.FC = () => {
           <InfoRow label="Occupation :" value={item?.u_G2Occup} />
           <InfoRow label="Phone 1 :" value={item?.u_G2Restel} />
           <InfoRow label="Phone 2 :" value={item?.u_G2Offtel} />
-          <InfoRow label="Location Res :" value={item?.u_G2ResLoc || item?.u_G2ResAdd} />
-          <InfoRow label="Location Offc :" value={item?.u_G2OffLoc || item?.u_G2OffAdd} />
+          <InfoRow
+            label="Location Res :"
+            value={item?.u_G2ResLoc || item?.u_G2ResAdd}
+          />
+          <InfoRow
+            label="Location Offc :"
+            value={item?.u_G2OffLoc || item?.u_G2OffAdd}
+          />
 
           <Button
-            title="View Installment"
+            title="View Installments"
             textStyle={{ color: theme.colors.secondaryDark }}
             onPress={() => setShowPervious(true)}
-            variant='outline'
+            variant="outline"
             style={CommonStyles.viewButtonStyle}
           />
 
@@ -779,7 +834,7 @@ export const CustomerDetail: React.FC = () => {
             name="chevron-up"
             size={22}
             color={theme.colors.secondaryDark}
-            style={{ alignSelf: 'center', }}
+            style={{ alignSelf: 'center' }}
             onPress={() => setIsExpanded(false)}
           />
         </View>
@@ -852,34 +907,23 @@ export const CustomerDetail: React.FC = () => {
   };
 
   return (
-    <SafeAreaView
-      edges={['top']}
-      style={styles.background}>
-
-      <Header
-        title="Customer"
-        subtitle="Customer Information"
-        showBackButton
-      />
+    <SafeAreaView edges={['top']} style={styles.background}>
+      <Header title="Customer" subtitle="Customer Information" showBackButton />
 
       {loading ? (
-        <Loader title="Loading Customer details..." />
+        <Loader title="Loading Customer detail" />
       ) : (
         <>
           <FlatList
             data={[customerDetails]}
             keyExtractor={item => item.id}
             refreshing={loading}
-            // nestedScrollEnabled
-            // scrollEnabled={false}
             onRefresh={getCustomerDetails}
             contentContainerStyle={CommonStyles.list}
             renderItem={renderItem}
             ListEmptyComponent={
               <View style={styles.center}>
-                <Text
-                  style={[styles.errorText, { color: theme.colors.black }]}
-                >
+                <Text style={[styles.errorText, { color: theme.colors.black }]}>
                   Customer data not available
                 </Text>
                 <Button title="Retry" onPress={getCustomerDetails} />
@@ -888,14 +932,11 @@ export const CustomerDetail: React.FC = () => {
           />
 
           {showpervious && (
-
-
             <BaseModal
               visible
               onClose={() => setShowPervious(prev => !prev)}
-              headerText=' Previous Months Installment Detail'
+              headerText=" Previous Months Installment Detail"
             >
-
               <FlatList
                 data={installments}
                 keyExtractor={item => item?.receiptDate}
@@ -905,10 +946,7 @@ export const CustomerDetail: React.FC = () => {
                 ListEmptyComponent={
                   <View style={styles.center}>
                     <Text
-                      style={[
-                        styles.errorText,
-                        { color: theme.colors.black },
-                      ]}
+                      style={[styles.errorText, { color: theme.colors.black }]}
                     >
                       Customer data not available
                     </Text>
@@ -917,18 +955,15 @@ export const CustomerDetail: React.FC = () => {
                 }
               />
             </BaseModal>
-
           )}
         </>
       )}
-
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   background: { flex: 1 },
-
 
   list: { padding: 20, rowGap: AppSizes.Padding_Horizontal_20 },
   item: {
@@ -952,7 +987,12 @@ const styles = StyleSheet.create({
   title: { fontSize: AppSizes.Font_18 },
   subtitle: { fontSize: AppSizes.Font_16 },
   label: { fontSize: AppSizes.Font_14, fontFamily: fonts.semiBold, flex: 1.3 },
-  value: { fontSize: AppSizes.Font_14, fontFamily: fonts.semiBold, flex: 1.7, textAlign: 'right' },
+  value: {
+    fontSize: AppSizes.Font_14,
+    fontFamily: fonts.semiBold,
+    flex: 1.7,
+    textAlign: 'right',
+  },
   separator: { marginVertical: 10, borderWidth: 0.5, borderTopColor: '#ccc' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   errorText: {
