@@ -139,7 +139,7 @@ export const AVOsList: React.FC = () => {
 
       console.log(data, 'horizontal data fetched');
       const formatted = data.map((item: any, index: number) => ({
-        region: item.zmName,
+        region: item.assignedName,
         total: parseInt(String(item.instTotalAmount).replace(/,/g, ''), 10),
 
         paid: parseInt(String(item.instRecAmount).replace(/,/g, ''), 10),

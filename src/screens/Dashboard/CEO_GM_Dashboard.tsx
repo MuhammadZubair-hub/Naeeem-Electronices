@@ -55,31 +55,8 @@ export const CEO_GM_Dashboard: React.FC = () => {
   const [allRegionsTotal, setAllRegionsTotal] = useState<Region[]>([]);
   const [showGraph, setShowGraph] = useState(false);
 
-  // const { isLoading } = useSelector((state: RootState) => state.dashboard);
   const Id = useSelector((state: RootState) => state.auth.user?.empId);
 
-  // // ✅ Random color generator (optimized)
-  // const getRandomColor = useCallback(() => {
-  //   const letters = '0123456789ABCDEF';
-  //   let color = '#';
-  //   for (let i = 0; i < 6; i++) {
-  //     color += letters[Math.floor(Math.random() * 16)];
-  //   }
-  //   return color;
-  // }, []);
-
-  // const generateUniqueColors = useCallback(
-  //   (count: number) => {
-  //     const colors = new Set<string>();
-  //     while (colors.size < count) {
-  //       colors.add(getRandomColor());
-  //     }
-  //     return Array.from(colors);
-  //   },
-  //   [getRandomColor],
-  // );
-
-  // ✅ API Calls
   const getAllRegionsCount = useCallback(async () => {
     try {
       const response = await API_Config.getRegionCount({ obj: Id });
@@ -214,14 +191,6 @@ export const CEO_GM_Dashboard: React.FC = () => {
           >
             {showGraph && (
               <>
-                {/* <BarGraph
-                  total={regionsCountData.totalCount}
-                  paid={regionsCountData.paidCount}
-                  due={regionsCountData.dueCount}
-                  data={data}
-                  purple={false}
-                /> */}
-
                 <HorizontalStackedBarGraph
                   title={'Regional Stats'}
                   data={allRegionsTotal}

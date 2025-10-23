@@ -43,6 +43,7 @@ type Zone = {
   instDueAmount: string | number;
   zoneBranches: string | number;
   item: any;
+  
 };
 
 interface Region {
@@ -50,6 +51,7 @@ interface Region {
   total: number;
   paid: number;
   due: number;
+   
 }
 
 export const ZoneList: React.FC = () => {
@@ -60,8 +62,6 @@ export const ZoneList: React.FC = () => {
   const users = useSelector((state: RootState) => state.auth.user);
 
   const data = route?.params?.data ?? users?.region;
-
-  // const newData = data || 'Faisalbad'
 
   const [zoneData, setZoneData] = useState<Zone[]>([]);
   const [loading, setLoading] = useState(false);
@@ -74,6 +74,10 @@ export const ZoneList: React.FC = () => {
     dueCount: number;
     paidCount: number;
   }>({ totalCount: 0, dueCount: 0, paidCount: 0 });
+
+
+  const { user } = useSelector((state: RootState) => state.auth);
+  const access = user?.fullAuth;
 
   useEffect(() => {
     getAllZones();
@@ -144,7 +148,7 @@ export const ZoneList: React.FC = () => {
   };
 
   const handleZonePress = (zone: any) => {
-    navigation.navigate(screenName.BranchList, { zoneId: zone });
+    navigation.navigate(screenName.BranchList, { Zone: zone });
     //  navigation.navigate(screenName.BranchList,);
   };
 
@@ -182,43 +186,9 @@ export const ZoneList: React.FC = () => {
     );
   }
 
-  // const getAllRegions = useCallback(async () => {
-  //     try {
-  //       const response = await API_Config.getRegions({ obj: Id });
-  //       if (response?.success) {
-  //         const data = response.data.data;
-
-  //         console.log(data, 'horizontal data fetched');
-  //         const formatted = data.map((item: any, index: number) => ({
-  //           region: item.region,
-  //           total: parseInt(String(item.instTotalAmount).replace(/,/g, ''), 10),
-
-  //           paid: parseInt(String(item.instRecAmount).replace(/,/g, ''), 10),
-  //           due: parseInt(String(item.instDueAmount).replace(/,/g, ''), 10),
-  //           // total: parseFloat(item.instTotalAmount),
-  //           // paid: parseFloat(item.instRecAmount),
-  //           // due: parseFloat(item.instDueAmount),
-  //         }));
-
-  //         setAllZoneTotal(formatted);
-
-  //         setShowGraph(true);
-  //       } else {
-  //         // showMessage({
-  //         //   message: 'Error',
-  //         //   description: response.data.message,
-  //         //   type: 'danger',
-  //         //   style: CommonStyles.error,
-  //         // });
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching regions:', error);
-  //     }
-  //   }, [Id]);
-
   return (
     <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
-      {users?.region ? (
+      {users?.region && access=="N" ? (
         <MainHeader title={users.firstName} subTitle={users.designation} />
       ) : (
         <Header title="Zones" subtitle="Region's Zones" showBackButton />
@@ -234,7 +204,7 @@ export const ZoneList: React.FC = () => {
             />
           }
         >
-          {users?.region && (
+          {users?.region && access=="N" && (
             <>
               <HorizontalStackedBarGraph
                 title={'Zonal stats'}

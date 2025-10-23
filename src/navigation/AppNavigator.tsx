@@ -29,31 +29,31 @@
 // import { RegionList } from '../screens/Regions/RegionList';
 // import DrawerContent from '.././components/common/DrawerContent';
 
-// export type AppStackParamList = {
-//   RegionList: undefined;
-//   ZoneList: { regionId: string };
-//   BranchList: { zoneId: string };
-//   DashboardHome: undefined;
-//   CEO_GM_Dashboard: undefined;
-//   RM_ZM_Dashboard: undefined;
-//   ZM_BR_Dashboard: undefined;
-//   BR_AVO_Dashboard: undefined;
-//   AVO_AllCustomers: undefined;
-//   // BranchList: undefined; // removed duplicate
-//   BranchDetail: { branchId: string };
-//   BranchPerformance: { branchId: string };
-//   CustomerList: { branchId?: string } | undefined;
-//   CustomerDetail: { customerId: string };
-//   CustomerTransactions: { customerId: string };
-//   InvoiceList: { branchId?: string; customerId?: string } | undefined;
-//   InvoiceDetail: { invoiceId: string };
-//   // NewSale: undefined;
-//   // BranchComparison: undefined;
-//   // StaffPerformance: undefined;
-//   // RevenueTrends: undefined;
-//   // RecoveryReport: undefined;
-//   AVOsList: undefined;
-// };
+export type AppStackParamList = {
+  RegionList: undefined;
+  ZoneList: { regionId: string };
+  BranchList: { zoneId: string };
+  DashboardHome: undefined;
+  CEO_GM_Dashboard: undefined;
+  RM_ZM_Dashboard: undefined;
+  ZM_BR_Dashboard: undefined;
+  BR_AVO_Dashboard: undefined;
+  AVO_AllCustomers: undefined;
+  // BranchList: undefined; // removed duplicate
+  BranchDetail: { branchId: string };
+  BranchPerformance: { branchId: string };
+  CustomerList: { branchId?: string } | undefined;
+  CustomerDetail: { customerId: string };
+  CustomerTransactions: { customerId: string };
+  InvoiceList: { branchId?: string; customerId?: string } | undefined;
+  InvoiceDetail: { invoiceId: string };
+  // NewSale: undefined;
+  // BranchComparison: undefined;
+  // StaffPerformance: undefined;
+  // RevenueTrends: undefined;
+  // RecoveryReport: undefined;
+  AVOsList: undefined;
+};
 
 // const Stack = createNativeStackNavigator<AppStackParamList>();
 // const Drawer = createDrawerNavigator();
@@ -292,8 +292,13 @@ const RoleBasedNavigator = () => {
     );
   }
   const designation = user?.designation?.toUpperCase();
-  console.log('desgination',designation);
+  const access = user?.fullAuth;
+
+  console.log('access is : ', access);
+
+  console.log('desgination', designation);
   let initialScreen;
+
   switch (designation) {
     case Role.CEO:
     case Role.GM:
@@ -303,7 +308,7 @@ const RoleBasedNavigator = () => {
       initialScreen = screenName.ZoneList;
       break;
     case Role.ZM:
-      initialScreen = screenName.BranchList;
+      initialScreen = screenName.ZM_BR_Dashboard;
       break;
     // case Role.BR:
     //   initialScreen = screenName.AVOsList;
@@ -311,13 +316,17 @@ const RoleBasedNavigator = () => {
     case Role.AVM:
       initialScreen = screenName.AVOsList;
       break;
-      case Role.AVO:
+    case Role.AVO:
       initialScreen = screenName.CustomerList;
       break;
     default:
       initialScreen = screenName.AVO_AllCustomers;
   }
 
+  if (access == 'Y') {
+    initialScreen = screenName.CEO_GM_Dashboard;
+    console.log('Im in48148181871');
+  }
   return (
     <Stack.Navigator
       initialRouteName={initialScreen}
@@ -350,7 +359,7 @@ const RoleBasedNavigator = () => {
       />
       <Stack.Screen
         name="ZoneList"
-        component={RoleGuard(ZoneList, [ Role.RM, Role.ZM])}
+        component={RoleGuard(ZoneList, [Role.RM, Role.ZM])}
       />
       <Stack.Screen
         name="BranchList"
@@ -389,13 +398,15 @@ const RoleBasedNavigator = () => {
       />
       <Stack.Screen
         name="AVOsList"
-        component={RoleGuard(AVOsList, [ Role.CEO,
+        component={RoleGuard(AVOsList, [
+          Role.CEO,
           Role.GM,
           Role.RM,
           Role.ZM,
           Role.BR,
           Role.AVM,
-          Role.AVO,])}
+          Role.AVO,
+        ])}
       />
     </Stack.Navigator>
   );

@@ -26,9 +26,27 @@ export const useLoginUser = () => {
       );
       console.log('API Response:', response);
 
-      // ✅ Correct check for success
-
       if (response?.data?.status) {
+
+        const role = response.data.data.designation ;
+
+        if(role !== 'CEO' && role !== 'GM' && role !== 'RM' && role !== 'ZM' && role !== 'AVM' && role !== 'AVO'){
+          // Alert.alert(
+          //   'Access Denied',
+          //   'You do not have permission to access this application.',
+          //   [{ text: 'OK', onPress: () => null }],
+          //   { cancelable: true },
+          // );
+
+          showMessage({
+            message: 'Access Denied',
+            description: `You do not have permission to access this application.`,
+            type: 'danger',
+            style: CommonStyles.error,
+          });
+          return;
+        }
+
         dispatch(
           loginSuccess({ data: response.data, token: response.data.token }),
         );
@@ -52,7 +70,6 @@ export const useLoginUser = () => {
       console.error('Login error:', error);
     } finally {
       setIsLoading(false);
-      
     }
   };
 

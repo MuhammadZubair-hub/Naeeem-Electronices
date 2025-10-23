@@ -7,6 +7,8 @@ import {
   Image,
   TouchableOpacity,
   ImageBackground,
+  BackHandler,
+  Alert,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
@@ -21,6 +23,7 @@ import { LoadingModal } from '../../components/common/LoadingModal';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { fonts } from '../../assets/fonts/Fonts';
 import { colors } from '../../styles/theme';
+import { useFocusEffect } from '@react-navigation/native';
 // import { BlurView } from '@react-native-community/blur';
 
 const LoginScreen = () => {
@@ -29,6 +32,38 @@ const LoginScreen = () => {
   const [showPswd, setShowPswd] = useState<boolean>(true);
 
   const loginData = useLoginUser();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const backAction = () => {
+        Alert.alert(
+          '',
+          'Do you want to exit the app?',
+          [
+            {
+              text: 'Cancel',
+              onPress: () => null,
+              style: 'cancel',
+            },
+            {
+              text: 'YES',
+              onPress: () => BackHandler.exitApp(),
+            },
+          ],
+          { cancelable: true },
+        );
+        return true; // prevent default back behavior
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction,
+      );
+
+      // Cleanup when leaving the screen
+      return () => backHandler.remove();
+    }, []),
+  );
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.white }]}>
@@ -172,7 +207,6 @@ const LoginScreen = () => {
     </View>
   );
 };
-
 
 export default LoginScreen;
 

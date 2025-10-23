@@ -5,7 +5,7 @@ import { fonts } from '../../assets/fonts/Fonts';
 import { AppSizes } from '../../utils/AppSizes';
 
 interface EmptyComponentsProps {
-  emptyMessage?: string; 
+  emptyMessage?: string;
 }
 
 const EmptyComponents: React.FC<EmptyComponentsProps> = ({ emptyMessage }) => {
@@ -18,7 +18,7 @@ const EmptyComponents: React.FC<EmptyComponentsProps> = ({ emptyMessage }) => {
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: AppSizes.Margin_Vertical_20,
-        paddingHorizontal: AppSizes.Padding_Horizontal_10, 
+        paddingHorizontal: AppSizes.Padding_Horizontal_10,
       }}
     >
       <Text
@@ -26,7 +26,7 @@ const EmptyComponents: React.FC<EmptyComponentsProps> = ({ emptyMessage }) => {
           color: theme.colors.secondaryDark,
           fontFamily: fonts.semiBold,
           fontSize: AppSizes.Font_16,
-          textAlign: 'center', 
+          textAlign: 'center',
         }}
       >
         {emptyMessage ?? 'No items found...'}
@@ -34,13 +34,14 @@ const EmptyComponents: React.FC<EmptyComponentsProps> = ({ emptyMessage }) => {
 
       <Text
         style={{
-          color: theme.colors.secondaryDark,
-          fontFamily: fonts.medium, 
+          color: theme.colors.black,
+          fontFamily: fonts.medium,
           fontSize: AppSizes.Font_14,
           marginTop: AppSizes.Margin_Vertical_5,
+          textAlign: 'center',
         }}
       >
-        Refresh the screen
+        Swipe down to Refresh the Screen
       </Text>
     </View>
   );

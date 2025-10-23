@@ -33,7 +33,7 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
             paddingVertical: AppSizes.Padding_Vertical_10,
             textAlign: 'center',
             borderRadius: theme.borderRadius.md,
-
+            marginHorizontal: AppSizes.Padding_Horizontal_20,
             elevation: 12,
             shadowColor: theme.colors.secondaryDark,
             borderBottomWidth: 4,

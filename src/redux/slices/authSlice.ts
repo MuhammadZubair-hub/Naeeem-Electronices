@@ -226,6 +226,7 @@ interface User {
   zone? :string;
   branch? :string;
   assignedId?: string;
+  fullAuth?: string;
 }
 
 interface AuthState {

@@ -764,14 +764,8 @@ export const CustomerDetail: React.FC = () => {
           <InfoRow label="Occupation :" value={item?.u_G1Occup} />
           <InfoRow label="Phone 1 :" value={item?.u_G1Restel} />
           <InfoRow label="Phone 2 :" value={item?.u_G1Offtel} />
-          <InfoRow
-            label="Location Res :"
-            value={item?.u_G1ResAdd || item?.u_G1ResLoc}
-          />
-          <InfoRow
-            label="Location Offc :"
-            value={item?.u_G1OffAdd || item?.u_G1OffLoc}
-          />
+          <InfoRow label="Location Res :" value={item?.u_G1ResAdd} />
+          <InfoRow label="Location Offc :" value={item?.u_G1OffAdd} />
 
           <View>
             <View
@@ -813,14 +807,8 @@ export const CustomerDetail: React.FC = () => {
           <InfoRow label="Occupation :" value={item?.u_G2Occup} />
           <InfoRow label="Phone 1 :" value={item?.u_G2Restel} />
           <InfoRow label="Phone 2 :" value={item?.u_G2Offtel} />
-          <InfoRow
-            label="Location Res :"
-            value={item?.u_G2ResLoc || item?.u_G2ResAdd}
-          />
-          <InfoRow
-            label="Location Offc :"
-            value={item?.u_G2OffLoc || item?.u_G2OffAdd}
-          />
+          <InfoRow label="Location Res :" value={item?.u_G2ResAdd} />
+          <InfoRow label="Location Offc :" value={item?.u_G2OffAdd} />
 
           <Button
             title="View Installments"
