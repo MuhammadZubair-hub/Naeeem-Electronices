@@ -9,4 +9,5 @@ export const endPoints = {
   getallcustomers: 'Common/GetCustWithAVOCode',
   getcustomerdetails: 'Common/GetCustomerDetail',
   regioncount: 'Dashboard/GetTotalofRegions',
+  avocountdetial : 'Common/GetAVODetail',
 };

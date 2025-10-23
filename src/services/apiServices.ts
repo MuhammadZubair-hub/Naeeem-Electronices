@@ -65,4 +65,11 @@ export const API_Config = {
       params: param,
     });
   },
+  getAvoCountDetails: async (param: any) => {
+    return apicall_new({
+      endpoint: `${baseUrl}${endPoints.avocountdetial}`,
+      method: 'GET',
+      params: param,
+    });
+  },
 };

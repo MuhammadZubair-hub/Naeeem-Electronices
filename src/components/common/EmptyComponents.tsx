@@ -6,9 +6,10 @@ import { AppSizes } from '../../utils/AppSizes';
 
 interface EmptyComponentsProps {
   emptyMessage?: string;
+  emptySubMessage?:string
 }
 
-const EmptyComponents: React.FC<EmptyComponentsProps> = ({ emptyMessage }) => {
+const EmptyComponents: React.FC<EmptyComponentsProps> = ({ emptyMessage,emptySubMessage }) => {
   const { theme } = useTheme();
 
   return (
@@ -41,7 +42,7 @@ const EmptyComponents: React.FC<EmptyComponentsProps> = ({ emptyMessage }) => {
           textAlign: 'center',
         }}
       >
-        Swipe down to Refresh the Screen
+       {emptySubMessage??' Swipe down to Refresh the Screen'}
       </Text>
     </View>
   );

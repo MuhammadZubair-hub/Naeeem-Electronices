@@ -610,6 +610,7 @@ export const CustomerDetail: React.FC = () => {
 
   // Reusable Row Component
 
+
   const InfoRow = ({ label, value }: any) => (
     <View style={CommonStyles.row}>
       <Text style={[CommonStyles.label, { color: theme.colors.textSecondary }]}>
@@ -624,6 +625,8 @@ export const CustomerDetail: React.FC = () => {
   );
 
   const renderItem = ({ item }: { item: any }) => (
+
+
     <View
       style={[{ backgroundColor: theme.colors.surface }, CommonStyles.item]}
     >
@@ -717,11 +720,11 @@ export const CustomerDetail: React.FC = () => {
           <InfoRow label="Phone No. 2 :" value={item?.phone2} />
           <InfoRow
             label="Location Res :"
-            value={item?.u_Raddress || item?.u_ResLoc}
+            value={item?.u_Raddress}
           />
           <InfoRow
             label="Location Offc :"
-            value={item?.u_Offaddress || item?.u_OffLoc}
+            value={item?.u_Offaddress}
           />
 
           <View>

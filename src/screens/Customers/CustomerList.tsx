@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   BackHandler,
   Alert,
+  ScrollView,
 } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -27,6 +28,8 @@ import EmptyComponents from '../../components/common/EmptyComponents';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import MainHeader from '../../components/common/MainHeader';
+import { HorizontalStackedBarGraph } from '../../components/charts/BarGraphHorizontal';
+import { Card } from '../../components/common';
 
 const InfoRow = ({
   label,
@@ -54,17 +57,34 @@ const InfoRow = ({
   </View>
 );
 
+
+interface Region {
+  region: string;
+  total: number;
+  paid: number;
+  due: number;
+
+}
+
 export const CustomerList: React.FC = () => {
   const { theme } = useTheme();
   const navigation = useNavigation<any>();
   const users = useSelector((state: RootState) => state.auth.user);
   const route = useRoute<any>();
-  const  AvoId  = route?.params?.AvoId ?? users?.assignedId;
+  const AvoId = route?.params?.AvoId ?? users?.assignedId;
 
   const [customers, setCustomers] = useState<any[]>([]);
   const [filteredCustomers, setFilteredCustomers] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const [AvoCountData, setAvoCountData] = useState<{
+    total: number;
+    due: number;
+    paid: number;
+  }>({ total: 0, due: 0, paid: 0 });
+  const [allZonesTotal, setAllZoneTotal] = useState<Region[]>([]);
+
 
 
 
@@ -101,16 +121,55 @@ export const CustomerList: React.FC = () => {
       }, []),
     );
   }
-  /** ------------------ Fetch Customers ------------------ **/
+
+
+  const getAVOCount = useCallback(async () => {
+
+    const res = await API_Config.getAvoCountDetails({
+      AssignedID: AvoId,
+    });
+
+
+    if (res.success) {
+      const data = res.data.data;
+      console.log('this is is', data);
+      const countData = res.data.data[0];
+      setAvoCountData(prev => ({
+        ...prev,
+        total: countData?.instTotalAmount,
+        due: countData?.instDueAmount,
+        paid: countData?.instRecAmount
+      }))
+
+
+    }
+
+  }, [AvoId])
+
   const getAllCustomers = useCallback(async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const response = await API_Config.getAllCustomers({ AssignedID: AvoId });
       if (response?.success) {
         const data = response?.data?.data || [];
         console.log('All customers are : ', data);
         setCustomers(data);
         setFilteredCustomers(data);
+
+        //  const formatted = data.map((item: any, index: number) => ({
+        //   region: item.customerName,
+        //   total: parseInt(String(item.instTotalAmount).replace(/,/g, ''), 10),
+
+        //   paid: parseInt(String(item.balance).replace(/,/g, ''), 10),
+        //   due: parseInt(String(item.instDueAmount).replace(/,/g, ''), 10),
+        //   // total: parseInt(item.instTotalAmount),
+        //   // paid: parseInt(item.instRecAmount),
+        //   // due: parseInt(item.instDueAmount),
+        // }));
+
+        // setAllZoneTotal(formatted);
+        // console.log(formatted,'all zons total is ');
+
       } else {
         showMessage({
           message: 'Error',
@@ -121,14 +180,103 @@ export const CustomerList: React.FC = () => {
       }
     } catch (error) {
       console.error('Error fetching customers:', error);
-    } finally {
-      setLoading(false);
     }
   }, [AvoId]);
 
+  const getAllAvoDetials = useCallback(async () => {
+    try {
+      setLoading(true);
+      await Promise.all([getAVOCount(), getAllCustomers()])
+
+    } catch (error) {
+      showMessage({
+        message: 'Error',
+        description: `${error}`,
+        type: 'danger',
+        style: CommonStyles.error
+      })
+    } finally {
+      setLoading(false);
+    }
+  }, [getAVOCount, getAllCustomers]);
+
+
+
   useEffect(() => {
-    getAllCustomers();
-  }, [getAllCustomers]);
+    getAllAvoDetials();
+  }, [getAllAvoDetials])
+
+
+
+
+  useEffect(() => {
+
+  }, [allZonesTotal])
+
+  return (
+    <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
+      <Header title="Customers" subtitle="AVO's Customers" showBackButton />
+
+      {loading ? (
+        <Loader title="Loading Customers" />
+      ) : (
+        < >
+
+          {AvoCountData.due == 0 ? (
+
+
+            <Text
+              style={{
+                flex: 1,
+                marginTop: AppSizes.Margin_Vertical_100,
+                justifyContent: 'center',
+                textAlign: 'center',
+                color: theme.colors.secondaryDark,
+                fontFamily: fonts.semiBold,
+                fontSize: AppSizes.Font_18
+              }}
+            > This AVO has no outstanding  amounts against customers. </Text>
+
+          ) : (
+            <>
+
+
+              <AvosCoustomerData
+                coustomerData={customers}
+                refreshing={loading}
+                onRefresh={() => getAllAvoDetials()}
+              />
+            </>
+          )
+
+
+
+          }
+
+        </>
+      )}
+    </SafeAreaView>
+  );
+};
+
+interface AvosCoustomerDataProps {
+  coustomerData: any,
+  refreshing: any,
+  onRefresh: any
+}
+
+export const AvosCoustomerData = ({
+  coustomerData,
+  refreshing,
+  onRefresh, }: AvosCoustomerDataProps) => {
+
+  const { theme } = useTheme();
+  const navigation = useNavigation<any>();
+
+  const [customers, setCustomers] = useState<any[]>(coustomerData || []);
+  const [filteredCustomers, setFilteredCustomers] = useState<any[]>(coustomerData || []);
+  const [searchQuery, setSearchQuery] = useState('');
+
 
   const debouncedSearch = useMemo(
     () =>
@@ -165,7 +313,7 @@ export const CustomerList: React.FC = () => {
   };
 
   const handleCustomerPress = useCallback(
-    
+
     (item: any) => {
       console.log('i am ', item);
       navigation.navigate(screenName.CustomerDetail, {
@@ -174,8 +322,6 @@ export const CustomerList: React.FC = () => {
     },
     [navigation],
   );
-
-
 
   const renderItem = useCallback(
     ({ item }: { item: any }) => (
@@ -277,79 +423,67 @@ export const CustomerList: React.FC = () => {
     [theme, handleCustomerPress],
   );
 
+
   return (
-    <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
-      {
-        users?.designation =='AVO'? (
-
-          <MainHeader title={users.firstName} subTitle={users.designation} />
-
-        ):(
-          <Header title="Customers" subtitle="AVO's Customers" showBackButton />
-        )
-      }
-
-      {loading ? (
-        <Loader title="Loading Customers" />
-      ) : (
-        <>
-          {/* Search Box */}
-          <View style={styles.searchContainer}>
-            <TextInput
-              placeholder="Search Customers"
-              placeholderTextColor={theme.colors.textSecondary}
-              value={searchQuery}
-              onChangeText={handleSearchChange}
-              style={[
-                styles.searchInput,
-                {
-                  backgroundColor: theme.colors.surface,
-                  color: theme.colors.textPrimary,
-                },
-              ]}
-            />
-            {searchQuery.length > 0 && (
-              <TouchableOpacity
-                style={styles.clearButton}
-                onPress={() => {
-                  setSearchQuery('');
-                  debouncedSearch('');
-                }}
-              >
-                <Ionicons
-                  name="close-circle-outline"
-                  size={24}
-                  color={theme.colors.secondaryDark}
-                />
-              </TouchableOpacity>
-            )}
-          </View>
-
-          {/* Customer List */}
-          <FlatList
-            data={filteredCustomers}
-            keyExtractor={item => item.customerCode.toString()}
-            renderItem={renderItem}
-            refreshing={loading}
-            onRefresh={getAllCustomers}
-            contentContainerStyle={{
-              paddingBottom: AppSizes.Padding_Horizontal_20,
-              rowGap: AppSizes.Margin_Vertical_20,
+    <>
+      <View style={styles.searchContainer}>
+        <TextInput
+          placeholder="Search Customers"
+          placeholderTextColor={theme.colors.textSecondary}
+          value={searchQuery}
+          onChangeText={handleSearchChange}
+          style={[
+            styles.searchInput,
+            {
+              backgroundColor: theme.colors.surface,
+              color: theme.colors.textPrimary,
+            },
+          ]}
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity
+            style={styles.clearButton}
+            onPress={() => {
+              setSearchQuery('');
+              debouncedSearch('');
             }}
-            ListEmptyComponent={() => (
-              <EmptyComponents emptyMessage="Not any customer found..." />
-            )}
-            initialNumToRender={15}
-            maxToRenderPerBatch={30}
-            windowSize={15}
-            removeClippedSubviews
-            showsVerticalScrollIndicator={false}
+          >
+            <Ionicons
+              name="close-circle-outline"
+              size={24}
+              color={theme.colors.secondaryDark}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
+
+
+
+      <FlatList
+        data={filteredCustomers}
+        keyExtractor={item => item.customerCode.toString()}
+        renderItem={renderItem}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        contentContainerStyle={{
+          paddingBottom: AppSizes.Padding_Horizontal_20,
+          rowGap: AppSizes.Margin_Vertical_20,
+        }}
+        ListEmptyComponent={() => (
+          <EmptyComponents
+            emptyMessage="Not any customer found"
+            emptySubMessage=''
           />
-        </>
-      )}
-    </SafeAreaView>
-  );
-};
+        )}
+        initialNumToRender={15}
+        maxToRenderPerBatch={30}
+        windowSize={15}
+        removeClippedSubviews
+        showsVerticalScrollIndicator={false}
+      />
+    </>
+  )
+}
 
 const styles = StyleSheet.create({
   searchContainer: {

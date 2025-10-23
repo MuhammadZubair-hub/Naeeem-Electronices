@@ -1,460 +1,258 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  ImageBackground,
+  Alert,
+  BackHandler,
   ScrollView,
   RefreshControl,
-  Dimensions,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
-import { RootState, AppDispatch } from '../../redux/store';
-import { fetchDashboardData } from '../../redux/slices/dashboardSlice';
-import { useTheme } from '../../hooks/useTheme';
-import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
-import { LineGraph } from '../../components/charts/LineGraph';
-import { BarGraph } from '../../components/charts/BarGraph';
-import { ProgressGraph } from '../../components/charts/ProgressGraph';
-import { Role } from '../../types';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
+import { useTheme } from '../../hooks/useTheme';
+import { Header } from '../../components/common/Header';
 import { screenName } from '../../navigation/ScreenName';
+import { API_Config } from '../../services/apiServices';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { AppSizes } from '../../utils/AppSizes';
+import Loader from '../../components/common/Loader';
+import { fonts } from '../../assets/fonts/Fonts';
+import { Card } from '../../components/common';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { showMessage } from 'react-native-flash-message';
+import { CommonStyles } from '../../styles/GlobalStyle';
+import EmptyComponents from '../../components/common/EmptyComponents';
 import MainHeader from '../../components/common/MainHeader';
+import { HorizontalStackedBarGraph } from '../../components/charts/BarGraphHorizontal';
+import { ZonesData } from '../Zones/ZoneList';
 
-const { width } = Dimensions.get('window');
+type Zone = {
+  id: string;
+  zone: string;
+  zmName: string;
+  instTotalAmount: string | number;
+  instRecAmount: string | number;
+  instDueAmount: string | number;
+  zoneBranches: string | number;
+  item: any;
+
+};
+
+interface Region {
+  region: string;
+  total: number;
+  paid: number;
+  due: number;
+
+}
 
 export const RM_ZM_Dashboard: React.FC = () => {
   const { theme } = useTheme();
-  const dispatch = useDispatch<AppDispatch>();
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
+  const route = useRoute<any>();
 
-  const { user } = useSelector((state: RootState) => state.auth);
-  const {
-    data: dashboardData,
-    isLoading,
-    error,
-  } = useSelector((state: RootState) => state.dashboard);
+  const users = useSelector((state: RootState) => state.auth.user);
+
+  const data = route?.params?.data ?? users?.region;
+
+  const [zoneData, setZoneData] = useState<Zone[]>([]);
+  const [loading, setLoading] = useState(false);
+
+
+  const [showGraph, setShowGraph] = useState(false);
+  const [allZonesTotal, setAllZoneTotal] = useState<Region[]>([]);
+  const [ZonesCountData, setZonesCountData] = useState<{
+    totalCount: number;
+    dueCount: number;
+    paidCount: number;
+  }>({ totalCount: 0, dueCount: 0, paidCount: 0 });
+
+
+
 
   useEffect(() => {
-    dispatch(fetchDashboardData());
-  }, [dispatch]);
+    getAllZones();
+  }, []);
 
-  const onRefresh = () => {
-    dispatch(fetchDashboardData());
+  const getAllZones = async () => {
+    try {
+      setLoading(true);
+      const response = await API_Config.getZones({ ID: users?.empId, Region: data });
+      console.log('zones are ', response);
+      if (response?.success) {
+        setZoneData(response.data.data);
+        const data = response.data.data;
+
+        if (Array.isArray(data)) {
+          let count = {
+            totalCount: 0,
+            dueCount: 0,
+            paidCount: 0,
+          };
+
+          data.forEach((item: any) => {
+            console.log(
+              item.instTotalAmount,
+              item.instDueAmount,
+              item.instRecAmount,
+            );
+            count.totalCount +=
+              parseInt(String(item.instTotalAmount).replace(/,/g, ''), 10) || 0;
+            count.dueCount +=
+              parseInt(String(item.instDueAmount).replace(/,/g, ''), 10) || 0;
+            count.paidCount +=
+              parseInt(String(item.instRecAmount).replace(/,/g, ''), 10) || 0;
+          });
+
+          setZonesCountData(count);
+        }
+
+        console.log(data, 'horizontal data fetched');
+        const formatted = data.map((item: any, index: number) => ({
+          region: item.zmName,
+          total: parseInt(String(item.instTotalAmount).replace(/,/g, ''), 10),
+
+          paid: parseInt(String(item.instRecAmount).replace(/,/g, ''), 10),
+          due: parseInt(String(item.instDueAmount).replace(/,/g, ''), 10),
+          // total: parseFloat(item.instTotalAmount),
+          // paid: parseFloat(item.instRecAmount),
+          // due: parseFloat(item.instDueAmount),
+        }));
+
+        setAllZoneTotal(formatted);
+
+        setShowGraph(true);
+      } else {
+        showMessage({
+          message: 'Error',
+          description: response.data.message,
+          type: 'danger',
+          style: CommonStyles.error,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching regions:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-PK', {
-      style: 'currency',
-      currency: 'PKR',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
 
-  const formatNumber = (num: number): string => {
-    return new Intl.NumberFormat('en-PK').format(num);
-  };
 
-  const getRoleDisplayName = (role: Role): string => {
-    const roleNames = {
-      [Role.CEO]: 'Chief Executive Officer',
-      [Role.GM]: 'General Manager',
-      [Role.RM]: 'Regional Manager',
-      [Role.ZM]: 'Zone Manager',
-      [Role.BR]: 'Branch Manager',
-      [Role.AVO]: 'Area Sales Officer',
-    };
-    return roleNames[role];
-  };
+  useFocusEffect(
+    React.useCallback(() => {
+      const backAction = () => {
+        Alert.alert(
+          '',
+          'Do you want to exit the app?',
+          [
+            {
+              text: 'Cancel',
+              onPress: () => null,
+              style: 'cancel',
+            },
+            {
+              text: 'YES',
+              onPress: () => BackHandler.exitApp(),
+            },
+          ],
+          { cancelable: true },
+        );
+        return true; // prevent default back behavior
+      };
 
-  // Regional/Zone specific data
-  const zonePerformanceData = [
-    { x: 'Zone A', y: 85000 },
-    { x: 'Zone B', y: 72000 },
-    { x: 'Zone C', y: 68000 },
-    { x: 'Zone D', y: 59000 },
-  ];
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction,
+      );
 
-  const salesTrendData = [
-    { x: 'Week 1', y: 12000 },
-    { x: 'Week 2', y: 15000 },
-    { x: 'Week 3', y: 18000 },
-    { x: 'Week 4', y: 16000 },
-  ];
+      // Cleanup when leaving the screen
+      return () => backHandler.remove();
+    }, []),
+  );
 
-  const customerDistributionData = [
-    { x: 'Retail', y: 45 },
-    { x: 'Wholesale', y: 35 },
-    { x: 'Corporate', y: 20 },
-  ];
-
-  if (error) {
-    return (
-      <View
-        style={[
-          styles.container,
-          styles.centerContent,
-          { backgroundColor: theme.colors.background },
-        ]}
-      >
-        <Text style={[styles.errorText, { color: theme.colors.error }]}>
-          Failed to load dashboard data
-        </Text>
-        <Button title="Retry" onPress={onRefresh} style={styles.retryButton} />
-      </View>
-    );
-  }
 
   return (
-    <View
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-    >
-      <ScrollView
-        style={styles.scrollView}
-        refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
-        }
-        showsVerticalScrollIndicator={false}
-      >
-        <MainHeader title={user?.name || 'Dashboard'} />
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text
-              style={[styles.greeting, { color: theme.colors.textPrimary }]}
-            >
-              Regional/Zone Dashboard
-            </Text>
-            <Text
-              style={[styles.userName, { color: theme.colors.textPrimary }]}
-            >
-              {user?.name}
-            </Text>
-            <Text
-              style={[styles.userRole, { color: theme.colors.textSecondary }]}
-            >
-              {user ? getRoleDisplayName(user.role) : ''}
-            </Text>
-          </View>
-        </View>
+    <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
+      <MainHeader title={users?.firstName} subTitle={users?.designation} />
+      {loading ? (
+        <Loader title={'Loading Zones...'} />
+      ) : (
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={() => getAllZones()}
+            />
+          }
+        >
 
-        {/* Regional Summary */}
-        {dashboardData?.summary && (
-          <Card style={styles.summaryCard} padding="lg">
-            <Text
-              style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
+          <HorizontalStackedBarGraph
+            title={'Zonal stats'}
+            data={allZonesTotal}
+          />
+
+          <Card
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+              marginHorizontal: AppSizes.Margin_Horizontal_20,
+              elevation: 12,
+            }}
+          >
+            <View
+              style={[
+                CommonStyles.cardtitle,
+                { backgroundColor: theme.colors.secondaryDark },
+              ]}
             >
-              Regional Performance
-            </Text>
-            <View style={styles.summaryGrid}>
-              <View style={styles.summaryItem}>
-                <Text
-                  style={[styles.summaryValue, { color: theme.colors.primary }]}
-                >
-                  {formatCurrency(dashboardData.summary.totalRevenue * 0.3)}
-                </Text>
-                <Text
-                  style={[
-                    styles.summaryLabel,
-                    { color: theme.colors.textSecondary },
-                  ]}
-                >
-                  Regional Revenue
-                </Text>
-              </View>
-              <View style={styles.summaryItem}>
-                <Text
-                  style={[styles.summaryValue, { color: theme.colors.success }]}
-                >
-                  {formatNumber(dashboardData.summary.totalCustomers * 0.4)}
-                </Text>
-                <Text
-                  style={[
-                    styles.summaryLabel,
-                    { color: theme.colors.textSecondary },
-                  ]}
-                >
-                  Regional Customers
-                </Text>
-              </View>
-              <View style={styles.summaryItem}>
-                <Text
-                  style={[styles.summaryValue, { color: theme.colors.warning }]}
-                >
-                  {formatNumber(dashboardData.summary.totalBranches * 0.5)}
-                </Text>
-                <Text
-                  style={[
-                    styles.summaryLabel,
-                    { color: theme.colors.textSecondary },
-                  ]}
-                >
-                  Managed Branches
-                </Text>
-              </View>
-              <View style={styles.summaryItem}>
-                <Text
-                  style={[styles.summaryValue, { color: theme.colors.error }]}
-                >
-                  {formatCurrency(dashboardData.summary.totalDue * 0.3)}
-                </Text>
-                <Text
-                  style={[
-                    styles.summaryLabel,
-                    { color: theme.colors.textSecondary },
-                  ]}
-                >
-                  Regional Outstanding
-                </Text>
-              </View>
+              <Text style={CommonStyles.cardSubtitle}>Total</Text>
+              <Text style={{ color: 'white', fontFamily: fonts.medium }}>
+                {ZonesCountData.totalCount.toLocaleString()}hkhkfkshsfk
+              </Text>
+            </View>
+            <View
+              style={[
+                CommonStyles.cardtitle,
+                { backgroundColor: theme.colors.success },
+              ]}
+            >
+              <Text style={CommonStyles.cardSubtitle}>Paid</Text>
+              <Text style={{ color: 'white', fontFamily: fonts.medium }}>
+                {ZonesCountData.paidCount.toLocaleString()}
+              </Text>
+            </View>
+
+            <View
+              style={[
+                CommonStyles.cardtitle,
+                { backgroundColor: theme.colors.warning },
+              ]}
+            >
+              <Text style={CommonStyles.cardSubtitle}>Due</Text>
+              <Text style={{ color: 'white', fontFamily: fonts.medium }}>
+                {ZonesCountData.dueCount.toLocaleString()}
+              </Text>
             </View>
           </Card>
-        )}
 
-        {/* Charts Section */}
-        <View style={styles.chartsSection}>
-          <Text
-            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
-          >
-            Regional Analytics
-          </Text>
-
-          <LineGraph
-            title="Monthly Sales Trend"
-            data={salesTrendData}
-            color={theme.colors.primary}
+          <ZonesData
+            zoneData={zoneData}
+            refreshing={loading}
+           // onRefresh={() => getAllZones()}
           />
 
-          <ProgressGraph
-            title="Customer Type Distribution"
-            data={customerDistributionData}
-            colors={[
-              theme.colors.primary,
-              theme.colors.success,
-              theme.colors.warning,
-            ]}
-          />
-        </View>
-
-        {/* Hierarchical Navigation */}
-        <Card style={styles.navigationCard} padding="lg">
-          <Text
-            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
-          >
-            Navigate Through Hierarchy
-          </Text>
-          <View style={styles.navigationGrid}>
-            <Button
-              title="View Regional Branches"
-              onPress={() =>
-                (navigation as any).navigate(screenName.BranchList)
-              }
-              variant="primary"
-              size="sm"
-              style={styles.navigationButton}
-            />
-            <Button
-              title="View Regional Customers"
-              onPress={() =>
-                (navigation as any).navigate(screenName.CustomerList)
-              }
-              variant="primary"
-              size="sm"
-              style={styles.navigationButton}
-            />
-            <Button
-              title="View Regional Sales"
-              onPress={() =>
-                (navigation as any).navigate(screenName.InvoiceList)
-              }
-              variant="primary"
-              size="sm"
-              style={styles.navigationButton}
-            />
-            <Button
-              title="Branch Comparison"
-              onPress={() =>
-                (navigation as any).navigate(screenName.BranchComparison)
-              }
-              variant="outline"
-              size="sm"
-              style={styles.navigationButton}
-            />
-            <Button
-              title="Staff Performance"
-              onPress={() =>
-                (navigation as any).navigate(screenName.StaffPerformance)
-              }
-              variant="outline"
-              size="sm"
-              style={styles.navigationButton}
-            />
-            <Button
-              title="Revenue Trends"
-              onPress={() =>
-                (navigation as any).navigate(screenName.RevenueTrends)
-              }
-              variant="outline"
-              size="sm"
-              style={styles.navigationButton}
-            />
-          </View>
-        </Card>
-
-        {/* Quick Actions */}
-        <Card style={styles.quickActionsCard} padding="lg">
-          <Text
-            style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}
-          >
-            Regional Actions
-          </Text>
-          <View style={styles.quickActionsGrid}>
-            <Button
-              title="Recovery Report"
-              onPress={() =>
-                (navigation as any).navigate(screenName.RecoveryReport)
-              }
-              variant="outline"
-              size="sm"
-              style={styles.quickActionButton}
-            />
-            <Button
-              title="Branch Reports"
-              onPress={() =>
-                (navigation as any).navigate(screenName.BranchComparison)
-              }
-              variant="outline"
-              size="sm"
-              style={styles.quickActionButton}
-            />
-            <Button
-              title="Sales Analysis"
-              onPress={() =>
-                (navigation as any).navigate(screenName.RevenueTrends)
-              }
-              variant="outline"
-              size="sm"
-              style={styles.quickActionButton}
-            />
-            <Button
-              title="Team Performance"
-              onPress={() =>
-                (navigation as any).navigate(screenName.StaffPerformance)
-              }
-              variant="outline"
-              size="sm"
-              style={styles.quickActionButton}
-            />
-          </View>
-        </Card>
-
-        {/* Bottom Spacing */}
-        <View style={styles.bottomSpacing} />
-      </ScrollView>
-    </View>
+        </ScrollView>
+      )}
+    </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  centerContent: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 10,
-  },
-  greeting: {
-    fontSize: 16,
-    fontFamily: 'Poppins-Regular',
-  },
-  userName: {
-    fontSize: 24,
-    fontFamily: 'Poppins-Bold',
-    marginTop: 2,
-  },
-  userRole: {
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-    marginTop: 2,
-  },
-  summaryCard: {
-    marginHorizontal: 20,
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontFamily: 'Poppins-SemiBold',
-    marginBottom: 16,
-  },
-  summaryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  summaryItem: {
-    width: '48%',
-    marginBottom: 16,
-  },
-  summaryValue: {
-    fontSize: 20,
-    fontFamily: 'Poppins-Bold',
-    marginBottom: 4,
-  },
-  summaryLabel: {
-    fontSize: 12,
-    fontFamily: 'Poppins-Regular',
-  },
-  chartsSection: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  navigationCard: {
-    marginHorizontal: 20,
-    marginBottom: 20,
-  },
-  navigationGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  navigationButton: {
-    width: '48%',
-    marginBottom: 12,
-  },
-  quickActionsCard: {
-    marginHorizontal: 20,
-    marginBottom: 20,
-  },
-  quickActionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  quickActionButton: {
-    width: '48%',
-    marginBottom: 12,
-  },
-  errorText: {
-    fontSize: 16,
-    fontFamily: 'Poppins-SemiBold',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  retryButton: {
-    marginTop: 8,
-  },
-  bottomSpacing: {
-    height: 20,
-  },
-});

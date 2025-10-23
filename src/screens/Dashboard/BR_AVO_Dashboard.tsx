@@ -1,320 +1,250 @@
-
-import React, { useEffect } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  ImageBackground,
+  Alert,
   ScrollView,
+  BackHandler,
   RefreshControl,
-  Dimensions,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '../../redux/store';
-import { fetchDashboardData } from '../../redux/slices/dashboardSlice';
-import { useTheme } from '../../hooks/useTheme';
-import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
-import { LineGraph } from '../../components/charts/LineGraph';
-import { BarGraph } from '../../components/charts/BarGraph';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import { useTheme } from '../../hooks/useTheme';
+import { Header } from '../../components/common/Header';
+import { screenName } from '../../navigation/ScreenName';
+import { API_Config } from '../../services/apiServices';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { fonts } from '../../assets/fonts/Fonts';
+import { AppSizes } from '../../utils/AppSizes';
+import Loader from '../../components/common/Loader';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { showMessage } from 'react-native-flash-message';
+import { CommonStyles } from '../../styles/GlobalStyle';
+import EmptyComponents from '../../components/common/EmptyComponents';
+import { HorizontalStackedBarGraph } from '../../components/charts/BarGraphHorizontal';
+import { Card } from '../../components/common';
+import MainHeader from '../../components/common/MainHeader';
+import { AvosData } from '../AVOs/AVOsList';
 
-import { Role } from '../../types';
+interface AVO {
+  region: string;
+  total: number;
+  paid: number;
+  due: number;
+}
 
-const { width } = Dimensions.get('window');
-
-
-const BR_AVO_Dashboard: React.FC = () => {
+export const BR_AVO_Dashboard: React.FC = () => {
   const { theme } = useTheme();
-  const dispatch = useDispatch<AppDispatch>();
-  const { user } = useSelector((state: RootState) => state.auth);
-  const { data: dashboardData, isLoading, error } = useSelector((state: RootState) => state.dashboard);
+
+  const route = useRoute<any>();
+  const users = useSelector((state: RootState) => state.auth.user);
+  const branch = route?.params?.branch ?? users?.branch;
+
+
+
+
+  const [avos, setAvos] = React.useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [allAVOsTotal, setAlAVOTotal] = useState<AVO[]>([]);
+  const [ZonesCountData, setZonesCountData] = useState<{
+    totalCount: number;
+    dueCount: number;
+    paidCount: number;
+  }>({ totalCount: 0, dueCount: 0, paidCount: 0 });
+
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const backAction = () => {
+        Alert.alert(
+          '',
+          'Do you want to exit the app?',
+          [
+            {
+              text: 'Cancel',
+              onPress: () => null,
+              style: 'cancel',
+            },
+            {
+              text: 'YES',
+              onPress: () => BackHandler.exitApp(),
+            },
+          ],
+          { cancelable: true },
+        );
+        return true; // prevent default back behavior
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction,
+      );
+
+      // Cleanup when leaving the screen
+      return () => backHandler.remove();
+    }, []),
+  );
+
 
   useEffect(() => {
-    dispatch(fetchDashboardData());
-  }, [dispatch]);
 
-  const onRefresh = () => {
-    dispatch(fetchDashboardData());
+    getAVos();
+  }, []);
+
+
+
+  const getAVos = async () => {
+    setLoading(true);
+    const response = await API_Config.getBranchesAVOs({
+      ID: users?.empId,
+      BranchID: branch,
+    });
+
+    if (response.success) {
+      //console.log(response.data.data);
+      setAvos(response.data.data);
+      console.log('data is : ', response.data.data);
+
+      const data = response.data.data;
+
+      if (Array.isArray(data)) {
+        let count = {
+          totalCount: 0,
+          dueCount: 0,
+          paidCount: 0,
+        };
+
+        data.forEach((item: any) => {
+          console.log(
+            item.instTotalAmount,
+            item.instDueAmount,
+            item.instRecAmount,
+          );
+          count.totalCount +=
+            parseInt(String(item.instTotalAmount).replace(/,/g, ''), 10) || 0;
+          count.dueCount +=
+            parseInt(String(item.instDueAmount).replace(/,/g, ''), 10) || 0;
+          count.paidCount +=
+            parseInt(String(item.instRecAmount).replace(/,/g, ''), 10) || 0;
+        });
+
+        setZonesCountData(count);
+      }
+
+      console.log(data, 'horizontal data fetched');
+      const formatted = data.map((item: any, index: number) => ({
+        region: item.assignedName,
+        total: parseInt(String(item.instTotalAmount).replace(/,/g, ''), 10),
+
+        paid: parseInt(String(item.instRecAmount).replace(/,/g, ''), 10),
+        due: parseInt(String(item.instDueAmount).replace(/,/g, ''), 10),
+        // total: parseFloat(item.instTotalAmount),
+        // paid: parseFloat(item.instRecAmount),
+        // due: parseFloat(item.instDueAmount),
+      }));
+
+      setAlAVOTotal(formatted);
+
+      setLoading(false);
+    } else {
+      setLoading(false);
+      showMessage({
+        message: 'Error',
+        description: response.data.message,
+        type: 'danger',
+        style: CommonStyles.error,
+      });
+
+      //console.log('the error is : ', response.message);
+      return;
+    }
   };
 
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-PK', {
-      style: 'currency',
-      currency: 'PKR',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
 
-  const formatNumber = (num: number): string => {
-    return new Intl.NumberFormat('en-PK').format(num);
-  };
-
-  const getRoleDisplayName = (role: Role): string => {
-    const roleNames = {
-      [Role.CEO]: 'Chief Executive Officer',
-      [Role.GM]: 'General Manager',
-      [Role.RM]: 'Regional Manager',
-      [Role.ZM]: 'Zone Manager',
-      [Role.BR]: 'Branch Manager',
-      [Role.AVO]: 'Area Sales Officer',
-    };
-    return roleNames[role];
-  };
-
-  // Branch/AVO specific data
-  const hourlySalesData = [
-    { x: '9AM', y: 1200 },
-    { x: '10AM', y: 1800 },
-    { x: '11AM', y: 2200 },
-    { x: '12PM', y: 2800 },
-    { x: '1PM', y: 1500 },
-    { x: '2PM', y: 3200 },
-    { x: '3PM', y: 2500 },
-    { x: '4PM', y: 1900 },
-  ];
-
-  const staffPerformanceData = [
-    { label: 'Staff 1', value: 8500 },
-    { label: 'Staff 2', value: 7200 },
-    { label: 'Staff 3', value: 6800 },
-    { label: 'Staff 4', value: 5900 },
-  ];
-
-  if (error) {
-    return (
-      <View style={[styles.container, styles.centerContent, { backgroundColor: theme.colors.background }]}>
-        <Text style={[styles.errorText, { color: theme.colors.error }]}>
-          Failed to load dashboard data
-        </Text>
-        <Button
-          title="Retry"
-          onPress={onRefresh}
-          style={styles.retryButton}
-        />
-      </View>
-    );
-  }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <ScrollView
-        style={styles.scrollView}
-        refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
-        }
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text style={[styles.greeting, { color: theme.colors.textPrimary }]}>
-              Branch/AVO Dashboard
-            </Text>
-            <Text style={[styles.userName, { color: theme.colors.textPrimary }]}>
-              {user?.name}
-            </Text>
-            <Text style={[styles.userRole, { color: theme.colors.textSecondary }]}>
-              {user ? getRoleDisplayName(user.role) : ''}
-            </Text>
-          </View>
-        </View>
+    <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
 
-        {/* Branch/AVO Summary */}
-        {dashboardData?.summary && (
-          <Card style={styles.summaryCard} padding="lg">
-            <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
-              Branch Performance
-            </Text>
-            <View style={styles.summaryGrid}>
-              <View style={styles.summaryItem}>
-                <Text style={[styles.summaryValue, { color: theme.colors.primary }]}>
-                  {formatCurrency(dashboardData.summary.totalRevenue * 0.1)}
-                </Text>
-                <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
-                  Branch Revenue
-                </Text>
-              </View>
-              <View style={styles.summaryItem}>
-                <Text style={[styles.summaryValue, { color: theme.colors.success }]}>
-                  {formatNumber(dashboardData.summary.totalCustomers * 0.15)}
-                </Text>
-                <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
-                  Branch Customers
-                </Text>
-              </View>
-              <View style={styles.summaryItem}>
-                <Text style={[styles.summaryValue, { color: theme.colors.warning }]}>
-                  {formatNumber(8)}
-                </Text>
-                <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
-                  Active Staff
-                </Text>
-              </View>
-              <View style={styles.summaryItem}>
-                <Text style={[styles.summaryValue, { color: theme.colors.error }]}>
-                  {formatCurrency(dashboardData.summary.totalDue * 0.1)}
-                </Text>
-                <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
-                  Branch Outstanding
-                </Text>
-              </View>
+      <MainHeader title={users?.firstName} subTitle={users?.designation} />
+      {loading ? (
+        <Loader title={'Loading AVOs'} />
+      ) : (
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={() => getAVos()}
+            />
+          }
+        >
+
+          <HorizontalStackedBarGraph
+            title={'AVOs stats'}
+            data={allAVOsTotal}
+          />
+
+          <Card
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+              marginHorizontal: AppSizes.Margin_Horizontal_20,
+              elevation: 12,
+            }}
+          >
+            <View
+              style={[
+                CommonStyles.cardtitle,
+                { backgroundColor: theme.colors.secondaryDark },
+              ]}
+            >
+              <Text style={CommonStyles.cardSubtitle}>Total</Text>
+              <Text style={{ color: 'white', fontFamily: fonts.medium }}>
+                {ZonesCountData.totalCount.toLocaleString()}
+              </Text>
+            </View>
+            <View
+              style={[
+                CommonStyles.cardtitle,
+                { backgroundColor: theme.colors.success },
+              ]}
+            >
+              <Text style={CommonStyles.cardSubtitle}>Paid</Text>
+              <Text style={{ color: 'white', fontFamily: fonts.medium }}>
+                {ZonesCountData.paidCount.toLocaleString()}
+              </Text>
+            </View>
+
+            <View
+              style={[
+                CommonStyles.cardtitle,
+                { backgroundColor: theme.colors.warning },
+              ]}
+            >
+              <Text style={CommonStyles.cardSubtitle}>Due</Text>
+              <Text style={{ color: 'white', fontFamily: fonts.medium }}>
+                {ZonesCountData.dueCount.toLocaleString()}
+              </Text>
             </View>
           </Card>
-        )}
 
-        {/* Charts Section */}
-        <View style={styles.chartsSection}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
-            Branch Analytics
-          </Text>
-          
-          <LineGraph
-            title="Hourly Sales Trend"
-            data={hourlySalesData}
-            color={theme.colors.primary}
+
+          <AvosData
+            avos={avos}
+            //onRefresh={()=>getAVos()}
+            refreshing={loading}
           />
-          
-          <BarGraph
-            title="Staff Performance"
-            data={staffPerformanceData}
-          />
-          
 
-        </View>
 
-        {/* Quick Actions */}
-        <Card style={styles.quickActionsCard} padding="lg">
-          <Text style={[styles.sectionTitle, { color: theme.colors.textPrimary }]}>
-            Branch Actions
-          </Text>
-          <View style={styles.quickActionsGrid}>
-            <Button
-              title="View Customers"
-              onPress={() => {}}
-              variant="outline"
-              size="sm"
-              style={styles.quickActionButton}
-            />
-            <Button
-              title="Sales Entry"
-              onPress={() => {}}
-              variant="outline"
-              size="sm"
-              style={styles.quickActionButton}
-            />
-            <Button
-              title="Inventory Check"
-              onPress={() => {}}
-              variant="outline"
-              size="sm"
-              style={styles.quickActionButton}
-            />
-            <Button
-              title="Staff Reports"
-              onPress={() => {}}
-              variant="outline"
-              size="sm"
-              style={styles.quickActionButton}
-            />
-          </View>
-        </Card>
 
-        {/* Bottom Spacing */}
-        <View style={styles.bottomSpacing} />
-      </ScrollView>
-    </View>
+        </ScrollView>
+      )}
+    </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  centerContent: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 10,
-  },
-  greeting: {
-    fontSize: 16,
-    fontFamily: 'Poppins-Regular',
-  },
-  userName: {
-    fontSize: 24,
-    fontFamily: 'Poppins-Bold',
-    marginTop: 2,
-  },
-  userRole: {
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-    marginTop: 2,
-  },
-  summaryCard: {
-    marginHorizontal: 20,
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontFamily: 'Poppins-SemiBold',
-    marginBottom: 16,
-  },
-  summaryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  summaryItem: {
-    width: '48%',
-    marginBottom: 16,
-  },
-  summaryValue: {
-    fontSize: 20,
-    fontFamily: 'Poppins-Bold',
-    marginBottom: 4,
-  },
-  summaryLabel: {
-    fontSize: 12,
-    fontFamily: 'Poppins-Regular',
-  },
-  chartsSection: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  quickActionsCard: {
-    marginHorizontal: 20,
-    marginBottom: 20,
-  },
-  quickActionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  quickActionButton: {
-    width: '48%',
-    marginBottom: 12,
-  },
-  errorText: {
-    fontSize: 16,
-    fontFamily: 'Poppins-SemiBold',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  retryButton: {
-    marginTop: 8,
-  },
-  bottomSpacing: {
-    height: 20,
-  },
-
-});
-
-export default BR_AVO_Dashboard;

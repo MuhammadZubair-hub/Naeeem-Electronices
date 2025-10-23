@@ -259,7 +259,7 @@ import { screenName } from './ScreenName';
 import { CEO_GM_Dashboard } from '../screens/Dashboard/CEO_GM_Dashboard';
 import { RM_ZM_Dashboard } from '../screens/Dashboard/RM_ZM_Dashboard';
 import { ZM_BR_Dashboard } from '../screens/Dashboard/ZM_BR_Dashboard';
-import BR_AVO_Dashboard from '../screens/Dashboard/BR_AVO_Dashboard';
+import {BR_AVO_Dashboard} from '../screens/Dashboard/BR_AVO_Dashboard';
 import { AVO_AllCustomers } from '../screens/Dashboard/AVO_AllCustomers';
 
 // Import other screens
@@ -305,7 +305,8 @@ const RoleBasedNavigator = () => {
       initialScreen = screenName.CEO_GM_Dashboard;
       break;
     case 'RM':
-      initialScreen = screenName.ZoneList;
+      // initialScreen = screenName.ZoneList;
+      initialScreen = screenName.RM_ZM_Dashboard;
       break;
     case Role.ZM:
       initialScreen = screenName.ZM_BR_Dashboard;
@@ -314,18 +315,21 @@ const RoleBasedNavigator = () => {
     //   initialScreen = screenName.AVOsList;
     //   break;
     case Role.AVM:
-      initialScreen = screenName.AVOsList;
+      // initialScreen = screenName.AVOsList;
+       initialScreen = screenName.BR_AVO_Dashboard;
       break;
     case Role.AVO:
-      initialScreen = screenName.CustomerList;
+      // initialScreen = screenName.CustomerList;
+    initialScreen = screenName.AVO_AllCustomers;
       break;
-    default:
-      initialScreen = screenName.AVO_AllCustomers;
+    // default:
+    //   initialScreen = screenName.AVO_AllCustomers;
   }
 
-  if (access == 'Y') {
+  
+  if (access?.toUpperCase() == 'Y' || access?.toUpperCase()  == 'YES') {
     initialScreen = screenName.CEO_GM_Dashboard;
-    console.log('Im in48148181871');
+    //console.log('Im in48148181871');
   }
   return (
     <Stack.Navigator

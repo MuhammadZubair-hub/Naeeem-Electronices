@@ -282,7 +282,10 @@ const threshold = 20;
 export const HorizontalStackedBarGraph = ({ data ,title}: any ) => {
   const { theme } = useTheme();
 
-  // Compute max value for scaling
+  
+
+  console.log('data reviving in the grap is :',data);
+
   const maxValue = useMemo(
     () => Math.max(...data.map((d: any) => Math.max(d.total, d.paid, d.due)), 1),
     [data],
