@@ -43,7 +43,6 @@ type Zone = {
   instDueAmount: string | number;
   zoneBranches: string | number;
   item: any;
-
 };
 
 interface Region {
@@ -51,11 +50,9 @@ interface Region {
   total: number;
   paid: number;
   due: number;
-
 }
 
 export const ZoneList: React.FC = () => {
-
   const route = useRoute<any>();
   const users = useSelector((state: RootState) => state.auth.user);
   const data = route?.params?.data ?? users?.region;
@@ -64,7 +61,7 @@ export const ZoneList: React.FC = () => {
 
   const Id = useSelector((state: RootState) => state.auth.user?.empId);
   const [showGraph, setShowGraph] = useState(false);
-  
+
   useEffect(() => {
     getAllZones();
   }, []);
@@ -74,12 +71,9 @@ export const ZoneList: React.FC = () => {
       setLoading(true);
       //console.log('the data is : ', Id, data);
       const response = await API_Config.getZones({ ID: Id, Region: data });
-     // console.log('zones are ', response);
+      // console.log('zones are ', response);
       if (response?.success) {
         setZoneData(response.data.data);
-        
-
-     
 
         setShowGraph(true);
       } else {
@@ -97,81 +91,37 @@ export const ZoneList: React.FC = () => {
     }
   };
 
- 
-
-  if (users?.designation == "RM") {
-    useFocusEffect(
-      React.useCallback(() => {
-        const backAction = () => {
-          Alert.alert(
-            '',
-            'Do you want to exit the app?',
-            [
-              {
-                text: 'Cancel',
-                onPress: () => null,
-                style: 'cancel',
-              },
-              {
-                text: 'YES',
-                onPress: () => BackHandler.exitApp(),
-              },
-            ],
-            { cancelable: true },
-          );
-          return true; // prevent default back behavior
-        };
-
-        const backHandler = BackHandler.addEventListener(
-          'hardwareBackPress',
-          backAction,
-        );
-
-        // Cleanup when leaving the screen
-        return () => backHandler.remove();
-      }, []),
-    );
-  }
-
   return (
     <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
-     <Header title="Zones" subtitle="Region's Zones" showBackButton />
+      <Header title="Zones" subtitle="Region's Zones" showBackButton />
       {loading ? (
-        <Loader title={'Loading Zones...'} />
+        <Loader title={'Loading Zones'} />
       ) : (
-        
-          
-          <ZonesData
+        <ZonesData
           zoneData={zoneData}
           refreshing={loading}
-           onRefresh={() => getAllZones()}
-          />
-      
+          onRefresh={() => getAllZones()}
+        />
       )}
     </SafeAreaView>
   );
 };
 
-
 interface ZoneDataProps {
-  zoneData: any,
-  refreshing: any,
-  onRefresh?: any,
-
+  zoneData: any;
+  refreshing: any;
+  onRefresh?: any;
 }
 
 export const ZonesData = ({
   zoneData,
   refreshing,
-  onRefresh
-
+  onRefresh,
 }: ZoneDataProps) => {
-
-
   const { theme } = useTheme();
   const navigation = useNavigation<any>();
 
-   const handleZonePress = (zone: any) => {
+  const handleZonePress = (zone: any) => {
     navigation.navigate(screenName.BranchList, { Zone: zone });
     //  navigation.navigate(screenName.BranchList,);
   };
@@ -188,10 +138,7 @@ export const ZonesData = ({
       contentContainerStyle={CommonStyles.list}
       renderItem={({ item }) => (
         <View
-          style={[
-            { backgroundColor: theme.colors.surface },
-            CommonStyles.item,
-          ]}
+          style={[{ backgroundColor: theme.colors.surface }, CommonStyles.item]}
         >
           <Text
             style={[
@@ -216,10 +163,7 @@ export const ZonesData = ({
               Zone Branches :
             </Text>
             <Text
-              style={[
-                CommonStyles.value,
-                { color: theme.colors.secondary },
-              ]}
+              style={[CommonStyles.value, { color: theme.colors.secondary }]}
             >
               {item.zoneBranches || 'N/A'}
             </Text>
@@ -235,9 +179,7 @@ export const ZonesData = ({
             >
               Total Outstand :
             </Text>
-            <Text
-              style={[CommonStyles.value, { color: theme.colors.black }]}
-            >
+            <Text style={[CommonStyles.value, { color: theme.colors.black }]}>
               {item?.instTotalAmount || 'N/A'}
             </Text>
           </View>
@@ -251,12 +193,7 @@ export const ZonesData = ({
             >
               Total Paid :
             </Text>
-            <Text
-              style={[
-                CommonStyles.value,
-                { color: theme.colors.success },
-              ]}
-            >
+            <Text style={[CommonStyles.value, { color: theme.colors.success }]}>
               {item?.instRecAmount || 'N/A'}
             </Text>
           </View>
@@ -270,12 +207,7 @@ export const ZonesData = ({
             >
               Total Due :
             </Text>
-            <Text
-              style={[
-                CommonStyles.value,
-                { color: theme.colors.warning },
-              ]}
-            >
+            <Text style={[CommonStyles.value, { color: theme.colors.warning }]}>
               {item?.instDueAmount || 'N/A'}
             </Text>
           </View>
@@ -292,6 +224,5 @@ export const ZonesData = ({
         </View>
       )}
     />
-  )
-
-}
+  );
+};

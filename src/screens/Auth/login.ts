@@ -16,7 +16,15 @@ export const useLoginUser = () => {
   };
 
   const handleLogin = async (values: { empId: string; password: string }) => {
-    console.log('Logging in with', values);
+    if (!values.empId || !values.password) {
+      showMessage({
+        message: 'Validation Error',
+        description: 'Please enter both User ID and Password',
+        type: 'danger',
+        style: CommonStyles.error,
+      });
+      return;
+    }
     setIsLoading(true);
 
     try {
@@ -27,10 +35,16 @@ export const useLoginUser = () => {
       console.log('API Response:', response);
 
       if (response?.data?.status) {
+        const role = response.data.data.designation;
 
-        const role = response.data.data.designation ;
-
-        if(role !== 'CEO' && role !== 'GM' && role !== 'RM' && role !== 'ZM' && role !== 'AVM' && role !== 'AVO'){
+        if (
+          role !== 'CEO' &&
+          role !== 'GM' &&
+          role !== 'RM' &&
+          role !== 'ZM' &&
+          role !== 'AVM' &&
+          role !== 'AVO'
+        ) {
           // Alert.alert(
           //   'Access Denied',
           //   'You do not have permission to access this application.',

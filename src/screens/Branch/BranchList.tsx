@@ -203,7 +203,11 @@ export const BranchList: React.FC = () => {
         //   )}
         // />
 
-        <BranchesData branchdata={branches} onRefresh={getAllBranches} refreshing={loading} />
+        <BranchesData
+          branchdata={branches}
+          onRefresh={getAllBranches}
+          refreshing={loading}
+        />
       )}
     </SafeAreaView>
   );
@@ -211,7 +215,7 @@ export const BranchList: React.FC = () => {
 
 interface BranchesDataProps {
   branchdata: any;
-  onRefresh: () => void;
+  onRefresh?: any;
   refreshing: boolean;
 }
 
@@ -251,6 +255,7 @@ export const BranchesData = ({
                   color: theme.colors.secondaryDark,
                   fontFamily: fonts.bold,
                   fontSize: AppSizes.Font_20,
+                  flex: 0.7,
                 },
               ]}
             >
@@ -259,7 +264,11 @@ export const BranchesData = ({
             <Text
               style={[
                 CommonStyles.subtitle,
-                { color: theme.colors.secondary, flex: 0 },
+                {
+                  color: theme.colors.secondary,
+                  textAlign: 'right',
+                  flex: 0.3,
+                },
               ]}
             >
               ( {item?.branchCode || 'N/A'})

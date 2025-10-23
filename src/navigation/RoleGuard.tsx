@@ -77,7 +77,7 @@ export const RoleGuard = <P extends object>(
             { backgroundColor: theme.colors.background },
           ]}
         >
-          <MainHeader title='knv' subTitle=';'/>
+          
           <Text style={[styles.errorText, { color: theme.colors.error }]}>
             Invalid role
           </Text>

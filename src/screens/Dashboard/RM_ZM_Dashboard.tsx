@@ -217,7 +217,7 @@ export const RM_ZM_Dashboard: React.FC = () => {
             >
               <Text style={CommonStyles.cardSubtitle}>Total</Text>
               <Text style={{ color: 'white', fontFamily: fonts.medium }}>
-                {ZonesCountData.totalCount.toLocaleString()}hkhkfkshsfk
+                {ZonesCountData.totalCount.toLocaleString()}
               </Text>
             </View>
             <View

@@ -180,7 +180,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
         <MainHeader title={users?.firstName} subTitle={users?.designation} />
 
         {loader ? (
-          <Loader title={'Loading Dashboard...'} />
+          <Loader title={'Loading Dashboard'} />
         ) : (
           <ScrollView
             style={styles.scrollView}

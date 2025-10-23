@@ -182,7 +182,15 @@ export const ZM_BR_Dashboard: React.FC = () => {
       {loading ? (
         <Loader title={'Loading Branches'} />
       ) : (
-        <ScrollView>
+        <ScrollView  
+        
+        refreshControl={
+          <RefreshControl
+          refreshing={loading}
+            onRefresh={() => getAllBranches()}
+          />
+        }
+        >
         
               <HorizontalStackedBarGraph
                 title={'Branches stats'}
@@ -234,7 +242,7 @@ export const ZM_BR_Dashboard: React.FC = () => {
               </Card>
            
 
-          <BranchesData branchdata={branches} onRefresh={getAllBranches} refreshing={loading} />
+          <BranchesData branchdata={branches} refreshing={loading} />
         </ScrollView>
       )}
     </SafeAreaView>
