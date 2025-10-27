@@ -36,30 +36,29 @@ export const useLoginUser = () => {
 
       if (response?.data?.status) {
         const role = response.data.data.designation;
+        const fullAuth = response.data.data.fullAuth;
+        console.log('User Role:', role);
+        console.log('Full Auth:', fullAuth);
 
         if (
-          role !== 'CEO' &&
-          role !== 'GM' &&
           role !== 'RM' &&
           role !== 'ZM' &&
           role !== 'AVM' &&
           role !== 'AVO'
         ) {
-          // Alert.alert(
-          //   'Access Denied',
-          //   'You do not have permission to access this application.',
-          //   [{ text: 'OK', onPress: () => null }],
-          //   { cancelable: true },
-          // );
+          if(fullAuth == 'N') {
 
-          showMessage({
-            message: 'Access Denied',
-            description: `You do not have permission to access this application.`,
-            type: 'danger',
-            style: CommonStyles.error,
-          });
+            showMessage({
+              message: 'Access Denied',
+              description: 'You do not have access to this application.',           
+              type: 'danger',
+              style: CommonStyles.error,
+            });
           return;
         }
+     
+
+      }
 
         dispatch(
           loginSuccess({ data: response.data, token: response.data.token }),

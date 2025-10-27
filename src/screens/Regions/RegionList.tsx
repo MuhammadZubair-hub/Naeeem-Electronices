@@ -9,7 +9,7 @@ import EmptyComponents from '../../components/common/EmptyComponents';
 import { CommonStyles } from '../../styles/GlobalStyle';
 
 interface RegionListProps {
-  data: any;
+  data?: any;
 }
 
 export const RegionList: React.FC<RegionListProps> = ({ data }) => {
@@ -17,8 +17,6 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
   const navigation = useNavigation<any>();
 
   const handleRegionPress = (region: any) => {
-    console.log('region nnnnn:', region);
-
     navigation.navigate('ZoneList', { data: region });
   };
 

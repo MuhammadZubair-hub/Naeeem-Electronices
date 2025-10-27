@@ -12,11 +12,12 @@ interface RoleGuardProps {
 
 // Role hierarchy: CEO > GM > RM > ZM > BR > AVO
 const ROLE_HIERARCHY: Record<Role, number> = {
-  [Role.CEO]: 7,
-  [Role.GM]: 6,
+  [Role.CEO]: 8,
+  [Role.GM]: 7,
+  [Role.AGM]: 6,
   [Role.RM]: 5,
   [Role.ZM]: 4,
-    [Role.AVM]: 3,
+  [Role.AVM]: 3,
   [Role.BR]: 2,
   [Role.AVO]: 1,
 };
@@ -28,13 +29,15 @@ const mapDesignationToRole = (designation: string): Role | null => {
       return Role.CEO;
     case 'GM':
       return Role.GM;
+    case 'AGM':
+      return Role.AGM;
     case 'RM':
       return Role.RM;
     case 'ZM':
       return Role.ZM;
     case 'BR':
       return Role.BR;
-       case 'AVM':
+    case 'AVM':
       return Role.AVM;
     case 'AVO':
       return Role.AVO;
@@ -66,48 +69,45 @@ export const RoleGuard = <P extends object>(
       );
     }
 
-    const userRole = mapDesignationToRole(user?.designation);
-    if (!userRole) {
-      return (
-        
-        <View
+    // const userRole = mapDesignationToRole(user?.designation);
+    // if (!userRole) {
+    //   return (
+    //     <View
+    //       style={[
+    //         styles.container,
+    //         { backgroundColor: theme.colors.background },
+    //       ]}
+    //     >
+    //       <Text style={[styles.errorText, { color: theme.colors.error }]}>
+    //         Invalid role
+    //       </Text>
+    //     </View>
+    //   );
+    // }
 
-          style={[
-            styles.container,
-            { backgroundColor: theme.colors.background },
-          ]}
-        >
-          
-          <Text style={[styles.errorText, { color: theme.colors.error }]}>
-            Invalid role
-          </Text>
-        </View>
-      );
-    }
+    // const userRoleLevel = ROLE_HIERARCHY[userRole];
+    // const hasAccess = allowedRoles.some(role => {
+    //   const roleLevel = ROLE_HIERARCHY[role];
+    //   return userRoleLevel >= roleLevel;
+    // });
 
-    const userRoleLevel = ROLE_HIERARCHY[userRole];
-    const hasAccess = allowedRoles.some(role => {
-      const roleLevel = ROLE_HIERARCHY[role];
-      return userRoleLevel >= roleLevel;  
-    });
-
-    if (!hasAccess) {
-      return (
-        <View
-          style={[
-            styles.container,
-            { backgroundColor: theme.colors.background },
-          ]}
-        >
-          <Text style={[styles.errorText, { color: theme.colors.error }]}>
-            Access Denied
-          </Text>
-          <Text style={[styles.subText, { color: theme.colors.textSecondary }]}>
-            You don't have permission to access this section
-          </Text>
-        </View>
-      );
-    }
+    // if (!hasAccess) {
+    //   return (
+    //     <View
+    //       style={[
+    //         styles.container,
+    //         { backgroundColor: theme.colors.background },
+    //       ]}
+    //     >
+    //       <Text style={[styles.errorText, { color: theme.colors.error }]}>
+    //         Access Denied
+    //       </Text>
+    //       <Text style={[styles.subText, { color: theme.colors.textSecondary }]}>
+    //         You don't have permission to access this section
+    //       </Text>
+    //     </View>
+    //   );
+    // }
 
     return <Component {...props} />;
   };

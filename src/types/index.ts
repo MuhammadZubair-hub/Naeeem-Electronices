@@ -2,6 +2,7 @@
 export enum Role {
   CEO = 'CEO',
   GM = 'GM', // General Manager
+  AGM = 'AGM', // Assistant General Manager
   RM = 'RM', // Regional Manager
   ZM = 'ZM', // Zone Manager
   BR = 'BR', // Branch Manager
