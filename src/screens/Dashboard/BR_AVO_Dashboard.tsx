@@ -12,7 +12,11 @@ import {
   RefreshControl,
 } from 'react-native';
 import { Button } from '../../components/common/Button';
-import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import { useTheme } from '../../hooks/useTheme';
 import { Header } from '../../components/common/Header';
 import { screenName } from '../../navigation/ScreenName';
@@ -45,9 +49,6 @@ export const BR_AVO_Dashboard: React.FC = () => {
   const users = useSelector((state: RootState) => state.auth.user);
   const branch = route?.params?.branch ?? users?.branch;
 
-
-
-
   const [avos, setAvos] = React.useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [allAVOsTotal, setAlAVOTotal] = useState<AVO[]>([]);
@@ -56,8 +57,6 @@ export const BR_AVO_Dashboard: React.FC = () => {
     dueCount: number;
     paidCount: number;
   }>({ totalCount: 0, dueCount: 0, paidCount: 0 });
-
-
 
   useFocusEffect(
     React.useCallback(() => {
@@ -86,18 +85,13 @@ export const BR_AVO_Dashboard: React.FC = () => {
         backAction,
       );
 
-      // Cleanup when leaving the screen
       return () => backHandler.remove();
     }, []),
   );
 
-
   useEffect(() => {
-
     getAVos();
   }, []);
-
-
 
   const getAVos = async () => {
     setLoading(true);
@@ -107,12 +101,9 @@ export const BR_AVO_Dashboard: React.FC = () => {
     });
 
     if (response.success) {
-      //console.log(response.data.data);
       setAvos(response.data.data);
       console.log('data is : ', response.data.data);
-
       const data = response.data.data;
-
       if (Array.isArray(data)) {
         let count = {
           totalCount: 0,
@@ -141,12 +132,8 @@ export const BR_AVO_Dashboard: React.FC = () => {
       const formatted = data.map((item: any, index: number) => ({
         region: item.assignedName,
         total: parseInt(String(item.instTotalAmount).replace(/,/g, ''), 10),
-
         paid: parseInt(String(item.instRecAmount).replace(/,/g, ''), 10),
         due: parseInt(String(item.instDueAmount).replace(/,/g, ''), 10),
-        // total: parseFloat(item.instTotalAmount),
-        // paid: parseFloat(item.instRecAmount),
-        // due: parseFloat(item.instDueAmount),
       }));
 
       setAlAVOTotal(formatted);
@@ -166,28 +153,18 @@ export const BR_AVO_Dashboard: React.FC = () => {
     }
   };
 
-
-
   return (
     <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
-
       <MainHeader title={users?.firstName} subTitle={users?.designation} />
       {loading ? (
         <Loader title={'Loading AVOs'} />
       ) : (
         <ScrollView
           refreshControl={
-            <RefreshControl
-              refreshing={loading}
-              onRefresh={() => getAVos()}
-            />
+            <RefreshControl refreshing={loading} onRefresh={() => getAVos()} />
           }
         >
-
-          <HorizontalStackedBarGraph
-            title={'AVOs stats'}
-            data={allAVOsTotal}
-          />
+          <HorizontalStackedBarGraph title={'AVOs stats'} data={allAVOsTotal} />
 
           <Card
             style={{
@@ -233,18 +210,13 @@ export const BR_AVO_Dashboard: React.FC = () => {
             </View>
           </Card>
 
-
           <AvosData
             avos={avos}
             //onRefresh={()=>getAVos()}
             refreshing={loading}
           />
-
-
-
         </ScrollView>
       )}
     </SafeAreaView>
   );
 };
-

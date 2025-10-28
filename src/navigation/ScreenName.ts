@@ -1,5 +1,3 @@
-import { AGM_Dashboard } from './../screens/Dashboard/AGM_Dashboard';
-// ScreenNames.ts
 import { AppStackParamList } from './AppNavigator';
 
 // Centralized screen names

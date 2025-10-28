@@ -29,8 +29,8 @@ export const useLoginUser = () => {
 
     try {
       const response = await API_Config.loginUser(
-        values.empId,
-        values.password,
+        values.empId.trim(),
+        values.password.trim(),
       );
       console.log('API Response:', response);
 
@@ -46,19 +46,16 @@ export const useLoginUser = () => {
           role !== 'AVM' &&
           role !== 'AVO'
         ) {
-          if(fullAuth == 'N') {
-
+          if (fullAuth == 'N') {
             showMessage({
               message: 'Access Denied',
-              description: 'You do not have access to this application.',           
+              description: 'You do not have access to this application.',
               type: 'danger',
               style: CommonStyles.error,
             });
-          return;
+            return;
+          }
         }
-     
-
-      }
 
         dispatch(
           loginSuccess({ data: response.data, token: response.data.token }),
@@ -69,7 +66,6 @@ export const useLoginUser = () => {
           style: CommonStyles.sucsses,
         });
         setCredentials({ empId: '', password: '' });
-        //console.log('Login successfulss:', response.data.designation);
       } else {
         showMessage({
           message: 'Logged in Failed',
