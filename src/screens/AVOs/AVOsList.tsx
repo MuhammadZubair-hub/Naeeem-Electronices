@@ -43,43 +43,8 @@ export const AVOsList: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
 
-  if (users?.designation == "AVM") {
-    useFocusEffect(
-      React.useCallback(() => {
-        const backAction = () => {
-          Alert.alert(
-            '',
-            'Do you want to exit the app?',
-            [
-              {
-                text: 'Cancel',
-                onPress: () => null,
-                style: 'cancel',
-              },
-              {
-                text: 'YES',
-                onPress: () => BackHandler.exitApp(),
-              },
-            ],
-            { cancelable: true },
-          );
-          return true; // prevent default back behavior
-        };
-
-        const backHandler = BackHandler.addEventListener(
-          'hardwareBackPress',
-          backAction,
-        );
-
-        // Cleanup when leaving the screen
-        return () => backHandler.remove();
-      }, []),
-    );
-  }
-
+  
   useEffect(() => {
-    
-
     getAVos();
   }, []);
 

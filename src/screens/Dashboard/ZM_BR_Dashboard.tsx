@@ -11,6 +11,7 @@ import {
   ImageBackground,
   Alert,
   BackHandler,
+  StatusBar,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -177,6 +178,10 @@ export const ZM_BR_Dashboard: React.FC = () => {
 
   return (
     <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
+      <StatusBar
+        backgroundColor={'#140958'}
+        barStyle="light-content"
+      />
       <MainHeader title={users?.firstName} subTitle={users?.designation} />
 
       {loading ? (

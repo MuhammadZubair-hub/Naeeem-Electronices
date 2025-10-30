@@ -1,11 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../hooks/useTheme';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { AppSizes } from '../../utils/AppSizes';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@/redux/store';
+import { AppDispatch } from '../../redux/store';
 import { logout } from '../../redux/slices/authSlice';
 import { showMessage } from 'react-native-flash-message';
 import { CommonStyles } from '../../styles/GlobalStyle';
@@ -16,7 +15,7 @@ interface MainHeaderProps {
 }
 
 const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
-  const navigation = useNavigation();
+
   const { theme } = useTheme();
 
   const dispatch = useDispatch<AppDispatch>();
@@ -44,11 +43,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
     <View
       style={[styles.header, { backgroundColor: theme.colors.secondaryDark }]}
     >
-      <TouchableOpacity
-        // onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-        style={styles.menuButton}
-        accessibilityLabel="Open drawer"
-      >
+     
         <View
           style={{
             padding: AppSizes.Padding_Horizontal_8,
@@ -56,15 +51,16 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
             borderColor: theme.colors.white,
             borderWidth: 1,
             borderRadius: AppSizes.Radius_30,
+            marginRight :AppSizes.Margin_Horizontal_15
           }}
         >
           <Ionicons
-            name="person-outline"
+            name="person"
             size={28}
             color={theme.colors.secondaryDark}
           />
         </View>
-      </TouchableOpacity>
+     
       <View>
         <Text style={[styles.title, { color: theme.colors.white }]}>
           {title}

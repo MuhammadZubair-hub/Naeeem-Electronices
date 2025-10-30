@@ -9,6 +9,7 @@ import {
   BackHandler,
   Alert,
   ScrollView,
+  StatusBar,
 } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -189,6 +190,10 @@ export const AVO_AllCustomers: React.FC = () => {
 
   return (
     <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
+      <StatusBar
+        backgroundColor={'#140958'}
+        barStyle="light-content"
+      />
       <MainHeader title={users?.firstName} subTitle={users?.designation} />
 
       {loading ? (

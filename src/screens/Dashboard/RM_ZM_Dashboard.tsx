@@ -10,6 +10,7 @@ import {
   BackHandler,
   ScrollView,
   RefreshControl,
+  StatusBar,
 } from 'react-native';
 import { Button } from '../../components/common/Button';
 import {
@@ -57,7 +58,6 @@ interface Region {
 
 export const RM_ZM_Dashboard: React.FC = () => {
   const { theme } = useTheme();
-  const navigation = useNavigation<any>();
   const route = useRoute<any>();
 
   const users = useSelector((state: RootState) => state.auth.user);
@@ -183,6 +183,10 @@ export const RM_ZM_Dashboard: React.FC = () => {
 
   return (
     <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
+      <StatusBar
+        backgroundColor={'#140958'}
+        barStyle="light-content"
+      />
       <MainHeader title={users?.firstName} subTitle={users?.designation} />
       {loading ? (
         <Loader title={'Loading Zones...'} />

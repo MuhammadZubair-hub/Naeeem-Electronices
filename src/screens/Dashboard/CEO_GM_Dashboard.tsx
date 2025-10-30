@@ -9,6 +9,7 @@ import {
   Text,
   ScrollView,
   Dimensions,
+  StatusBar,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -172,88 +173,92 @@ export const CEO_GM_Dashboard: React.FC = () => {
   const users = useSelector((state: RootState) => state.auth.user);
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView
-        edges={['top']}
-        style={[styles.safeArea, { backgroundColor: theme.colors.surface }]}
-      >
-        <MainHeader title={users?.firstName} subTitle={users?.designation} />
 
-        {loader ? (
-          <Loader title={'Loading Dashboard'} />
-        ) : (
-          <ScrollView
-            style={styles.scrollView}
-            refreshControl={
-              <RefreshControl refreshing={loader} onRefresh={onRefresh} />
-            }
-            showsVerticalScrollIndicator={false}
-          >
-            {showGraph && (
-              <>
-                <HorizontalStackedBarGraph
-                  title={'Regional Stats'}
-                  data={allRegionsTotal}
-                />
-                <Card
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-around',
-                    marginHorizontal: AppSizes.Margin_Horizontal_20,
-                    elevation: 12,
-                    //marginTop: AppSizes.Margin_Vertical_20,
-                  }}
+    <SafeAreaView
+      edges={['top']}
+      style={[styles.safeArea, { backgroundColor: theme.colors.surface }]}
+    >
+      <StatusBar
+        backgroundColor={'#140958'}
+        barStyle="light-content"
+      />
+      <MainHeader title={users?.firstName} subTitle={users?.designation} />
+
+      {loader ? (
+        <Loader title={'Loading Dashboard'} />
+      ) : (
+        <ScrollView
+          style={styles.scrollView}
+          refreshControl={
+            <RefreshControl refreshing={loader} onRefresh={onRefresh} />
+          }
+          showsVerticalScrollIndicator={false}
+        >
+          {showGraph && (
+            <>
+              <HorizontalStackedBarGraph
+                title={'Regional Stats'}
+                data={allRegionsTotal}
+              />
+              <Card
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-around',
+                  marginHorizontal: AppSizes.Margin_Horizontal_20,
+                  elevation: 12,
+                  //marginTop: AppSizes.Margin_Vertical_20,
+                }}
+              >
+                <View
+                  style={[
+                    styles.cardtitle,
+                    { backgroundColor: colors.secondaryDark },
+                  ]}
                 >
-                  <View
-                    style={[
-                      styles.cardtitle,
-                      { backgroundColor: colors.secondaryDark },
-                    ]}
-                  >
-                    <Text style={styles.cardSubtitle}>Total</Text>
-                    <Text style={{ color: 'white', fontFamily: fonts.medium }}>
-                      {regionsCountData.totalCount}
-                    </Text>
-                  </View>
-                  <View
-                    style={[
-                      styles.cardtitle,
-                      { backgroundColor: theme.colors.success },
-                    ]}
-                  >
-                    <Text style={styles.cardSubtitle}>Paid</Text>
-                    <Text style={{ color: 'white', fontFamily: fonts.medium }}>
-                      {regionsCountData.paidCount}
-                    </Text>
-                  </View>
+                  <Text style={styles.cardSubtitle}>Total</Text>
+                  <Text style={{ color: 'white', fontFamily: fonts.medium }}>
+                    {regionsCountData.totalCount}
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    styles.cardtitle,
+                    { backgroundColor: theme.colors.success },
+                  ]}
+                >
+                  <Text style={styles.cardSubtitle}>Paid</Text>
+                  <Text style={{ color: 'white', fontFamily: fonts.medium }}>
+                    {regionsCountData.paidCount}
+                  </Text>
+                </View>
 
-                  <View
-                    style={[
-                      styles.cardtitle,
-                      { backgroundColor: theme.colors.warning },
-                    ]}
-                  >
-                    <Text style={styles.cardSubtitle}>Due</Text>
-                    <Text style={{ color: 'white', fontFamily: fonts.medium }}>
-                      {regionsCountData.dueCount}
-                    </Text>
-                  </View>
-                </Card>
+                <View
+                  style={[
+                    styles.cardtitle,
+                    { backgroundColor: theme.colors.warning },
+                  ]}
+                >
+                  <Text style={styles.cardSubtitle}>Due</Text>
+                  <Text style={{ color: 'white', fontFamily: fonts.medium }}>
+                    {regionsCountData.dueCount}
+                  </Text>
+                </View>
+              </Card>
 
-                <RegionList data={regionsData} />
-              </>
-            )}
+              <RegionList data={regionsData} />
+            </>
+          )}
 
-            {/* <View style={styles.bottomSpacing} /> */}
-          </ScrollView>
-        )}
-      </SafeAreaView>
-    </View>
+          {/* <View style={styles.bottomSpacing} /> */}
+        </ScrollView>
+      )}
+    </SafeAreaView>
+
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+
   safeArea: { flex: 1, backgroundColor: 'white', zIndex: 2 },
   overlay: {
     ...StyleSheet.absoluteFillObject,

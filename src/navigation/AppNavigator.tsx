@@ -23,7 +23,7 @@ export type AppStackParamList = {
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, StatusBar, View } from 'react-native';
 import { RootState } from '../redux/store';
 import { Role } from '../types';
 import { screenName } from './ScreenName';
@@ -75,7 +75,7 @@ const RoleBasedNavigator = () => {
     case Role.ZM:
       initialScreen = screenName.ZM_BR_Dashboard;
       break;
-   
+
     case Role.AVM:
       initialScreen = screenName.BR_AVO_Dashboard;
       break;
@@ -89,7 +89,7 @@ const RoleBasedNavigator = () => {
 
   if (access?.toUpperCase() == 'Y' || access?.toUpperCase() == 'YES') {
     initialScreen = screenName.CEO_GM_Dashboard;
-  }else{
+  } else {
     // initialScreen = screenName.AVO_AllCustomers
     console.log('no ausdfsfddsf')
   }
@@ -130,7 +130,7 @@ const RoleBasedNavigator = () => {
           Role.AVO,
         ])}
       />
-     
+
       <Stack.Screen
         name="ZoneList"
         component={RoleGuard(ZoneList, [
@@ -147,7 +147,7 @@ const RoleBasedNavigator = () => {
         component={RoleGuard(BranchList, [
           Role.CEO,
           Role.GM,
-        
+
           Role.RM,
           Role.ZM,
           Role.AVM,
@@ -159,7 +159,7 @@ const RoleBasedNavigator = () => {
         component={RoleGuard(CustomerList, [
           Role.CEO,
           Role.GM,
-          
+
           Role.RM,
           Role.ZM,
           Role.AVM,
@@ -171,7 +171,7 @@ const RoleBasedNavigator = () => {
         component={RoleGuard(CustomerDetail, [
           Role.CEO,
           Role.GM,
-          
+
           Role.RM,
           Role.ZM,
           Role.AVM,
@@ -183,7 +183,7 @@ const RoleBasedNavigator = () => {
         component={RoleGuard(AVOsList, [
           Role.CEO,
           Role.GM,
-         
+
           Role.RM,
           Role.ZM,
           Role.AVM,
@@ -195,7 +195,8 @@ const RoleBasedNavigator = () => {
 };
 
 export const AppNavigator = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
+  <Stack.Navigator
+   screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Main" component={RoleBasedNavigator} />
   </Stack.Navigator>
 );

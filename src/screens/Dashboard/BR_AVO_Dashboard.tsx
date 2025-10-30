@@ -10,6 +10,7 @@ import {
   ScrollView,
   BackHandler,
   RefreshControl,
+  StatusBar,
 } from 'react-native';
 import { Button } from '../../components/common/Button';
 import {
@@ -155,6 +156,10 @@ export const BR_AVO_Dashboard: React.FC = () => {
 
   return (
     <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
+      <StatusBar
+              backgroundColor={'#140958'}
+              barStyle="light-content"
+            />
       <MainHeader title={users?.firstName} subTitle={users?.designation} />
       {loading ? (
         <Loader title={'Loading AVOs'} />

@@ -66,17 +66,16 @@ const LoginScreen = () => {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.white }]}>
-      {/* Background Image */}
-
-      <SafeAreaView style={styles.safeArea}>
+   
+      <SafeAreaView style={[styles.safeArea,{backgroundColor:theme.colors.white}]}>
         <KeyboardAwareScrollView
           enableOnAndroid
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.scrollContainer}
           showsVerticalScrollIndicator={false}
         >
-          {/* Login Form Card with Glass Effect */}
+          
+
           <View style={styles.glassCard}>
             {/* Header Section */}
             <View style={styles.headerContainer}>
@@ -188,39 +187,39 @@ const LoginScreen = () => {
               </View>
             </View>
 
-            {/* Sign In Button */}
-            <View style={styles.buttonContainer}>
+        
+        
               <Button
                 variant="secondary"
                 title="Sign In"
                 onPress={() => loginData.handleLogin(loginData.credentials)}
                 style={styles.loginButton}
               />
-            </View>
+           
           </View>
 
           {/* Footer Spacing */}
           <View style={styles.footer} />
         </KeyboardAwareScrollView>
+
+              <LoadingModal visible={loginData.isLoading} />
+
       </SafeAreaView>
-      <LoadingModal visible={loginData.isLoading} />
-    </View>
+
+    
   );
 };
 
 export default LoginScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-  },
+  
 
   safeArea: {
     flex: 1,
-    zIndex: 2,
+    //zIndex: 2,
     justifyContent: 'center',
-    marginTop: AppSizes.Margin_Vertical_40,
+    //marginTop: AppSizes.Margin_Vertical_40,
 
     // alignItems: 'center',
   },
@@ -233,11 +232,12 @@ const styles = StyleSheet.create({
   // Header Styles
   headerContainer: {
     alignItems: 'center',
-    paddingTop: 20,
+    paddingTop: AppSizes.Margin_Vertical_40,
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 32,
+   // marginBottom: 32,
+    marginVertical: AppSizes.Margin_Vertical_40,
   },
   brandTitle: {
     fontSize: 32,
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     fontFamily: 'Poppins-Regular',
-    paddingVertical: AppSizes.Padding_Vertical_15,
+    //paddingVertical: AppSizes.Padding_Vertical_15,
   },
   eyeIconContainer: {
     padding: 4,

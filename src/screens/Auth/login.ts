@@ -2,7 +2,6 @@ import { API_Config } from '../../services/apiServices';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../redux/slices/authSlice';
-import { Alert } from 'react-native';
 import { CommonStyles } from '../../styles/GlobalStyle';
 import { showMessage } from 'react-native-flash-message';
 
@@ -32,13 +31,13 @@ export const useLoginUser = () => {
         values.empId.trim(),
         values.password.trim(),
       );
-      console.log('API Response:', response);
+      //console.log('API Response:', response);
 
       if (response?.data?.status) {
         const role = response.data.data.designation;
         const fullAuth = response.data.data.fullAuth;
-        console.log('User Role:', role);
-        console.log('Full Auth:', fullAuth);
+        //console.log('User Role:', role);
+        //console.log('Full Auth:', fullAuth);
 
         if (
           role !== 'RM' &&

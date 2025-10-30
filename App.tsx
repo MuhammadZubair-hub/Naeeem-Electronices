@@ -224,8 +224,8 @@ const AppContent = () => {
     <View style={{ flex: 1 }} {...panResponder.panHandlers}>
       <NavigationContainer>
         <StatusBar
-          backgroundColor={theme.colors.secondaryDark}
-          barStyle="light-content"
+          backgroundColor={theme.colors.white}
+          barStyle="dark-content"
         />
         {isAuthenticated ? <AppNavigator /> : <AuthNavigator />}
       </NavigationContainer>
