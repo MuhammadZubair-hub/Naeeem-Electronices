@@ -6,6 +6,10 @@ import {
   FlatList,
   Image,
   ScrollView,
+  Linking,
+  TouchableOpacity,
+  Alert,
+  Modal,
 } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { Header } from '../../components/common/Header';
@@ -19,7 +23,6 @@ import { Button } from '../../components/common/Button';
 import { useTheme } from '../../hooks/useTheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@react-native-vector-icons/ionicons';
-import { Modal } from '../../components/common';
 import { set } from 'lodash';
 import BaseModal from '../../components/common/BaseModal';
 
@@ -37,6 +40,8 @@ export const CustomerDetail: React.FC = () => {
   ]);
   let perviousInsatllment = [{ receiptDate: '', receiptAmnt: '' }];
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedPhone, setSelectedPhone] = useState('');
   // 🔹 Fetch customer details on component mount
   useEffect(() => {
     getCustomerDetails();
@@ -610,23 +615,43 @@ export const CustomerDetail: React.FC = () => {
 
   // Reusable Row Component
 
-
-  const InfoRow = ({ label, value }: any) => (
+  const InfoRow = ({ label, value, onPress }: any) => (
     <View style={CommonStyles.row}>
       <Text style={[CommonStyles.label, { color: theme.colors.textSecondary }]}>
         {label}
       </Text>
-      <Text
+      {/* <Text
         style={[CommonStyles.value, { color: theme.colors.black, flex: 1.7 }]}
       >
         {value || 'N/A'}
-      </Text>
+      </Text> */}
+
+      {onPress ? (
+        <TouchableOpacity onPress={onPress}>
+          <Text
+            style={[
+              CommonStyles.value,
+              {
+                color: theme.colors.black,
+                flex: 1.7,
+                textDecorationLine: 'underline',
+              },
+            ]}
+          >
+            {value || 'N/A'}
+          </Text>
+        </TouchableOpacity>
+      ) : (
+        <Text
+          style={[CommonStyles.value, { color: theme.colors.black, flex: 1.7 }]}
+        >
+          {value || 'N/A'}
+        </Text>
+      )}
     </View>
   );
 
   const renderItem = ({ item }: { item: any }) => (
-
-
     <View
       style={[{ backgroundColor: theme.colors.surface }, CommonStyles.item]}
     >
@@ -716,16 +741,18 @@ export const CustomerDetail: React.FC = () => {
           <InfoRow label="Occupation :" value={item?.u_Occupation} />
           <InfoRow label="Married :" value={item?.u_Mstatus} />
           <InfoRow label="House Owner :" value={item?.u_Howner} />
-          <InfoRow label="Phone No. 1 :" value={item?.phone} />
-          <InfoRow label="Phone No. 2 :" value={item?.phone2} />
           <InfoRow
-            label="Location Res :"
-            value={item?.u_Raddress}
+            label="Phone No. 1 :"
+            value={item?.phone}
+            onPress={() => showPhoneOptions(item.phone)}
           />
           <InfoRow
-            label="Location Offc :"
-            value={item?.u_Offaddress}
+            label="Phone No. 2 :"
+            value={item?.phone2}
+            onPress={() => showPhoneOptions(item.phone2)}
           />
+          <InfoRow label="Location Res :" value={item?.u_Raddress} />
+          <InfoRow label="Location Offc :" value={item?.u_Offaddress} />
 
           <View>
             <View
@@ -765,8 +792,16 @@ export const CustomerDetail: React.FC = () => {
 
           <InfoRow label="CNIC :" value={item?.u_G1CNIC} />
           <InfoRow label="Occupation :" value={item?.u_G1Occup} />
-          <InfoRow label="Phone 1 :" value={item?.u_G1Restel} />
-          <InfoRow label="Phone 2 :" value={item?.u_G1Offtel} />
+          <InfoRow
+            label="Phone 1 :"
+            value={item?.u_G1Restel}
+            onPress={() => showPhoneOptions(item.u_G1Restel)}
+          />
+          <InfoRow
+            label="Phone 2 :"
+            value={item?.u_G1Offtel}
+            onPress={() => showPhoneOptions(item.u_G1Offtel)}
+          />
           <InfoRow label="Location Res :" value={item?.u_G1ResAdd} />
           <InfoRow label="Location Offc :" value={item?.u_G1OffAdd} />
 
@@ -808,8 +843,16 @@ export const CustomerDetail: React.FC = () => {
 
           <InfoRow label="CNIC :" value={item?.u_G2CNIC} />
           <InfoRow label="Occupation :" value={item?.u_G2Occup} />
-          <InfoRow label="Phone 1 :" value={item?.u_G2Restel} />
-          <InfoRow label="Phone 2 :" value={item?.u_G2Offtel} />
+          <InfoRow
+            label="Phone 1 :"
+            value={item?.u_G2Restel}
+            onPress={() => showPhoneOptions(item.u_G2Restel)}
+          />
+          <InfoRow
+            label="Phone 2 :"
+            value={item?.u_G2Offtel}
+            onPress={() => showPhoneOptions(item.u_G2Offtel)}
+          />
           <InfoRow label="Location Res :" value={item?.u_G2ResAdd} />
           <InfoRow label="Location Offc :" value={item?.u_G2OffAdd} />
 
@@ -833,6 +876,190 @@ export const CustomerDetail: React.FC = () => {
     </View>
   );
 
+const PhoneOptionsModal = ({
+  visible,
+  phoneNumber,
+  onClose,
+  onCall,
+  onWhatsApp,
+  theme,
+}: {
+  visible: boolean;
+  phoneNumber: string;
+  onClose: () => void;
+  onCall: () => void;
+  onWhatsApp: () => void;
+  theme: any;
+}) => (
+  <Modal
+        visible={visible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={onClose}
+      >
+        <SafeAreaView style={styles.modalOverlay}>
+          <View
+            style={[
+              styles.modalContainer,
+              {
+                backgroundColor: theme.colors.white,
+                borderColor: theme.colors.secondaryDark,
+                maxHeight: '40%',
+              },
+            ]}
+          >
+            <View style={styles.headerContainer}>
+              <Text
+                style={[
+                  styles.headerText,
+                  {
+                    color: theme.colors.secondaryDark,
+                  },
+                ]}
+              >
+                {/* {phoneNumber} */}
+                Choose Contact Option
+              </Text>
+              <Ionicons
+                name="close"
+                onPress={onClose}
+                color={'red'}
+                size={AppSizes.Icon_Height_30}
+              />
+            </View>
+  
+            <ScrollView style={styles.contentContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.optionButton,
+                  {
+                    borderBottomColor: theme.colors.border,
+                  },
+                ]}
+                onPress={() => {
+                  onClose();
+                  onCall();
+                }}
+              >
+                <View style={{flexDirection:'row', justifyContent:'center', gap:AppSizes.Gap_20,alignItems:'center' }}>
+                  <Ionicons
+                    name="call-outline"
+                    onPress={onClose}
+                    color={'black'}
+                    size={AppSizes.Icon_Height_30}
+                  />
+  
+                  <Text
+                    style={[
+                      styles.optionText,
+                      {
+                        color: theme.colors.black,
+                      },
+                    ]}
+                  >
+                    Phone Call
+                  </Text>
+                </View>
+              </TouchableOpacity>
+  
+              <TouchableOpacity
+                style={[
+                  styles.optionButton,
+                  {
+                    borderBottomColor: theme.colors.border,
+                  },
+                ]}
+                onPress={() => {
+                  onClose();
+                  onWhatsApp();
+                }}
+              >
+                <View style={{flexDirection:'row', justifyContent:'center', gap:AppSizes.Gap_20,alignItems:'center' }}>
+                  <Ionicons
+                    name="logo-whatsapp"
+                    onPress={onClose}
+                    color={'green'}
+                    size={AppSizes.Icon_Height_30}
+                  />
+  
+                  <Text
+                    style={[
+                      styles.optionText,
+                      {
+                        color: theme.colors.black,
+                      },
+                    ]}
+                  >
+                    WhatsApp
+                  </Text>
+                </View>
+              </TouchableOpacity>
+  
+              {/* <TouchableOpacity
+                style={[
+                  styles.cancelButton,
+                  {
+                    borderTopColor: theme.colors.border,
+                  },
+                ]}
+                onPress={onClose}
+              >
+                <Text
+                  style={[
+                    styles.cancelText,
+                    {
+                      color: theme.colors.textSecondary,
+                    },
+                  ]}
+                >
+                  Cancel
+                </Text>
+              </TouchableOpacity> */}
+            </ScrollView>
+          </View>
+        </SafeAreaView>
+      </Modal>
+);
+
+  const showPhoneOptions = (phoneNumber: string) => {
+    if (!phoneNumber) return;
+    setSelectedPhone(phoneNumber);
+    setModalVisible(true);
+  };
+
+  const makeCall = (phoneNumber: string) => {
+    if (phoneNumber) {
+      const cleanNumber = phoneNumber.replace(/[^\d+]/g, '');
+      const phoneUrl = `tel:${cleanNumber}`;
+
+      Linking.openURL(phoneUrl).catch(err =>
+        console.error('Error making call:', err),
+      );
+    }
+  };
+
+  const openWhatsApp = (phoneNumber: string) => {
+    if (phoneNumber) {
+      let cleanNumber = phoneNumber.replace(/[^\d+]/g, '');
+
+      if (!cleanNumber.startsWith('+')) {
+        cleanNumber = cleanNumber.startsWith('0')
+          ? '+92' + cleanNumber.substring(1)
+          : '+92' + cleanNumber;
+      }
+
+      const whatsappNumber = cleanNumber.replace('+', '');
+      const whatsappUrl = `whatsapp://send?phone=${whatsappNumber}`;
+
+      Linking.openURL(whatsappUrl).catch(err => {
+        console.error('Error opening WhatsApp:', err);
+        Alert.alert(
+          'Error',
+          'Could not open WhatsApp. Please make sure it is installed.',
+        );
+      });
+    }
+  };
   const renderPreviousItem = ({
     item,
     index,
@@ -841,6 +1068,10 @@ export const CustomerDetail: React.FC = () => {
     index: number;
   }) => {
     console.log('Rendering item:', item);
+
+    if (!item?.receiptDate || item?.receiptDate === 'N/A') {
+      return null;
+    }
 
     return (
       <View
@@ -905,6 +1136,7 @@ export const CustomerDetail: React.FC = () => {
         <Loader title="Loading Customer detail" />
       ) : (
         <>
+        
           <FlatList
             data={[customerDetails]}
             keyExtractor={item => item.id}
@@ -922,6 +1154,15 @@ export const CustomerDetail: React.FC = () => {
             }
           />
 
+          <PhoneOptionsModal
+            visible={modalVisible}
+            phoneNumber={selectedPhone}
+            onClose={() => setModalVisible(false)}
+            onCall={() => makeCall(selectedPhone)}
+            onWhatsApp={() => openWhatsApp(selectedPhone)}
+            theme={theme}
+          />
+
           {showpervious && (
             <BaseModal
               visible
@@ -929,8 +1170,13 @@ export const CustomerDetail: React.FC = () => {
               headerText=" Previous Months Installment Detail"
             >
               <FlatList
-                data={installments}
-                keyExtractor={item => item?.receiptDate}
+                // data={installments}
+                // keyExtractor={item => item?.receiptDate}
+
+                data={installments.filter(
+                  item => item.receiptDate && item.receiptDate !== 'N/A',
+                )}
+                keyExtractor={(item, index) => `${item?.receiptDate}-${index}`}
                 scrollEnabled
                 showsVerticalScrollIndicator
                 renderItem={renderPreviousItem}
@@ -939,9 +1185,9 @@ export const CustomerDetail: React.FC = () => {
                     <Text
                       style={[styles.errorText, { color: theme.colors.black }]}
                     >
-                      Customer data not available
+                      Not found
                     </Text>
-                    <Button title="Retry" onPress={getCustomerDetails} />
+                    {/* <Button title="Retry" onPress={getCustomerDetails} /> */}
                   </View>
                 }
               />
@@ -996,5 +1242,54 @@ const styles = StyleSheet.create({
     //color: theme.colors.secondaryDark,
     fontFamily: fonts.medium,
     //marginVertical: AppSizes.Margin_Vertical_10,
+  },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'flex-end',
+  },
+  modalContainer: {
+    borderTopLeftRadius: AppSizes.Radius_20,
+    borderTopRightRadius: AppSizes.Radius_20,
+    padding: AppSizes.Padding_Horizontal_10,
+    width: '100%',
+  },
+  headerContainer: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    padding: 5,
+    alignItems: 'center',
+  },
+  headerText: {
+    fontSize: AppSizes.Font_16,
+    fontFamily: fonts.semiBold,
+    flex: 1,
+    textAlign: 'center',
+  },
+  contentContainer: {
+    width: '100%',
+  },
+  optionButton: {
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+  },
+  optionText: {
+    fontSize: 16,
+    textAlign: 'center',
+    fontFamily: fonts.medium,
+  },
+  cancelButton: {
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderTopWidth: 1,
+    marginTop: 8,
+  },
+  cancelText: {
+    fontSize: 16,
+    textAlign: 'center',
+    fontFamily: fonts.medium,
+    fontWeight: '500',
   },
 });

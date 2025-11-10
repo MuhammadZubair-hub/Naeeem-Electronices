@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { use, useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -35,6 +35,7 @@ import EmptyComponents from '../../components/common/EmptyComponents';
 import MainHeader from '../../components/common/MainHeader';
 import { HorizontalStackedBarGraph } from '../../components/charts/BarGraphHorizontal';
 import { ZonesData } from '../Zones/ZoneList';
+import { useBackHandler } from '../../components/common/useBackHandler';
 
 type Zone = {
   id: string;
@@ -45,7 +46,6 @@ type Zone = {
   instDueAmount: string | number;
   zoneBranches: string | number;
   item: any;
-
 };
 
 interface Region {
@@ -53,10 +53,10 @@ interface Region {
   total: number;
   paid: number;
   due: number;
-
 }
 
 export const RM_ZM_Dashboard: React.FC = () => {
+  useBackHandler();
   const { theme } = useTheme();
   const route = useRoute<any>();
 
@@ -67,7 +67,6 @@ export const RM_ZM_Dashboard: React.FC = () => {
   const [zoneData, setZoneData] = useState<Zone[]>([]);
   const [loading, setLoading] = useState(false);
 
-
   const [showGraph, setShowGraph] = useState(false);
   const [allZonesTotal, setAllZoneTotal] = useState<Region[]>([]);
   const [ZonesCountData, setZonesCountData] = useState<{
@@ -76,9 +75,6 @@ export const RM_ZM_Dashboard: React.FC = () => {
     paidCount: number;
   }>({ totalCount: 0, dueCount: 0, paidCount: 0 });
 
-
-
-
   useEffect(() => {
     getAllZones();
   }, []);
@@ -86,7 +82,10 @@ export const RM_ZM_Dashboard: React.FC = () => {
   const getAllZones = async () => {
     try {
       setLoading(true);
-      const response = await API_Config.getZones({ ID: users?.empId, Region: data });
+      const response = await API_Config.getZones({
+        ID: users?.empId,
+        Region: data,
+      });
       console.log('zones are ', response);
       if (response?.success) {
         setZoneData(response.data.data);
@@ -146,47 +145,9 @@ export const RM_ZM_Dashboard: React.FC = () => {
     }
   };
 
-
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const backAction = () => {
-        Alert.alert(
-          '',
-          'Do you want to exit the app?',
-          [
-            {
-              text: 'Cancel',
-              onPress: () => null,
-              style: 'cancel',
-            },
-            {
-              text: 'YES',
-              onPress: () => BackHandler.exitApp(),
-            },
-          ],
-          { cancelable: true },
-        );
-        return true; // prevent default back behavior
-      };
-
-      const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
-        backAction,
-      );
-
-      // Cleanup when leaving the screen
-      return () => backHandler.remove();
-    }, []),
-  );
-
-
   return (
     <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
-      <StatusBar
-        backgroundColor={'#140958'}
-        barStyle="light-content"
-      />
+      <StatusBar backgroundColor={'#140958'} barStyle="light-content" />
       <MainHeader title={users?.firstName} subTitle={users?.designation} />
       {loading ? (
         <Loader title={'Loading Zones...'} />
@@ -199,7 +160,6 @@ export const RM_ZM_Dashboard: React.FC = () => {
             />
           }
         >
-
           <HorizontalStackedBarGraph
             title={'Zonal stats'}
             data={allZonesTotal}
@@ -252,9 +212,8 @@ export const RM_ZM_Dashboard: React.FC = () => {
           <ZonesData
             zoneData={zoneData}
             refreshing={loading}
-           // onRefresh={() => getAllZones()}
+            // onRefresh={() => getAllZones()}
           />
-
         </ScrollView>
       )}
     </SafeAreaView>

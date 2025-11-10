@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { use } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,9 @@ import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../hooks/useTheme';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { AppSizes } from '../../utils/AppSizes';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { screenName } from '../../navigation/ScreenName';
 
 interface HeaderProps {
   title: string;
@@ -28,13 +31,30 @@ export const Header: React.FC<HeaderProps> = ({
   subtitle,
   showBackButton = false,
   onBackPress,
-  rightButton,
   style,
   titleStyle,
   subtitleStyle,
 }) => {
   const navigation = useNavigation();
   const { theme } = useTheme();
+  const role = useSelector((state: RootState) =>
+    state?.auth?.user?.designation.toLocaleUpperCase(),
+  );
+  const navigateToDashboard = () => {
+    if (role === 'CEO' || role === 'GM') {
+      navigation.navigate(screenName.CEO_GM_Dashboard as never);
+    } else if (role === 'RM') {
+      navigation.navigate(screenName.RM_ZM_Dashboard as never);
+    } else if (role === 'ZM') {
+      navigation.navigate(screenName.ZM_BR_Dashboard as never);
+    } else if (role === 'AVM') {
+      navigation.navigate(screenName.BR_AVO_Dashboard as never);
+    } else if (role === 'AVO') {
+      navigation.navigate(screenName.BR_AVO_Dashboard as never);
+    } else {
+      navigation.navigate(screenName.CEO_GM_Dashboard as never);
+    }
+  };
 
   return (
     <View
@@ -51,7 +71,6 @@ export const Header: React.FC<HeaderProps> = ({
             style={styles.backButton}
             activeOpacity={0.7}
           >
-            {/* <Text style={[styles.backText, { color: theme.colors.primary }]}>←</Text> */}
             <Ionicons
               name="arrow-back-circle"
               size={AppSizes.Icon_Height_35}
@@ -59,6 +78,7 @@ export const Header: React.FC<HeaderProps> = ({
             />
           </TouchableOpacity>
         )}
+
         <View>
           <Text
             style={[styles.title, { color: theme.colors.white }, titleStyle]}
@@ -78,7 +98,20 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </View>
       </View>
-      {rightButton && <View style={styles.rightSection}>{rightButton}</View>}
+
+      {/* <View style={styles.rightSection}>
+        <TouchableOpacity
+          onPress={navigateToDashboard}
+          style={styles.backButton}
+          activeOpacity={0.7}
+        >
+          <Ionicons
+            name="home-outline"
+            size={AppSizes.Icon_Height_25}
+            color={theme.colors.white}
+          />
+        </TouchableOpacity>
+      </View> */}
     </View>
   );
 };

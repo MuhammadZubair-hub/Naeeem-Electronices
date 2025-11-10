@@ -36,7 +36,7 @@ import MainHeader from '../../components/common/MainHeader';
 import { Card } from '../../components/common';
 import { HorizontalStackedBarGraph } from '../../components/charts/BarGraphHorizontal';
 import { BranchesData } from '../Branch/BranchList';
-
+import { useBackHandler } from '../../components/common/useBackHandler';
 
 // Branch interface is now imported from mockDataService
 type RootStackParamList = {
@@ -51,8 +51,8 @@ interface Branch {
 }
 
 export const ZM_BR_Dashboard: React.FC = () => {
+  useBackHandler();
   const route = useRoute<any>();
-
   const users = useSelector((state: RootState) => state.auth.user);
   const zoneId = route?.params?.Zone ?? users?.zone;
   const { theme } = useTheme();
@@ -75,44 +75,9 @@ export const ZM_BR_Dashboard: React.FC = () => {
       getAllBranches();
     }, []);
 
- 
-
-    useFocusEffect(
-      React.useCallback(() => {
-        const backAction = () => {
-          Alert.alert(
-            '',
-            'Do you want to exit the app?',
-            [
-              {
-                text: 'Cancel',
-                onPress: () => null,
-                style: 'cancel',
-              },
-              {
-                text: 'YES',
-                onPress: () => BackHandler.exitApp(),
-              },
-            ],
-            { cancelable: true },
-          );
-          return true; // prevent default back behavior
-        };
-
-        const backHandler = BackHandler.addEventListener(
-          'hardwareBackPress',
-          backAction,
-        );
-
-        // Cleanup when leaving the screen
-        return () => backHandler.remove();
-      }, []),
-    );
-
-
   const getAllBranches = async () => {
     setLoading(true);
-    console.log('user data is ' ,users);
+    console.log('user data is ', users);
     console.log(zoneId);
     const response = await API_Config.getZoneBranches({ ID: Id, Zone: zoneId });
     console.log('response is : ', response);
@@ -174,78 +139,70 @@ export const ZM_BR_Dashboard: React.FC = () => {
     }
   };
 
- 
-
   return (
     <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
-      <StatusBar
-        backgroundColor={'#140958'}
-        barStyle="light-content"
-      />
+      <StatusBar backgroundColor={'#140958'} barStyle="light-content" />
       <MainHeader title={users?.firstName} subTitle={users?.designation} />
 
       {loading ? (
         <Loader title={'Loading Branches'} />
       ) : (
-        <ScrollView  
-        
-        refreshControl={
-          <RefreshControl
-          refreshing={loading}
-            onRefresh={() => getAllBranches()}
-          />
-        }
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={() => getAllBranches()}
+            />
+          }
         >
-        
-              <HorizontalStackedBarGraph
-                title={'Branches stats'}
-                data={allZonesTotal}
-              />
+          <HorizontalStackedBarGraph
+            title={'Branches stats'}
+            data={allZonesTotal}
+          />
 
-              <Card
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-around',
-                  marginHorizontal: AppSizes.Margin_Horizontal_20,
-                  elevation: 12,
-                }}
-              >
-                <View
-                  style={[
-                    CommonStyles.cardtitle,
-                    { backgroundColor: theme.colors.secondaryDark },
-                  ]}
-                >
-                  <Text style={CommonStyles.cardSubtitle}>Total</Text>
-                  <Text style={{ color: 'white', fontFamily: fonts.medium }}>
-                    {branchCountData.totalCount.toLocaleString()}
-                  </Text>
-                </View>
-                <View
-                  style={[
-                    CommonStyles.cardtitle,
-                    { backgroundColor: theme.colors.success },
-                  ]}
-                >
-                  <Text style={CommonStyles.cardSubtitle}>Paid</Text>
-                  <Text style={{ color: 'white', fontFamily: fonts.medium }}>
-                    {branchCountData.paidCount.toLocaleString()}
-                  </Text>
-                </View>
+          <Card
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+              marginHorizontal: AppSizes.Margin_Horizontal_20,
+              elevation: 12,
+            }}
+          >
+            <View
+              style={[
+                CommonStyles.cardtitle,
+                { backgroundColor: theme.colors.secondaryDark },
+              ]}
+            >
+              <Text style={CommonStyles.cardSubtitle}>Total</Text>
+              <Text style={{ color: 'white', fontFamily: fonts.medium }}>
+                {branchCountData.totalCount.toLocaleString()}
+              </Text>
+            </View>
+            <View
+              style={[
+                CommonStyles.cardtitle,
+                { backgroundColor: theme.colors.success },
+              ]}
+            >
+              <Text style={CommonStyles.cardSubtitle}>Paid</Text>
+              <Text style={{ color: 'white', fontFamily: fonts.medium }}>
+                {branchCountData.paidCount.toLocaleString()}
+              </Text>
+            </View>
 
-                <View
-                  style={[
-                    CommonStyles.cardtitle,
-                    { backgroundColor: theme.colors.warning },
-                  ]}
-                >
-                  <Text style={CommonStyles.cardSubtitle}>Due</Text>
-                  <Text style={{ color: 'white', fontFamily: fonts.medium }}>
-                    {branchCountData.dueCount.toLocaleString()}
-                  </Text>
-                </View>
-              </Card>
-           
+            <View
+              style={[
+                CommonStyles.cardtitle,
+                { backgroundColor: theme.colors.warning },
+              ]}
+            >
+              <Text style={CommonStyles.cardSubtitle}>Due</Text>
+              <Text style={{ color: 'white', fontFamily: fonts.medium }}>
+                {branchCountData.dueCount.toLocaleString()}
+              </Text>
+            </View>
+          </Card>
 
           <BranchesData branchdata={branches} refreshing={loading} />
         </ScrollView>
@@ -253,5 +210,3 @@ export const ZM_BR_Dashboard: React.FC = () => {
     </SafeAreaView>
   );
 };
-
-

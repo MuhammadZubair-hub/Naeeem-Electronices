@@ -35,6 +35,7 @@ import { HorizontalStackedBarGraph } from '../../components/charts/BarGraphHoriz
 import { Card } from '../../components/common';
 import MainHeader from '../../components/common/MainHeader';
 import { AvosData } from '../AVOs/AVOsList';
+import { useBackHandler } from '../../components/common/useBackHandler';
 
 interface AVO {
   region: string;
@@ -44,8 +45,8 @@ interface AVO {
 }
 
 export const BR_AVO_Dashboard: React.FC = () => {
+  useBackHandler();
   const { theme } = useTheme();
-
   const route = useRoute<any>();
   const users = useSelector((state: RootState) => state.auth.user);
   const branch = route?.params?.branch ?? users?.branch;
@@ -58,37 +59,6 @@ export const BR_AVO_Dashboard: React.FC = () => {
     dueCount: number;
     paidCount: number;
   }>({ totalCount: 0, dueCount: 0, paidCount: 0 });
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const backAction = () => {
-        Alert.alert(
-          '',
-          'Do you want to exit the app?',
-          [
-            {
-              text: 'Cancel',
-              onPress: () => null,
-              style: 'cancel',
-            },
-            {
-              text: 'YES',
-              onPress: () => BackHandler.exitApp(),
-            },
-          ],
-          { cancelable: true },
-        );
-        return true; // prevent default back behavior
-      };
-
-      const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
-        backAction,
-      );
-
-      return () => backHandler.remove();
-    }, []),
-  );
 
   useEffect(() => {
     getAVos();
@@ -156,10 +126,7 @@ export const BR_AVO_Dashboard: React.FC = () => {
 
   return (
     <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
-      <StatusBar
-              backgroundColor={'#140958'}
-              barStyle="light-content"
-            />
+      <StatusBar backgroundColor={'#140958'} barStyle="light-content" />
       <MainHeader title={users?.firstName} subTitle={users?.designation} />
       {loading ? (
         <Loader title={'Loading AVOs'} />

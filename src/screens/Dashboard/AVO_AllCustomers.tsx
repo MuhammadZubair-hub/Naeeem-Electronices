@@ -11,7 +11,11 @@ import {
   ScrollView,
   StatusBar,
 } from 'react-native';
-import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { showMessage } from 'react-native-flash-message';
 import { useTheme } from '../../hooks/useTheme';
@@ -33,18 +37,17 @@ import { HorizontalStackedBarGraph } from '../../components/charts/BarGraphHoriz
 import { Card } from '../../components/common';
 import { AvosData } from '../AVOs/AVOsList';
 import { AvosCoustomerData } from '../Customers/CustomerList';
-
-
+import { useBackHandler } from '../../components/common/useBackHandler';
 
 interface Region {
   region: string;
   total: number;
   paid: number;
   due: number;
-
 }
 
 export const AVO_AllCustomers: React.FC = () => {
+  useBackHandler();
   const { theme } = useTheme();
   const users = useSelector((state: RootState) => state.auth.user);
   const route = useRoute<any>();
@@ -62,50 +65,10 @@ export const AVO_AllCustomers: React.FC = () => {
   }>({ total: 0, due: 0, paid: 0 });
   const [allZonesTotal, setAllZoneTotal] = useState<Region[]>([]);
 
-
-
-
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const backAction = () => {
-        Alert.alert(
-          '',
-          'Do you want to exit the app?',
-          [
-            {
-              text: 'Cancel',
-              onPress: () => null,
-              style: 'cancel',
-            },
-            {
-              text: 'YES',
-              onPress: () => BackHandler.exitApp(),
-            },
-          ],
-          { cancelable: true },
-        );
-        return true; // prevent default back behavior
-      };
-
-      const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
-        backAction,
-      );
-
-      // Cleanup when leaving the screen
-      return () => backHandler.remove();
-    }, []),
-  );
-
-
-
   const getAVOCount = useCallback(async () => {
-
     const res = await API_Config.getAvoCountDetails({
       AssignedID: AvoId,
     });
-
 
     if (res.success) {
       const data = res.data.data;
@@ -115,13 +78,10 @@ export const AVO_AllCustomers: React.FC = () => {
         ...prev,
         total: countData?.instTotalAmount,
         due: countData?.instDueAmount,
-        paid: countData?.instRecAmount
-      }))
-
-
+        paid: countData?.instRecAmount,
+      }));
     }
-
-  }, [AvoId])
+  }, [AvoId]);
 
   const getAllCustomers = useCallback(async () => {
     try {
@@ -146,7 +106,6 @@ export const AVO_AllCustomers: React.FC = () => {
 
         // setAllZoneTotal(formatted);
         // console.log(formatted,'all zons total is ');
-
       } else {
         showMessage({
           message: 'Error',
@@ -163,44 +122,34 @@ export const AVO_AllCustomers: React.FC = () => {
   const getAllAvoDetials = useCallback(async () => {
     try {
       setLoading(true);
-      await Promise.all([getAVOCount(), getAllCustomers()])
-
+      await Promise.all([getAVOCount(), getAllCustomers()]);
     } catch (error) {
       showMessage({
         message: 'Error',
         description: `${error}`,
         type: 'danger',
-        style: CommonStyles.error
-      })
+        style: CommonStyles.error,
+      });
     } finally {
       setLoading(false);
     }
   }, [getAVOCount, getAllCustomers]);
 
-
-
   useEffect(() => {
     getAllAvoDetials();
-  }, [getAllAvoDetials])
+  }, [getAllAvoDetials]);
 
-
-  useEffect(() => {
-
-  }, [allZonesTotal])
+  useEffect(() => {}, [allZonesTotal]);
 
   return (
     <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
-      <StatusBar
-        backgroundColor={'#140958'}
-        barStyle="light-content"
-      />
+      <StatusBar backgroundColor={'#140958'} barStyle="light-content" />
       <MainHeader title={users?.firstName} subTitle={users?.designation} />
 
       {loading ? (
         <Loader title="Loading Customers" />
       ) : (
-        < >
-
+        <>
           {/* <HorizontalStackedBarGraph
             title={'AVOs stats'}
             data={allZonesTotal}
@@ -212,7 +161,7 @@ export const AVO_AllCustomers: React.FC = () => {
               justifyContent: 'space-around',
               marginHorizontal: AppSizes.Margin_Horizontal_20,
               elevation: 12,
-              marginTop: AppSizes.Margin_Horizontal_20
+              marginTop: AppSizes.Margin_Horizontal_20,
             }}
           >
             <View
@@ -251,14 +200,9 @@ export const AVO_AllCustomers: React.FC = () => {
             </View>
           </Card>
 
-
-
           {/* Search Box */}
 
-
           {AvoCountData.due == 0 ? (
-
-
             <Text
               style={{
                 flex: 1,
@@ -267,10 +211,12 @@ export const AVO_AllCustomers: React.FC = () => {
                 textAlign: 'center',
                 color: theme.colors.secondaryDark,
                 fontFamily: fonts.semiBold,
-                fontSize: AppSizes.Font_18
+                fontSize: AppSizes.Font_18,
               }}
-            > This AVO has no outstanding  amounts against customers. </Text>
-
+            >
+              {' '}
+              This AVO has no outstanding amounts against customers.{' '}
+            </Text>
           ) : (
             <>
               {/* <View style={styles.searchContainer}>
@@ -330,21 +276,14 @@ export const AVO_AllCustomers: React.FC = () => {
               /> */}
 
               <AvosCoustomerData
-
                 coustomerData={customers}
                 refreshing={loading}
                 onRefresh={() => getAllAvoDetials()}
               />
             </>
-          )
-
-
-
-          }
-
+          )}
         </>
       )}
     </SafeAreaView>
   );
 };
-

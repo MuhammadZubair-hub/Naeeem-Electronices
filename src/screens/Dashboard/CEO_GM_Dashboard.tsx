@@ -31,6 +31,7 @@ import { HorizontalStackedBarGraph } from '../../components/charts/BarGraphHoriz
 import { showMessage } from 'react-native-flash-message';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { CommonStyles } from '../../styles/GlobalStyle';
+import { useBackHandler } from '../../components/common/useBackHandler';
 
 const { width } = Dimensions.get('window');
 
@@ -42,6 +43,7 @@ interface Region {
 }
 
 export const CEO_GM_Dashboard: React.FC = () => {
+  useBackHandler();
   const { theme } = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
@@ -134,37 +136,37 @@ export const CEO_GM_Dashboard: React.FC = () => {
     getAllDashboardData();
   }, [getAllDashboardData]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const backAction = () => {
-        Alert.alert(
-          '',
-          'Do you want to exit the app?',
-          [
-            {
-              text: 'Cancel',
-              onPress: () => null,
-              style: 'cancel',
-            },
-            {
-              text: 'YES',
-              onPress: () => BackHandler.exitApp(),
-            },
-          ],
-          { cancelable: true },
-        );
-        return true; // prevent default back behavior
-      };
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const backAction = () => {
+  //       Alert.alert(
+  //         '',
+  //         'Do you want to exit the app?',
+  //         [
+  //           {
+  //             text: 'Cancel',
+  //             onPress: () => null,
+  //             style: 'cancel',
+  //           },
+  //           {
+  //             text: 'YES',
+  //             onPress: () => BackHandler.exitApp(),
+  //           },
+  //         ],
+  //         { cancelable: true },
+  //       );
+  //       return true; // prevent default back behavior
+  //     };
 
-      const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
-        backAction,
-      );
+  //     const backHandler = BackHandler.addEventListener(
+  //       'hardwareBackPress',
+  //       backAction,
+  //     );
 
-      // Cleanup when leaving the screen
-      return () => backHandler.remove();
-    }, []),
-  );
+  //     // Cleanup when leaving the screen
+  //     return () => backHandler.remove();
+  //   }, []),
+  // );
 
   const onRefresh = useCallback(() => {
     getAllDashboardData();
@@ -173,15 +175,11 @@ export const CEO_GM_Dashboard: React.FC = () => {
   const users = useSelector((state: RootState) => state.auth.user);
 
   return (
-
     <SafeAreaView
       edges={['top']}
       style={[styles.safeArea, { backgroundColor: theme.colors.surface }]}
     >
-      <StatusBar
-        backgroundColor={'#140958'}
-        barStyle="light-content"
-      />
+      <StatusBar backgroundColor={'#140958'} barStyle="light-content" />
       <MainHeader title={users?.firstName} subTitle={users?.designation} />
 
       {loader ? (
@@ -253,12 +251,10 @@ export const CEO_GM_Dashboard: React.FC = () => {
         </ScrollView>
       )}
     </SafeAreaView>
-
   );
 };
 
 const styles = StyleSheet.create({
-
   safeArea: { flex: 1, backgroundColor: 'white', zIndex: 2 },
   overlay: {
     ...StyleSheet.absoluteFillObject,

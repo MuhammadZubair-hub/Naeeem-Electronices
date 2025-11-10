@@ -11,7 +11,11 @@ import {
   BackHandler,
 } from 'react-native';
 import { Button } from '../../components/common/Button';
-import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import { useTheme } from '../../hooks/useTheme';
 import { Header } from '../../components/common/Header';
 import { screenName } from '../../navigation/ScreenName';
@@ -42,13 +46,9 @@ export const AVOsList: React.FC = () => {
   const [avos, setAvos] = React.useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-
-  
   useEffect(() => {
     getAVos();
   }, []);
-
-
 
   const getAVos = async () => {
     setLoading(true);
@@ -63,8 +63,6 @@ export const AVOsList: React.FC = () => {
       console.log('data is : ', response.data.data);
 
       const data = response.data.data;
-
-
 
       setLoading(false);
     } else {
@@ -81,48 +79,34 @@ export const AVOsList: React.FC = () => {
     }
   };
 
-  
-
   return (
     <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
-
       <Header title="AVO's" subtitle="Branch's AVOs" showBackButton />
 
       {loading ? (
         <Loader title={'Loading AVOs'} />
       ) : (
-       
-
-              <AvosData
-              avos={avos}
-              onRefresh={()=>getAVos()}
-              refreshing={loading}
-              />
-
+        <AvosData
+          avos={avos}
+          onRefresh={() => getAVos()}
+          refreshing={loading}
+        />
       )}
     </SafeAreaView>
   );
 };
 
-
 interface AvoDataProps {
-  avos: any,
-  refreshing: any,
-  onRefresh?: any
+  avos: any;
+  refreshing: any;
+  onRefresh?: any;
 }
 
-export const AvosData = ({
-  avos,
-  refreshing,
-  onRefresh
-
-}: AvoDataProps) => {
-
-
+export const AvosData = ({ avos, refreshing, onRefresh }: AvoDataProps) => {
   const { theme } = useTheme();
   const navigation = useNavigation<any>();
 
- const handleAVOPress = (item: any) => {
+  const handleAVOPress = (item: any) => {
     // navigation.navigate(screenName.BranchList, { zoneId: zone.id });
     // console.log('navigating items are', item);
     if (item?.assigenedId == '') {
@@ -162,10 +146,7 @@ export const AvosData = ({
       contentContainerStyle={CommonStyles.list}
       renderItem={({ item }) => (
         <View
-          style={[
-            { backgroundColor: theme.colors.surface },
-            CommonStyles.item,
-          ]}
+          style={[{ backgroundColor: theme.colors.surface }, CommonStyles.item]}
         >
           <Text
             style={[
@@ -234,12 +215,7 @@ export const AvosData = ({
             >
               Total Due :
             </Text>
-            <Text
-              style={[
-                CommonStyles.value,
-                { color: theme.colors.warning },
-              ]}
-            >
+            <Text style={[CommonStyles.value, { color: theme.colors.warning }]}>
               {item.instDueAmount || 'N/A'}
             </Text>
           </View>
@@ -255,6 +231,5 @@ export const AvosData = ({
         </View>
       )}
     />
-  )
-
-}
+  );
+};

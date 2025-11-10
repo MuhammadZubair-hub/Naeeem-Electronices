@@ -12,9 +12,8 @@ import {
   Alert,
   BackHandler,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
-  useFocusEffect,
   useNavigation,
   useRoute,
   NavigationProp,
@@ -31,11 +30,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { showMessage } from 'react-native-flash-message';
 import { CommonStyles } from '../../styles/GlobalStyle';
 import EmptyComponents from '../../components/common/EmptyComponents';
-import MainHeader from '../../components/common/MainHeader';
-import { Card } from '../../components/common';
-import { HorizontalStackedBarGraph } from '../../components/charts/BarGraphHorizontal';
-
-const { width } = Dimensions.get('window');
 
 // Branch interface is now imported from mockDataService
 type RootStackParamList = {
