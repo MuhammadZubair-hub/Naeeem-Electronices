@@ -1,8 +1,8 @@
 import { API_Config } from '../../services/apiServices';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../../redux/slices/authSlice';
-import { CommonStyles } from '../../styles/GlobalStyle';
+import { loginSuccess } from '../../../redux/slices/authSlice';
+import { CommonStyles } from '../../../styles/GlobalStyle';
 import { showMessage } from 'react-native-flash-message';
 
 export const useLoginUser = () => {

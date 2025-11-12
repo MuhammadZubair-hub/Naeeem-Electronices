@@ -1,5 +1,5 @@
-import { apicall_new } from '.';
-import { baseUrl, endPoints } from '../utils/Constants/endPoints';
+import { apicall_new } from '../../services';
+import { baseUrl, endPoints } from '../../utils/Constants/endPoints';
 
 export const API_Config = {
   loginUser: async (empId: string, password: string) => {
@@ -73,3 +73,7 @@ export const API_Config = {
     });
   },
 };
+
+
+
+

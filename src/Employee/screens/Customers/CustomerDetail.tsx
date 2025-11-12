@@ -12,19 +12,19 @@ import {
   Modal,
 } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import { Header } from '../../components/common/Header';
+import { Header } from '../../../components/common/Header';
 import { API_Config } from '../../services/apiServices';
-import { fonts } from '../../assets/fonts/Fonts';
-import { AppSizes } from '../../utils/AppSizes';
-import Loader from '../../components/common/Loader';
+import { fonts } from '../../../assets/fonts/Fonts';
+import { AppSizes } from '../../../utils/AppSizes';
+import Loader from '../../../components/common/Loader';
 import { showMessage } from 'react-native-flash-message';
-import { CommonStyles } from '../../styles/GlobalStyle';
-import { Button } from '../../components/common/Button';
-import { useTheme } from '../../hooks/useTheme';
+import { CommonStyles } from '../../../styles/GlobalStyle';
+import { Button } from '../../../components/common/Button';
+import { useTheme } from '../../../hooks/useTheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { set } from 'lodash';
-import BaseModal from '../../components/common/BaseModal';
+import BaseModal from '../../../components/common/BaseModal';
 
 export const CustomerDetail: React.FC = () => {
   const { theme } = useTheme();

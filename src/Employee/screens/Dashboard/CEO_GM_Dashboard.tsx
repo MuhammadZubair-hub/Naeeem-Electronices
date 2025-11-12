@@ -15,23 +15,23 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { RootState, AppDispatch } from '../../redux/store';
-import { useTheme } from '../../hooks/useTheme';
-import { Card } from '../../components/common/Card';
-import Loader from '../../components/common/Loader';
-import MainHeader from '../../components/common/MainHeader';
-import { PieGraph } from '../../components/charts/PieGraph';
+import { RootState, AppDispatch } from '../../../redux/store';
+import { useTheme } from '../../../hooks/useTheme';
+import { Card } from '../../../components/common/Card';
+import Loader from '../../../components/common/Loader';
+import MainHeader from '../../../components/common/MainHeader';
+import { PieGraph } from '../../../components/charts/PieGraph';
 import { RegionList } from '../Regions/RegionList';
 import { API_Config } from '../../services/apiServices';
-import { fonts } from '../../assets/fonts/Fonts';
-import { AppSizes } from '../../utils/AppSizes';
-import { BarGraph } from '../../components/charts/BarGraph';
-import { colors } from '../../styles/theme';
-import { HorizontalStackedBarGraph } from '../../components/charts/BarGraphHorizontal';
+import { fonts } from '../../../assets/fonts/Fonts';
+import { AppSizes } from '../../../utils/AppSizes';
+import { BarGraph } from '../../../components/charts/BarGraph';
+import { colors } from '../../../styles/theme';
+import { HorizontalStackedBarGraph } from '../../../components/charts/BarGraphHorizontal';
 import { showMessage } from 'react-native-flash-message';
 import Ionicons from '@react-native-vector-icons/ionicons';
-import { CommonStyles } from '../../styles/GlobalStyle';
-import { useBackHandler } from '../../components/common/useBackHandler';
+import { CommonStyles } from '../../../styles/GlobalStyle';
+import { useBackHandler } from '../../../components/common/useBackHandler';
 
 const { width } = Dimensions.get('window');
 

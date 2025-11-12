@@ -11,28 +11,28 @@ import {
   ScrollView,
   RefreshControl,
 } from 'react-native';
-import { Button } from '../../components/common/Button';
+import { Button } from '../../../components/common/Button';
 import {
   useFocusEffect,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import { useTheme } from '../../hooks/useTheme';
-import { Header } from '../../components/common/Header';
+import { useTheme } from '../../../hooks/useTheme';
+import { Header } from '../../../components/common/Header';
 import { screenName } from '../../navigation/ScreenName';
 import { API_Config } from '../../services/apiServices';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/store';
-import { AppSizes } from '../../utils/AppSizes';
-import Loader from '../../components/common/Loader';
-import { fonts } from '../../assets/fonts/Fonts';
-import { Card } from '../../components/common';
+import { RootState } from '../../../redux/store';
+import { AppSizes } from '../../../utils/AppSizes';
+import Loader from '../../../components/common/Loader';
+import { fonts } from '../../../assets/fonts/Fonts';
+import { Card } from '../../../components/common';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { showMessage } from 'react-native-flash-message';
-import { CommonStyles } from '../../styles/GlobalStyle';
-import EmptyComponents from '../../components/common/EmptyComponents';
-import MainHeader from '../../components/common/MainHeader';
-import { HorizontalStackedBarGraph } from '../../components/charts/BarGraphHorizontal';
+import { CommonStyles } from '../../../styles/GlobalStyle';
+import EmptyComponents from '../../../components/common/EmptyComponents';
+import MainHeader from '../../../components/common/MainHeader';
+import { HorizontalStackedBarGraph } from '../../../components/charts/BarGraphHorizontal';
 
 type Zone = {
   id: string;

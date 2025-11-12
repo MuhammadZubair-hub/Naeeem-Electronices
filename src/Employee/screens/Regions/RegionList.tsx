@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
-import { Button } from '../../components/common/Button';
+import { Button } from '../../../components/common/Button';
 import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../../hooks/useTheme';
-import { AppSizes } from '../../utils/AppSizes';
-import { fonts } from '../../assets/fonts/Fonts';
-import EmptyComponents from '../../components/common/EmptyComponents';
-import { CommonStyles } from '../../styles/GlobalStyle';
+import { useTheme } from '../../../hooks/useTheme';
+import { AppSizes } from '../../../utils/AppSizes';
+import { fonts } from '../../../assets/fonts/Fonts';
+import EmptyComponents from '../../../components/common/EmptyComponents';
+import { CommonStyles } from '../../../styles/GlobalStyle';
 
 interface RegionListProps {
   data?: any;

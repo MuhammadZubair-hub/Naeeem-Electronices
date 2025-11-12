@@ -13,7 +13,7 @@ import Ionicons from '@react-native-vector-icons/ionicons';
 import { AppSizes } from '../../utils/AppSizes';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
-import { screenName } from '../../navigation/ScreenName';
+import { screenName } from '../../Employee/navigation/ScreenName';
 
 interface HeaderProps {
   title: string;

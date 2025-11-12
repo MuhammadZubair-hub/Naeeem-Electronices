@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
-import { RootState } from '../redux/store';
-import { Role } from '../types';
-import { useTheme } from '../hooks/useTheme';
-import MainHeader from '../components/common/MainHeader';
+import { Role } from '../../types';
+import { RootState } from '../../redux/store';
+import { useTheme } from '../../hooks/useTheme';
+
 
 interface RoleGuardProps {
   children: React.ReactNode;

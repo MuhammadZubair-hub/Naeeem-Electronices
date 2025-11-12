@@ -10,25 +10,25 @@ import {
   ScrollView,
   BackHandler,
 } from 'react-native';
-import { Button } from '../../components/common/Button';
+import { Button } from '../../../components/common/Button';
 import {
   useFocusEffect,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import { useTheme } from '../../hooks/useTheme';
-import { Header } from '../../components/common/Header';
+import { useTheme } from '../../../hooks/useTheme';
+import { Header } from '../../../components/common/Header';
 import { screenName } from '../../navigation/ScreenName';
 import { API_Config } from '../../services/apiServices';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/store';
-import { fonts } from '../../assets/fonts/Fonts';
-import { AppSizes } from '../../utils/AppSizes';
-import Loader from '../../components/common/Loader';
+import { RootState } from '../../../redux/store';
+import { fonts } from '../../../assets/fonts/Fonts';
+import { AppSizes } from '../../../utils/AppSizes';
+import Loader from '../../../components/common/Loader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { showMessage } from 'react-native-flash-message';
-import { CommonStyles } from '../../styles/GlobalStyle';
-import EmptyComponents from '../../components/common/EmptyComponents';
+import { CommonStyles } from '../../../styles/GlobalStyle';
+import EmptyComponents from '../../../components/common/EmptyComponents';
 
 interface AVO {
   region: string;

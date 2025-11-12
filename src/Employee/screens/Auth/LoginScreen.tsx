@@ -11,18 +11,18 @@ import {
   Alert,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../redux/store';
-import { useTheme } from '../../hooks/useTheme';
-import { Button } from '../../components/common/Button';
-import { Card } from '../../components/common/Card';
+import { AppDispatch } from '../../../redux/store';
+import { useTheme } from '../../../hooks/useTheme';
+import { Button } from '../../../components/common/Button';
+import { Card } from '../../../components/common/Card';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AppSizes } from '../../utils/AppSizes';
+import { AppSizes } from '../../../utils/AppSizes';
 import { useLoginUser } from './login';
-import { LoadingModal } from '../../components/common/LoadingModal';
+import { LoadingModal } from '../../../components/common/LoadingModal';
 import Ionicons from '@react-native-vector-icons/ionicons';
-import { fonts } from '../../assets/fonts/Fonts';
-import { colors } from '../../styles/theme';
+import { fonts } from '../../../assets/fonts/Fonts';
+import { colors } from '../../../styles/theme';
 import { useFocusEffect } from '@react-navigation/native';
 // import { BlurView } from '@react-native-community/blur';
 
@@ -80,7 +80,7 @@ const LoginScreen = () => {
             {/* Header Section */}
             <View style={styles.headerContainer}>
               <Image
-                source={require('../../assets/images/logo.png')}
+                source={require('../../../assets/images/logo.png')}
                 style={{ width: 200, height: 170, resizeMode: 'contain' }}
               />
             </View>

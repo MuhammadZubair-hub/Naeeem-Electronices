@@ -24,8 +24,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ActivityIndicator, StatusBar, View } from 'react-native';
-import { RootState } from '../redux/store';
-import { Role } from '../types';
+
 import { screenName } from './ScreenName';
 
 // Import all dashboards
@@ -42,6 +41,8 @@ import { ZoneList } from '../screens/Zones/ZoneList';
 import { AVOsList } from '../screens/AVOs/AVOsList';
 import { RegionList } from '../screens/Regions/RegionList';
 import { RoleGuard } from './RoleGuard';
+import { Role } from '../../types';
+import { RootState } from '../../redux/store';
 
 const Stack = createNativeStackNavigator();
 
