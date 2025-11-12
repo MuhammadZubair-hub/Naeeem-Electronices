@@ -43,6 +43,8 @@ import { RegionList } from '../screens/Regions/RegionList';
 import { RoleGuard } from './RoleGuard';
 import { Role } from '../../types';
 import { RootState } from '../../redux/store';
+import DashBoard from '../../Customer/screens/DashBoard';
+import { getIsActive } from '../../redux/slices/authSlice';
 
 const Stack = createNativeStackNavigator();
 
@@ -195,9 +197,35 @@ const RoleBasedNavigator = () => {
   );
 };
 
-export const AppNavigator = () => (
-  <Stack.Navigator
-   screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="Main" component={RoleBasedNavigator} />
-  </Stack.Navigator>
-);
+export const AppNavigator = () => {
+
+   const { isAuthenticated ,isActive} = useSelector((state: RootState) => state.auth);
+  console.log('active user is :' ,isActive);
+
+  return (
+    <Stack.Navigator
+      screenOptions={{ headerShown: false }}>
+      {isActive === 'Customer' ? (<Stack.Screen name="CustomerDashBoard" component={CustomerNaviagtion} />)
+        :
+        (
+          <Stack.Screen name="Main" component={RoleBasedNavigator} />
+        )}
+
+
+
+    </Stack.Navigator>
+  )
+};
+
+
+export const CustomerNaviagtion = () => {
+  return (
+    <Stack.Navigator
+    screenOptions={{headerShown:false}}
+    >
+
+      <Stack.Screen name='Dasboard' component={DashBoard} />
+    </Stack.Navigator>
+  )
+
+}

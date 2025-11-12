@@ -12,6 +12,7 @@ import { CommonStyles } from '../../styles/GlobalStyle';
 interface MainHeaderProps {
   title: string | undefined;
   subTitle: string | undefined;
+ 
 }
 
 const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
@@ -56,7 +57,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
         >
           <Ionicons
             name="person"
-            size={28}
+            size={AppSizes.Icon_Height_30}
             color={theme.colors.secondaryDark}
           />
         </View>
@@ -85,16 +86,13 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
+   flexDirection: 'row',
     alignItems: 'center',
-    height: '10%',
+    //justifyContent: 'space-between',
+    paddingHorizontal: AppSizes.Padding_Horizontal_15,
 
-    paddingHorizontal: 16,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
+    paddingTop: 24,
+    paddingBottom: 12,
     borderBottomLeftRadius: AppSizes.Radius_30,
     borderBottomRightRadius: AppSizes.Radius_30,
     //marginBottom: AppSizes.Margin_Vertical_10,

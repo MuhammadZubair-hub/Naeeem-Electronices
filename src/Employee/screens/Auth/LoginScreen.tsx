@@ -78,12 +78,12 @@ const LoginScreen = () => {
 
           <View style={styles.glassCard}>
             {/* Header Section */}
-            <View style={styles.headerContainer}>
+            {/* <View style={styles.headerContainer}>
               <Image
                 source={require('../../../assets/images/logo.png')}
                 style={{ width: 200, height: 170, resizeMode: 'contain' }}
               />
-            </View>
+            </View> */}
             {/* Card Header */}
 
             {/* Input Fields Container */}

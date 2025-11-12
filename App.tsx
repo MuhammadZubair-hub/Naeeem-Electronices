@@ -5,16 +5,15 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { store, persistor, RootState } from './src/redux/store';
-import { AppNavigator } from './src/Employee/navigation/AppNavigator';
-import { AuthNavigator } from './src/Employee/navigation/AuthNavigator';
 import { AppState, StatusBar, View, PanResponder } from 'react-native';
 import { useTheme } from './src/hooks/useTheme';
 import FlashMessage from 'react-native-flash-message';
-import { logout } from './src/redux/slices/authSlice';
+import { logout, setisActive } from './src/redux/slices/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { AppSizes } from './src/utils/AppSizes';
 import { fonts } from './src/assets/fonts/Fonts';
+import { AppNavigator, AuthNavigator } from './src/Employee/navigation';
 
 const App = () => (
   <Provider store={store}>
@@ -30,11 +29,11 @@ const App = () => (
 const IDLE_TIMEOUT = 10 * 60 * 1000;
 
 const AppContent = () => {
-  const [isActive, setIsActive] = useState('Customer');
+  //const [isActive, setIsActive] = useState('Customer');
   const user_Catogries = ['Customer', 'Employee'];
 
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated ,isActive} = useSelector((state: RootState) => state.auth);
   const { theme } = useTheme();
 
   const idleTimer = useRef<NodeJS.Timeout | null>(null);
@@ -104,113 +103,47 @@ const AppContent = () => {
     appState.current = nextAppState;
   };
 
-  const renderCategores = ({ item }) => {
-    const active = isActive === item;
+  // const renderCategores = ({ item }) => {
+  //   const active = isActive === item;
 
-    return (
-      <TouchableOpacity
-        style={[
-          styles.loginButton,
-          {
-            backgroundColor: active
-              ? theme.colors.secondaryDark
-              : theme.colors.white,
-          },
-        ]}
-      >
-        <Text
-          style={[
-            styles.loginButtonText,
-            { color: active ? theme.colors.white : theme.colors.secondaryDark },
-          ]}
-        >
-          Customer
-        </Text>
-      </TouchableOpacity>
-    );
-  };
+  //   return (
+  //     <TouchableOpacity
+  //       style={[
+  //         styles.loginButton,
+  //         {
+  //           backgroundColor: active
+  //             ? theme.colors.secondaryDark
+  //             : theme.colors.white,
+  //         },
+  //       ]}
+  //     >
+  //       <Text
+  //         style={[
+  //           styles.loginButtonText,
+  //           { color: active ? theme.colors.white : theme.colors.secondaryDark },
+  //         ]}
+  //       >
+  //         Customer
+  //       </Text>
+  //     </TouchableOpacity>
+  //   );
+  // };
 
   return (
-    // <View style={{ flex: 1 }} {...panResponder.panHandlers}>
-    //   <NavigationContainer>
-    //     <StatusBar
-    //       backgroundColor={theme.colors.white}
-    //       barStyle="dark-content"
-    //     />
+    <View style={{ flex: 1 }} {...panResponder.panHandlers}>
+      <NavigationContainer>
+        <StatusBar
+          backgroundColor={theme.colors.white}
+          barStyle="dark-content"
+        />
 
     
-    //     {isAuthenticated ? <AppNavigator /> : <AuthNavigator />}
-    //   </NavigationContainer>
+        {isAuthenticated ? <AppNavigator /> : <AuthNavigator />}
+      </NavigationContainer>
 
-    // </View>
+    </View>
 
-    <SafeAreaView
-      style={[styles.safeArea, { backgroundColor: theme.colors.white }]}
-    >
-      <KeyboardAwareScrollView
-        enableOnAndroid
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.glassCard}>
-          {/* Header Section */}
-          <View style={styles.headerContainer}>
-            <Image
-              source={require('./src/assets/images/logo.png')}
-              style={{ width: 200, height: 170, resizeMode: 'contain' }}
-            />
-          </View>
-          {/* Card Header */}
-        </View>
-
-        <View
-          style={[
-            styles.buttonContainer,
-            {
-              backgroundColor: theme.colors.white,
-              borderColor: theme.colors.gray400,
-              marginTop: 20,
-            },
-          ]}
-        >
-          {user_Catogries.map((item, index) => {
-            const active = isActive === item;
-
-            return (
-              <TouchableOpacity
-                style={[
-                  styles.loginButton,
-                  {
-                    backgroundColor: active
-                      ? theme.colors.secondaryDark
-                      : theme.colors.white,
-                  },
-                ]}
-                onPress={() => {
-                  setIsActive(item);
-                }}
-              >
-                <Text
-                  style={[
-                    styles.loginButtonText,
-                    {
-                      color: active
-                        ? theme.colors.white
-                        : theme.colors.secondaryDark,
-                    },
-                  ]}
-                >
-                  {item}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
-        
-      </KeyboardAwareScrollView>
-    </SafeAreaView>
+   
   );
 };
 

@@ -232,12 +232,14 @@ interface User {
 interface AuthState {
   user: User | null;
   token: string | null;
+  isActive : 'Customer' | 'Employee',
   isAuthenticated: boolean;
 }
 
 const initialState: AuthState = {
   user: null,
   token: null,
+  isActive:'Customer',
   isAuthenticated: false,
 };
 
@@ -245,6 +247,11 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+
+    setisActive :(state,action)=>{
+      state.isActive = action.payload;
+    },
+
     loginSuccess: (
       state,
       action: PayloadAction<{ data: { data: User }; token: string }>,
@@ -263,5 +270,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { loginSuccess, logout } = authSlice.actions;
+export const getIsActive = (state :any)=>state.authSlice?.isActive;
+
+export const { loginSuccess, logout ,setisActive} = authSlice.actions;
 export default authSlice.reducer;
