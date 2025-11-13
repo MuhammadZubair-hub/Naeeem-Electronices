@@ -6,12 +6,14 @@ import LoginScreen from '../screens/Auth/LoginScreen'
 import CoustomerLoginScreen from '../../Customer/Auth/CoustomerLoginScreen';
 import MainAuth from '../../MainAuth';
 import CoustomerSignUpScreen from '../../Customer/Auth/SignUp';
+import ForgetPassword from '../../Customer/Auth/ForgetPassword';
 
 export type AuthStackParamList = {
   Login: undefined;
   CoustLogin: undefined;
   MainAuth :undefined;
   SignUp :undefined;
+  ForgetPassword : undefined;
 };
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
@@ -28,6 +30,7 @@ export const AuthNavigator: React.FC = () => {
       <Stack.Screen name="CoustLogin" component={CoustomerLoginScreen} />
       <Stack.Screen name="SignUp" component={CoustomerSignUpScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
     </Stack.Navigator>
   );
 };

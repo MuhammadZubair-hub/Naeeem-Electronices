@@ -26,7 +26,7 @@ const ProfileDetails = () => {
     email: 'naeem.ahmed@example.com',
     branch: 'Karachi Main Branch',
     branchContact: '+92 21 34567890',
-    image: require('../../assets/images/logo.png'),
+    //image: require('../../assets/images/logo.png'),
   };
 
   return (
@@ -41,7 +41,7 @@ const ProfileDetails = () => {
         {/* Profile Picture Section */}
         <View style={styles.profileWrapper}>
           <Image
-            source={customer.image}
+            source={{uri:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT09OjTZ_jsL_Se31E5J-sJyBi4kJfmaKbX2A&s'}}
             style={[styles.profileImage, { borderColor: theme.colors.secondaryDark }]}
           />
           <Text style={[styles.profileName, { color: theme.colors.black }]}>

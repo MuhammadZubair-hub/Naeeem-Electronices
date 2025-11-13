@@ -139,8 +139,8 @@ const AppContent = () => {
           barStyle="dark-content"
         />
 
-        {/* {isAuthenticated ? <AppNavigator /> : <AuthNavigator />} */}
-        <AppNavigator />
+        {isAuthenticated ? <AppNavigator /> : <AuthNavigator />}
+        {/* <AppNavigator /> */}
       </NavigationContainer>
     </View>
   );

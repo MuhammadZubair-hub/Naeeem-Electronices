@@ -183,6 +183,7 @@ const CoustomerLoginScreen = () => {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: AppSizes.Margin_Horizontal_10 }}>
 
             <Text
+             onPress={() => { navigation.navigate('ForgetPassword') }}
               style={[
                 styles.fieldLabel,
                 { color: theme.colors.secondaryDark },
