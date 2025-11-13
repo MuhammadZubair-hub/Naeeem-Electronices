@@ -4,8 +4,9 @@ export const AppSizes = {
   Padding_Horizontal_5: scale(5),
   Padding_Horizontal_8: scale(8),
   Padding_Horizontal_10: scale(10),
-  Padding_Horizontal_20: scale(20),
   Padding_Horizontal_15: scale(15),
+  Padding_Horizontal_20: scale(20),
+  Padding_Horizontal_30: scale(30),
 
   Padding_Vertical_5: verticalScale(5),
   Padding_Vertical_10: verticalScale(10),

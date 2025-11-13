@@ -1,5 +1,5 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,21 +7,21 @@ import { useTheme } from './hooks/useTheme';
 import { RootState } from './redux/store';
 import { fonts } from './assets/fonts/Fonts';
 import { AppSizes } from './utils/AppSizes';
-import { setisActive } from './redux/slices/authSlice';
+import { getIsActive, setisActive } from './redux/slices/authSlice';
 import CoustomerLoginScreen from './Customer/Auth/CoustomerLoginScreen';
 import LoginScreen from './Employee/screens/Auth/LoginScreen';
 
 const MainAuth = () => {
-
-
-     const user_Catogries = ['Customer', 'Employee'];
+  const user_Catogries = ['Customer', 'Employee'];
 
   const dispatch = useDispatch();
-  const { isAuthenticated ,isActive} = useSelector((state: RootState) => state.auth);
+  const isActive =
+    useSelector((state: RootState) => state.auth.isActive) || 'Customer';
+  console.log('at very first i am ', isActive);
   const { theme } = useTheme();
 
   return (
-     <SafeAreaView
+    <SafeAreaView
       style={[styles.safeArea, { backgroundColor: theme.colors.white }]}
     >
       <KeyboardAwareScrollView
@@ -85,21 +85,13 @@ const MainAuth = () => {
           })}
         </View>
 
-        {
-            isActive === 'Customer'?(
-                <CoustomerLoginScreen/>
-            ):(
-                <LoginScreen/>
-            )
-        }
-
-        
+        {isActive === 'Customer' ? <CoustomerLoginScreen /> : <LoginScreen />}
       </KeyboardAwareScrollView>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default MainAuth
+export default MainAuth;
 
 const styles = StyleSheet.create({
   safeArea: {

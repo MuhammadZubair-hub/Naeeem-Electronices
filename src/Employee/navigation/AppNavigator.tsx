@@ -45,6 +45,7 @@ import { Role } from '../../types';
 import { RootState } from '../../redux/store';
 import DashBoard from '../../Customer/screens/DashBoard';
 import { getIsActive } from '../../redux/slices/authSlice';
+import ProfileDetials from '../../Customer/screens/ProfileDetials';
 
 const Stack = createNativeStackNavigator();
 
@@ -225,6 +226,8 @@ export const CustomerNaviagtion = () => {
     >
 
       <Stack.Screen name='Dasboard' component={DashBoard} />
+      
+      <Stack.Screen name='Profile' component={ProfileDetials} />
     </Stack.Navigator>
   )
 

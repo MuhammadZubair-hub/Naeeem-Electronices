@@ -876,126 +876,140 @@ export const CustomerDetail: React.FC = () => {
     </View>
   );
 
-const PhoneOptionsModal = ({
-  visible,
-  phoneNumber,
-  onClose,
-  onCall,
-  onWhatsApp,
-  theme,
-}: {
-  visible: boolean;
-  phoneNumber: string;
-  onClose: () => void;
-  onCall: () => void;
-  onWhatsApp: () => void;
-  theme: any;
-}) => (
-  <Modal
-        visible={visible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={onClose}
-      >
-        <SafeAreaView style={styles.modalOverlay}>
-          <View
-            style={[
-              styles.modalContainer,
-              {
-                backgroundColor: theme.colors.white,
-                borderColor: theme.colors.secondaryDark,
-                maxHeight: '40%',
-              },
-            ]}
-          >
-            <View style={styles.headerContainer}>
-              <Text
-                style={[
-                  styles.headerText,
-                  {
-                    color: theme.colors.secondaryDark,
-                  },
-                ]}
-              >
-                {/* {phoneNumber} */}
-                Choose Contact Option
-              </Text>
-              <Ionicons
-                name="close"
-                onPress={onClose}
-                color={'red'}
-                size={AppSizes.Icon_Height_30}
-              />
-            </View>
-  
-            <ScrollView style={styles.contentContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.optionButton,
-                  {
-                    borderBottomColor: theme.colors.border,
-                  },
-                ]}
-                onPress={() => {
-                  onClose();
-                  onCall();
+  const PhoneOptionsModal = ({
+    visible,
+    phoneNumber,
+    onClose,
+    onCall,
+    onWhatsApp,
+    theme,
+  }: {
+    visible: boolean;
+    phoneNumber: string;
+    onClose: () => void;
+    onCall: () => void;
+    onWhatsApp: () => void;
+    theme: any;
+  }) => (
+    <Modal
+      visible={visible}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <SafeAreaView style={styles.modalOverlay}>
+        <View
+          style={[
+            styles.modalContainer,
+            {
+              backgroundColor: theme.colors.white,
+              borderColor: theme.colors.secondaryDark,
+              maxHeight: '40%',
+            },
+          ]}
+        >
+          <View style={styles.headerContainer}>
+            <Text
+              style={[
+                styles.headerText,
+                {
+                  color: theme.colors.secondaryDark,
+                },
+              ]}
+            >
+              {/* {phoneNumber} */}
+              Choose Contact Option
+            </Text>
+            <Ionicons
+              name="close"
+              onPress={onClose}
+              color={'red'}
+              size={AppSizes.Icon_Height_30}
+            />
+          </View>
+
+          <ScrollView style={styles.contentContainer}>
+            <TouchableOpacity
+              style={[
+                styles.optionButton,
+                {
+                  borderBottomColor: theme.colors.border,
+                },
+              ]}
+              onPress={() => {
+                onClose();
+                onCall();
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  gap: AppSizes.Gap_20,
+                  alignItems: 'center',
                 }}
               >
-                <View style={{flexDirection:'row', justifyContent:'center', gap:AppSizes.Gap_20,alignItems:'center' }}>
-                  <Ionicons
-                    name="call-outline"
-                    onPress={onClose}
-                    color={'black'}
-                    size={AppSizes.Icon_Height_30}
-                  />
-  
-                  <Text
-                    style={[
-                      styles.optionText,
-                      {
-                        color: theme.colors.black,
-                      },
-                    ]}
-                  >
-                    Phone Call
-                  </Text>
-                </View>
-              </TouchableOpacity>
-  
-              <TouchableOpacity
-                style={[
-                  styles.optionButton,
-                  {
-                    borderBottomColor: theme.colors.border,
-                  },
-                ]}
-                onPress={() => {
-                  onClose();
-                  onWhatsApp();
+                <Ionicons
+                  name="call-outline"
+                  onPress={onClose}
+                  color={'black'}
+                  size={AppSizes.Icon_Height_30}
+                />
+
+                <Text
+                  style={[
+                    styles.optionText,
+                    {
+                      color: theme.colors.black,
+                    },
+                  ]}
+                >
+                  Phone Call
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.optionButton,
+                {
+                  borderBottomColor: theme.colors.border,
+                },
+              ]}
+              onPress={() => {
+                onClose();
+                onWhatsApp();
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  gap: AppSizes.Gap_20,
+                  alignItems: 'center',
                 }}
               >
-                <View style={{flexDirection:'row', justifyContent:'center', gap:AppSizes.Gap_20,alignItems:'center' }}>
-                  <Ionicons
-                    name="logo-whatsapp"
-                    onPress={onClose}
-                    color={'green'}
-                    size={AppSizes.Icon_Height_30}
-                  />
-  
-                  <Text
-                    style={[
-                      styles.optionText,
-                      {
-                        color: theme.colors.black,
-                      },
-                    ]}
-                  >
-                    WhatsApp
-                  </Text>
-                </View>
-              </TouchableOpacity>
-  
-              {/* <TouchableOpacity
+                <Ionicons
+                  name="logo-whatsapp"
+                  onPress={onClose}
+                  color={'green'}
+                  size={AppSizes.Icon_Height_30}
+                />
+
+                <Text
+                  style={[
+                    styles.optionText,
+                    {
+                      color: theme.colors.black,
+                    },
+                  ]}
+                >
+                  WhatsApp
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            {/* <TouchableOpacity
                 style={[
                   styles.cancelButton,
                   {
@@ -1015,11 +1029,11 @@ const PhoneOptionsModal = ({
                   Cancel
                 </Text>
               </TouchableOpacity> */}
-            </ScrollView>
-          </View>
-        </SafeAreaView>
-      </Modal>
-);
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    </Modal>
+  );
 
   const showPhoneOptions = (phoneNumber: string) => {
     if (!phoneNumber) return;
@@ -1136,7 +1150,6 @@ const PhoneOptionsModal = ({
         <Loader title="Loading Customer detail" />
       ) : (
         <>
-        
           <FlatList
             data={[customerDetails]}
             keyExtractor={item => item.id}

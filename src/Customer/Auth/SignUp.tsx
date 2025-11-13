@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import {
-    View,
-    Text,
-    TextInput,
-    StyleSheet,
-    Image,
-    TouchableOpacity,
-    ImageBackground,
-    BackHandler,
-    Alert,
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ImageBackground,
+  BackHandler,
+  Alert,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
@@ -27,519 +27,502 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 // import { BlurView } from '@react-native-community/blur';
 
 const CoustomerSignUpScreen = () => {
-    const { theme } = useTheme();
-    const dispatch = useDispatch<AppDispatch>();
-    const [showPswd, setShowPswd] = useState<boolean>(true);
-    const navigation = useNavigation();
-    const loginData = useLoginUser();
+  const { theme } = useTheme();
+  const dispatch = useDispatch<AppDispatch>();
+  const [showPswd, setShowPswd] = useState<boolean>(true);
+  const navigation = useNavigation();
+  const loginData = useLoginUser();
 
-    const [firstResponse, setFirstReponse] = useState(false);
+  const [firstResponse, setFirstReponse] = useState(false);
 
-    useFocusEffect(
-        React.useCallback(() => {
-            const backAction = () => {
-                Alert.alert(
-                    '',
-                    'Do you want to exit the app?',
-                    [
-                        {
-                            text: 'Cancel',
-                            onPress: () => null,
-                            style: 'cancel',
-                        },
-                        {
-                            text: 'YES',
-                            onPress: () => BackHandler.exitApp(),
-                        },
-                    ],
-                    { cancelable: true },
-                );
-                return true; // prevent default back behavior
-            };
+  useFocusEffect(
+    React.useCallback(() => {
+      const backAction = () => {
+        Alert.alert(
+          '',
+          'Do you want to exit the app?',
+          [
+            {
+              text: 'Cancel',
+              onPress: () => null,
+              style: 'cancel',
+            },
+            {
+              text: 'YES',
+              onPress: () => BackHandler.exitApp(),
+            },
+          ],
+          { cancelable: true },
+        );
+        return true; // prevent default back behavior
+      };
 
-            const backHandler = BackHandler.addEventListener(
-                'hardwareBackPress',
-                backAction,
-            );
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction,
+      );
 
-            // Cleanup when leaving the screen
-            return () => backHandler.remove();
-        }, []),
-    );
+      // Cleanup when leaving the screen
+      return () => backHandler.remove();
+    }, []),
+  );
 
+  const handleSignup = () => {
+    console.log('handle signup');
+    setFirstReponse(prev => !prev);
+    return;
+  };
 
-    const handleSignup = ()=>{
-        console.log('handle signup')
-        setFirstReponse(prev=>!prev);
-        return;
-    }
+  return (
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: theme.colors.white }]}
+    >
+      <KeyboardAwareScrollView
+        enableOnAndroid
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.glassCard}>
+          <View style={styles.headerContainer}>
+            <Image
+              source={require('../../assets/images/logo.png')}
+              style={{ width: 200, height: 170, resizeMode: 'contain' }}
+            />
+          </View>
+          {/* Input Fields Container */}
+          <View style={styles.inputFieldsContainer}>
+            {/* User ID Input */}
+            <View style={styles.fieldContainer}>
+              <Text
+                style={[
+                  styles.fieldLabel,
+                  { color: theme.colors.secondaryDark },
+                ]}
+              >
+                CNIC
+              </Text>
+              <View
+                style={[
+                  styles.inputContainer,
+                  {
+                    backgroundColor: theme.colors.white,
+                    borderColor: 'rgba(255,255,255,0.3)',
+                  },
+                ]}
+              >
+                <View style={styles.iconContainer}>
+                  <Ionicons
+                    name="person-outline"
+                    size={AppSizes.Icon_Height_20}
+                    color={theme.colors.secondaryDark}
+                  />
+                </View>
+                <TextInput
+                  style={[
+                    styles.input,
+                    {
+                      color: theme.colors.textTertiary,
+                    },
+                  ]}
+                  value={loginData.credentials.empId}
+                  onChangeText={text => loginData.handleChange('empId', text)}
+                  placeholder="Enter your CNIC"
+                  placeholderTextColor={theme.colors.textTertiary}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  editable={!firstResponse}
+                  maxLength={13}
+                  keyboardType="number-pad"
+                />
+              </View>
+            </View>
 
-    return (
-
-        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.white }]}>
-            <KeyboardAwareScrollView
-                enableOnAndroid
-                keyboardShouldPersistTaps="handled"
-                contentContainerStyle={styles.scrollContainer}
-                showsVerticalScrollIndicator={false}
-            >
-
-
-                <View style={styles.glassCard}>
-
-
-                    <View style={styles.headerContainer}>
-                        <Image
-                            source={require('../../assets/images/logo.png')}
-                            style={{ width: 200, height: 170, resizeMode: 'contain' }}
-                        />
+            {firstResponse ? (
+              <>
+                {/* user name */}
+                <View style={styles.fieldContainer}>
+                  <Text
+                    style={[
+                      styles.fieldLabel,
+                      { color: theme.colors.secondaryDark },
+                    ]}
+                  >
+                    User Name
+                  </Text>
+                  <View
+                    style={[
+                      styles.inputContainer,
+                      {
+                        backgroundColor: theme.colors.white,
+                        borderColor: 'rgba(255,255,255,0.3)',
+                      },
+                    ]}
+                  >
+                    <View style={styles.iconContainer}>
+                      <Ionicons
+                        name="lock-closed-outline"
+                        size={AppSizes.Icon_Height_20}
+                        color={theme.colors.secondaryDark}
+                      />
                     </View>
-                    {/* Input Fields Container */}
-                    <View style={styles.inputFieldsContainer}>
-                        {/* User ID Input */}
-                        <View style={styles.fieldContainer}>
-                            <Text
-                                style={[
-                                    styles.fieldLabel,
-                                    { color: theme.colors.secondaryDark },
-                                ]}
-                            >
-                                CNIC
-                            </Text>
-                            <View
-                                style={[
-                                    styles.inputContainer,
-                                    {
-                                        backgroundColor: theme.colors.white,
-                                        borderColor: 'rgba(255,255,255,0.3)',
-                                    },
-                                ]}
-                            >
-                                <View style={styles.iconContainer}>
-                                    <Ionicons
-                                        name="person-outline"
-                                        size={AppSizes.Icon_Height_20}
-                                        color={theme.colors.secondaryDark}
-                                    />
-                                </View>
-                                <TextInput
-                                    style={[
-                                        styles.input,
-                                        {
-                                            color: theme.colors.textTertiary,
-                                        },
-                                    ]}
-                                    value={loginData.credentials.empId}
-                                    onChangeText={text => loginData.handleChange('empId', text)}
-                                    placeholder="Enter your CNIC"
-                                    placeholderTextColor={theme.colors.textTertiary}
-                                    autoCapitalize="none"
-                                    autoCorrect={false}
-                                    editable={!firstResponse}
-                                />
-                            </View>
-                        </View>
-                        
-                    {firstResponse? (<>
-
-
-                    {/* user name */}
-                         <View style={styles.fieldContainer}>
-                            <Text
-                                style={[
-                                    styles.fieldLabel,
-                                    { color: theme.colors.secondaryDark },
-                                ]}
-                            >
-                                User Name
-                            </Text>
-                            <View
-                                style={[
-                                    styles.inputContainer,
-                                    {
-                                        backgroundColor: theme.colors.white,
-                                        borderColor: 'rgba(255,255,255,0.3)',
-                                    },
-                                ]}
-                            >
-                                <View style={styles.iconContainer}>
-                                    <Ionicons
-                                        name="lock-closed-outline"
-                                        size={AppSizes.Icon_Height_20}
-                                        color={theme.colors.secondaryDark}
-                                    />
-                                </View>
-                                <TextInput
-                                    style={[
-                                        styles.input,
-                                        {
-                                            color: theme.colors.textTertiary,
-                                        },
-                                    ]}
-                                    value={loginData.credentials.password}
-                                    onChangeText={text =>
-                                        loginData.handleChange('password', text)
-                                    }
-                                    placeholder="username"
-                                    placeholderTextColor={theme.colors.textTertiary}
-                                    secureTextEntry={showPswd}
-                                    editable={false}
-                                />
-
-                                {/* <Ionicons
-                                    onPress={() => setShowPswd(!showPswd)}
-                                    name={showPswd ? 'eye-outline' : 'eye-off-outline'}
-                                    size={22}
-                                    color={theme.colors.secondaryDark}
-                                /> */}
-
-                            </View>
-                        </View>
-
-                    {/* user name */}
-                         <View style={styles.fieldContainer}>
-                            <Text
-                                style={[
-                                    styles.fieldLabel,
-                                    { color: theme.colors.secondaryDark },
-                                ]}
-                            >
-                                Phone No.
-                            </Text>
-                            <View
-                                style={[
-                                    styles.inputContainer,
-                                    {
-                                        backgroundColor: theme.colors.white,
-                                        borderColor: 'rgba(255,255,255,0.3)',
-                                    },
-                                ]}
-                            >
-                                <View style={styles.iconContainer}>
-                                    <Ionicons
-                                        name="lock-closed-outline"
-                                        size={AppSizes.Icon_Height_20}
-                                        color={theme.colors.secondaryDark}
-                                    />
-                                </View>
-                                <TextInput
-                                    style={[
-                                        styles.input,
-                                        {
-                                            color: theme.colors.textTertiary,
-                                        },
-                                    ]}
-                                    value={loginData.credentials.password}
-                                    onChangeText={text =>
-                                        loginData.handleChange('password', text)
-                                    }
-                                    placeholder="+12 3456789"
-                                    placeholderTextColor={theme.colors.textTertiary}
-                                    secureTextEntry={showPswd}
-                                    editable={false}
-                                />
-
-                                {/* <Ionicons
-                                    onPress={() => setShowPswd(!showPswd)}
-                                    name={showPswd ? 'eye-outline' : 'eye-off-outline'}
-                                    size={22}
-                                    color={theme.colors.secondaryDark}
-                                /> */}
-
-                            </View>
-                        </View>
-
-                        {/* Password Input */}
-                        <View style={styles.fieldContainer}>
-                            <Text
-                                style={[
-                                    styles.fieldLabel,
-                                    { color: theme.colors.secondaryDark },
-                                ]}
-                            >
-                                Create Password
-                            </Text>
-                            <View
-                                style={[
-                                    styles.inputContainer,
-                                    {
-                                        backgroundColor: theme.colors.white,
-                                        borderColor: 'rgba(255,255,255,0.3)',
-                                    },
-                                ]}
-                            >
-                                <View style={styles.iconContainer}>
-                                    <Ionicons
-                                        name="lock-closed-outline"
-                                        size={AppSizes.Icon_Height_20}
-                                        color={theme.colors.secondaryDark}
-                                    />
-                                </View>
-                                <TextInput
-                                    style={[
-                                        styles.input,
-                                        {
-                                            color: theme.colors.textTertiary,
-                                        },
-                                    ]}
-                                    value={loginData.credentials.password}
-                                    onChangeText={text =>
-                                        loginData.handleChange('password', text)
-                                    }
-                                    placeholder="Enter your password"
-                                    placeholderTextColor={theme.colors.textTertiary}
-                                    secureTextEntry={showPswd}
-                                />
-
-                                <Ionicons
-                                    onPress={() => setShowPswd(!showPswd)}
-                                    name={showPswd ? 'eye-outline' : 'eye-off-outline'}
-                                    size={22}
-                                    color={theme.colors.secondaryDark}
-                                />
-
-                            </View>
-                        </View>
-                        {/* Confrim password */}
-                        <View style={styles.fieldContainer}>
-                            <Text
-                                style={[
-                                    styles.fieldLabel,
-                                    { color: theme.colors.secondaryDark },
-                                ]}
-                            >
-                                Confirm Password
-                            </Text>
-                            <View
-                                style={[
-                                    styles.inputContainer,
-                                    {
-                                        backgroundColor: theme.colors.white,
-                                        borderColor: 'rgba(255,255,255,0.3)',
-                                    },
-                                ]}
-                            >
-                                <View style={styles.iconContainer}>
-                                    <Ionicons
-                                        name="lock-closed-outline"
-                                        size={AppSizes.Icon_Height_20}
-                                        color={theme.colors.secondaryDark}
-                                    />
-                                </View>
-                                <TextInput
-                                    style={[
-                                        styles.input,
-                                        {
-                                            color: theme.colors.textTertiary,
-                                        },
-                                    ]}
-                                    value={loginData.credentials.password}
-                                    onChangeText={text =>
-                                        loginData.handleChange('password', text)
-                                    }
-                                    placeholder="Confirm your password"
-                                    placeholderTextColor={theme.colors.textTertiary}
-                                    secureTextEntry={showPswd}
-                                />
-
-                                {/* <Ionicons
-                                    onPress={() => setShowPswd(!showPswd)}
-                                    name={showPswd ? 'eye-outline' : 'eye-off-outline'}
-                                    size={22}
-                                    color={theme.colors.secondaryDark}
-                                /> */}
-
-                            </View>
-                        </View>
-                    </>):(null)}
-                    </View>
-
-
-
-
-                    <Text
-                        onPress={() => navigation.goBack()}
-                        style={[
-                            styles.fieldLabel,
-
-                            { color: theme.colors.secondaryDark, alignSelf: 'flex-end' },
-                        ]}
-                    >
-                        Already Have an Account?
-                    </Text>
-
-
-
-
-
-                    <Button
-                        variant="secondary"
-                        title="Sign Up"
-                        onPress={() =>{handleSignup()}}
-                        style={styles.loginButton}
+                    <TextInput
+                      style={[
+                        styles.input,
+                        {
+                          color: theme.colors.textTertiary,
+                        },
+                      ]}
+                      value={loginData.credentials.password}
+                      onChangeText={text =>
+                        loginData.handleChange('password', text)
+                      }
+                      placeholder="username"
+                      placeholderTextColor={theme.colors.textTertiary}
+                      secureTextEntry={showPswd}
+                      editable={false}
                     />
 
+                    {/* <Ionicons
+                                    onPress={() => setShowPswd(!showPswd)}
+                                    name={showPswd ? 'eye-outline' : 'eye-off-outline'}
+                                    size={22}
+                                    color={theme.colors.secondaryDark}
+                                /> */}
+                  </View>
                 </View>
 
-                {/* Footer Spacing */}
-                <View style={styles.footer} />
-            </KeyboardAwareScrollView>
+                {/* user name */}
+                <View style={styles.fieldContainer}>
+                  <Text
+                    style={[
+                      styles.fieldLabel,
+                      { color: theme.colors.secondaryDark },
+                    ]}
+                  >
+                    Phone No.
+                  </Text>
+                  <View
+                    style={[
+                      styles.inputContainer,
+                      {
+                        backgroundColor: theme.colors.white,
+                        borderColor: 'rgba(255,255,255,0.3)',
+                      },
+                    ]}
+                  >
+                    <View style={styles.iconContainer}>
+                      <Ionicons
+                        name="lock-closed-outline"
+                        size={AppSizes.Icon_Height_20}
+                        color={theme.colors.secondaryDark}
+                      />
+                    </View>
+                    <TextInput
+                      style={[
+                        styles.input,
+                        {
+                          color: theme.colors.textTertiary,
+                        },
+                      ]}
+                      value={loginData.credentials.password}
+                      onChangeText={text =>
+                        loginData.handleChange('password', text)
+                      }
+                      placeholder="+12 3456789"
+                      placeholderTextColor={theme.colors.textTertiary}
+                      secureTextEntry={showPswd}
+                      editable={false}
+                    />
 
-            <LoadingModal visible={loginData.isLoading} />
+                    {/* <Ionicons
+                                    onPress={() => setShowPswd(!showPswd)}
+                                    name={showPswd ? 'eye-outline' : 'eye-off-outline'}
+                                    size={22}
+                                    color={theme.colors.secondaryDark}
+                                /> */}
+                  </View>
+                </View>
 
-        </SafeAreaView>
+                {/* Password Input */}
+                <View style={styles.fieldContainer}>
+                  <Text
+                    style={[
+                      styles.fieldLabel,
+                      { color: theme.colors.secondaryDark },
+                    ]}
+                  >
+                    Create Password
+                  </Text>
+                  <View
+                    style={[
+                      styles.inputContainer,
+                      {
+                        backgroundColor: theme.colors.white,
+                        borderColor: 'rgba(255,255,255,0.3)',
+                      },
+                    ]}
+                  >
+                    <View style={styles.iconContainer}>
+                      <Ionicons
+                        name="lock-closed-outline"
+                        size={AppSizes.Icon_Height_20}
+                        color={theme.colors.secondaryDark}
+                      />
+                    </View>
+                    <TextInput
+                      style={[
+                        styles.input,
+                        {
+                          color: theme.colors.textTertiary,
+                        },
+                      ]}
+                      value={loginData.credentials.password}
+                      onChangeText={text =>
+                        loginData.handleChange('password', text)
+                      }
+                      placeholder="Enter your password"
+                      placeholderTextColor={theme.colors.textTertiary}
+                      secureTextEntry={showPswd}
+                    />
 
+                    <Ionicons
+                      onPress={() => setShowPswd(!showPswd)}
+                      name={showPswd ? 'eye-outline' : 'eye-off-outline'}
+                      size={22}
+                      color={theme.colors.secondaryDark}
+                    />
+                  </View>
+                </View>
+                {/* Confrim password */}
+                <View style={styles.fieldContainer}>
+                  <Text
+                    style={[
+                      styles.fieldLabel,
+                      { color: theme.colors.secondaryDark },
+                    ]}
+                  >
+                    Confirm Password
+                  </Text>
+                  <View
+                    style={[
+                      styles.inputContainer,
+                      {
+                        backgroundColor: theme.colors.white,
+                        borderColor: 'rgba(255,255,255,0.3)',
+                      },
+                    ]}
+                  >
+                    <View style={styles.iconContainer}>
+                      <Ionicons
+                        name="lock-closed-outline"
+                        size={AppSizes.Icon_Height_20}
+                        color={theme.colors.secondaryDark}
+                      />
+                    </View>
+                    <TextInput
+                      style={[
+                        styles.input,
+                        {
+                          color: theme.colors.textTertiary,
+                        },
+                      ]}
+                      value={loginData.credentials.password}
+                      onChangeText={text =>
+                        loginData.handleChange('password', text)
+                      }
+                      placeholder="Confirm your password"
+                      placeholderTextColor={theme.colors.textTertiary}
+                      secureTextEntry={showPswd}
+                    />
 
-    );
+                    {/* <Ionicons
+                                    onPress={() => setShowPswd(!showPswd)}
+                                    name={showPswd ? 'eye-outline' : 'eye-off-outline'}
+                                    size={22}
+                                    color={theme.colors.secondaryDark}
+                                /> */}
+                  </View>
+                </View>
+              </>
+            ) : null}
+          </View>
+
+          <Text
+            onPress={() => navigation.goBack()}
+            style={[
+              styles.fieldLabel,
+
+              { color: theme.colors.secondaryDark, alignSelf: 'flex-end' },
+            ]}
+          >
+            Already Have an Account?
+          </Text>
+
+          <Button
+            variant="secondary"
+            title="Sign Up"
+            onPress={() => {
+              handleSignup();
+            }}
+            style={styles.loginButton}
+          />
+        </View>
+
+        {/* Footer Spacing */}
+        <View style={styles.footer} />
+      </KeyboardAwareScrollView>
+
+      <LoadingModal visible={loginData.isLoading} />
+    </SafeAreaView>
+  );
 };
 
 export default CoustomerSignUpScreen;
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    //zIndex: 2,
+    justifyContent: 'center',
+    //marginTop: AppSizes.Margin_Vertical_40,
 
+    // alignItems: 'center',
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    paddingHorizontal: AppSizes.Padding_Horizontal_10,
+    paddingVertical: AppSizes.Padding_Vertical_5,
+  },
 
-    safeArea: {
-        flex: 1,
-        //zIndex: 2,
-        justifyContent: 'center',
-        //marginTop: AppSizes.Margin_Vertical_40,
+  // Header Styles
+  headerContainer: {
+    alignItems: 'center',
+    //paddingTop: AppSizes.Margin_Vertical_40,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    // marginBottom: 32,
+    marginVertical: AppSizes.Margin_Vertical_40,
+  },
+  brandTitle: {
+    fontSize: 32,
+    fontFamily: fonts.bold,
+    textAlign: 'center',
+    marginBottom: 8,
+    letterSpacing: 1,
+  },
+  brandUnderline: {
+    width: 60,
+    height: 3,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 2,
+  },
+  titleContainer: {
+    alignItems: 'center',
+  },
+  welcomeTitle: {
+    fontSize: 28,
+    fontFamily: fonts.bold,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  welcomeSubtitle: {
+    fontSize: 16,
+    fontFamily: 'Poppins-Regular',
+    textAlign: 'center',
+  },
 
-        // alignItems: 'center',
-    },
-    scrollContainer: {
-        flexGrow: 1,
-        paddingHorizontal: AppSizes.Padding_Horizontal_10,
-        paddingVertical: AppSizes.Padding_Vertical_5,
-    },
+  // Glass Card Effect
+  glassCard: {
+    // borderRadius: 24,
+    padding: 12,
+    marginHorizontal: 4,
+  },
+  cardHeader: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  loginTitle: {
+    fontSize: 24,
+    fontFamily: fonts.medium,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  titleUnderline: {
+    width: 60,
+    height: 3,
+    borderRadius: 2,
+  },
 
-    // Header Styles
-    headerContainer: {
-        alignItems: 'center',
-        //paddingTop: AppSizes.Margin_Vertical_40,
+  // Input Fields Styles
+  inputFieldsContainer: {
+    marginBottom: AppSizes.Margin_Vertical_10,
+    // borderRadius :10,
+    // borderWidth: 2,
+    // borderColor :'black'
+  },
+  fieldContainer: {
+    marginBottom: AppSizes.Margin_Vertical_20,
+  },
+  fieldLabel: {
+    fontSize: 14,
+    fontFamily: fonts.medium,
+    marginBottom: 8,
+    marginLeft: 4,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderRadius: AppSizes.Radius_10,
+    paddingHorizontal: 16,
+    minHeight: 56,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
     },
-    logoContainer: {
-        alignItems: 'center',
-        // marginBottom: 32,
-        marginVertical: AppSizes.Margin_Vertical_40,
-    },
-    brandTitle: {
-        fontSize: 32,
-        fontFamily: fonts.bold,
-        textAlign: 'center',
-        marginBottom: 8,
-        letterSpacing: 1,
-    },
-    brandUnderline: {
-        width: 60,
-        height: 3,
-        backgroundColor: '#FFFFFF',
-        borderRadius: 2,
-    },
-    titleContainer: {
-        alignItems: 'center',
-    },
-    welcomeTitle: {
-        fontSize: 28,
-        fontFamily: fonts.bold,
-        marginBottom: 8,
-        textAlign: 'center',
-    },
-    welcomeSubtitle: {
-        fontSize: 16,
-        fontFamily: 'Poppins-Regular',
-        textAlign: 'center',
-    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  iconContainer: {
+    marginRight: AppSizes.Margin_Horizontal_10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: AppSizes.Margin_Vertical_5,
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: 'Poppins-Regular',
+    //paddingVertical: AppSizes.Padding_Vertical_15,
+  },
+  eyeIconContainer: {
+    padding: 4,
+    marginLeft: 8,
+  },
 
-    // Glass Card Effect
-    glassCard: {
-        // borderRadius: 24,
-        padding: 12,
-        marginHorizontal: 4,
+  // Button Styles
+  buttonContainer: {
+    marginBottom: 8,
+  },
+  loginButton: {
+    minHeight: 56,
+    borderRadius: AppSizes.Radius_10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
     },
-    cardHeader: {
-        alignItems: 'center',
-        marginBottom: 32,
-    },
-    loginTitle: {
-        fontSize: 24,
-        fontFamily: fonts.medium,
-        textAlign: 'center',
-        marginBottom: 8,
-    },
-    titleUnderline: {
-        width: 60,
-        height: 3,
-        borderRadius: 2,
-    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
 
-    // Input Fields Styles
-    inputFieldsContainer: {
-        marginBottom: AppSizes.Margin_Vertical_10,
-        // borderRadius :10,
-        // borderWidth: 2,
-        // borderColor :'black'
-    },
-    fieldContainer: {
-        marginBottom: AppSizes.Margin_Vertical_20,
-    },
-    fieldLabel: {
-        fontSize: 14,
-        fontFamily: fonts.medium,
-        marginBottom: 8,
-        marginLeft: 4,
-    },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1.5,
-        borderRadius: AppSizes.Radius_10,
-        paddingHorizontal: 16,
-        minHeight: 56,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-    },
-    iconContainer: {
-        marginRight: AppSizes.Margin_Horizontal_10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: AppSizes.Margin_Vertical_5,
-    },
-    input: {
-        flex: 1,
-        fontSize: 16,
-        fontFamily: 'Poppins-Regular',
-        //paddingVertical: AppSizes.Padding_Vertical_15,
-    },
-    eyeIconContainer: {
-        padding: 4,
-        marginLeft: 8,
-    },
-
-    // Button Styles
-    buttonContainer: {
-        marginBottom: 8,
-    },
-    loginButton: {
-        minHeight: 56,
-        borderRadius: AppSizes.Radius_10,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-    },
-
-    // Footer
-    footer: {
-        height: 40,
-    },
+  // Footer
+  footer: {
+    height: 40,
+  },
 });

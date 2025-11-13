@@ -33,7 +33,9 @@ const AppContent = () => {
   const user_Catogries = ['Customer', 'Employee'];
 
   const dispatch = useDispatch();
-  const { isAuthenticated ,isActive} = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, isActive } = useSelector(
+    (state: RootState) => state.auth,
+  );
   const { theme } = useTheme();
 
   const idleTimer = useRef<NodeJS.Timeout | null>(null);
@@ -137,13 +139,10 @@ const AppContent = () => {
           barStyle="dark-content"
         />
 
-    
-        {isAuthenticated ? <AppNavigator /> : <AuthNavigator />}
+        {/* {isAuthenticated ? <AppNavigator /> : <AuthNavigator />} */}
+        <AppNavigator />
       </NavigationContainer>
-
     </View>
-
-   
   );
 };
 
