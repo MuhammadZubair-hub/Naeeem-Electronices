@@ -91,7 +91,7 @@ const CoustomerLoginScreen = () => {
                   { color: theme.colors.secondaryDark },
                 ]}
               >
-                Cnic :
+                CNIC
               </Text>
               <View
                 style={[
@@ -118,10 +118,11 @@ const CoustomerLoginScreen = () => {
                   ]}
                   value={loginData.credentials.empId}
                   onChangeText={text => loginData.handleChange('empId', text)}
-                  placeholder="Enter your user ID"
+                  placeholder="Enter your CNIC without Dashes"
                   placeholderTextColor={theme.colors.textTertiary}
                   autoCapitalize="none"
                   autoCorrect={false}
+                  maxLength={13}
                 />
               </View>
             </View>
