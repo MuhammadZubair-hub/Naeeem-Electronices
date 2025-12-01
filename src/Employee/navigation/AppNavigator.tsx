@@ -95,7 +95,7 @@ const RoleBasedNavigator = () => {
     initialScreen = screenName.CEO_GM_Dashboard;
   } else {
     // initialScreen = screenName.AVO_AllCustomers
-    console.log('no ausdfsfddsf')
+    console.log('no ausdfsfddsf');
   }
   return (
     <Stack.Navigator
@@ -199,36 +199,29 @@ const RoleBasedNavigator = () => {
 };
 
 export const AppNavigator = () => {
-
-   const { isAuthenticated ,isActive} = useSelector((state: RootState) => state.auth);
-  console.log('active user is :' ,isActive);
+  let isActive = 'Employee';
+  //  const { isAuthenticated ,isActive} = useSelector((state: RootState) => state.auth);
+  console.log('active user is :', isActive);
 
   return (
-    <Stack.Navigator
-      screenOptions={{ headerShown: false }}>
-      {isActive === 'Customer' ? (<Stack.Screen name="CustomerDashBoard" component={CustomerNaviagtion} />)
-        :
-        (
-          <Stack.Screen name="Main" component={RoleBasedNavigator} />
-        )}
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {/* {isActive === 'Customer' ? (
+        <Stack.Screen name="CustomerDashBoard" component={CustomerNaviagtion} />
+      ) : (
+        <Stack.Screen name="Main" component={RoleBasedNavigator} />
+      )} */}
 
-
-
+      <Stack.Screen name="Main" component={RoleBasedNavigator} />
     </Stack.Navigator>
-  )
+  );
 };
-
 
 export const CustomerNaviagtion = () => {
   return (
-    <Stack.Navigator
-    screenOptions={{headerShown:false}}
-    >
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Dasboard" component={DashBoard} />
 
-      <Stack.Screen name='Dasboard' component={DashBoard} />
-      
-      <Stack.Screen name='Profile' component={ProfileDetials} />
+      <Stack.Screen name="Profile" component={ProfileDetials} />
     </Stack.Navigator>
-  )
-
-}
+  );
+};

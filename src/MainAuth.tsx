@@ -25,7 +25,7 @@ const MainAuth = () => {
       style={[styles.safeArea, { backgroundColor: theme.colors.white }]}
     >
       <KeyboardAwareScrollView
-        enableOnAndroid
+        // enableOnAndroid
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -35,13 +35,13 @@ const MainAuth = () => {
           <View style={styles.headerContainer}>
             <Image
               source={require('../src/assets/images/logo.png')}
-              style={{ width: 200, height: 170, resizeMode: 'contain' }}
+              style={{ width: 220, height: 200, resizeMode: 'contain' }}
             />
           </View>
           {/* Card Header */}
         </View>
-
-        <View
+        <LoginScreen />
+        {/* <View
           style={[
             styles.buttonContainer,
             {
@@ -83,9 +83,9 @@ const MainAuth = () => {
               </TouchableOpacity>
             );
           })}
-        </View>
+        </View> */}
 
-        {isActive === 'Customer' ? <CoustomerLoginScreen /> : <LoginScreen />}
+        {/* {isActive === 'Customer' ? <CoustomerLoginScreen /> : <LoginScreen />} */}
       </KeyboardAwareScrollView>
     </SafeAreaView>
   );
@@ -96,34 +96,22 @@ export default MainAuth;
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    //zIndex: 2,
-    justifyContent: 'center',
-    //marginTop: AppSizes.Margin_Vertical_40,
-
-    // alignItems: 'center',
+    // justifyContent: 'center',
   },
   scrollContainer: {
     flexGrow: 1,
-    // paddingHorizontal: AppSizes.Padding_Horizontal_10,
-    // paddingVertical: AppSizes.Padding_Vertical_5,
   },
 
   // Header Styles
   headerContainer: {
     alignItems: 'center',
-    //paddingTop: AppSizes.Margin_Vertical_40,
+    marginTop: AppSizes.Margin_Vertical_100,
   },
   logoContainer: {
     alignItems: 'center',
-    // marginBottom: 32,
-    //marginVertical: AppSizes.Margin_Vertical_10,
   },
 
-  glassCard: {
-    //borderRadius: 24,
-    //padding: 12,
-    //marginHorizontal: 4,
-  },
+  glassCard: {},
 
   buttonContainer: {
     alignSelf: 'center',
@@ -132,7 +120,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     height: 45,
     width: '60%',
-    marginBottom: 10,
+    // marginBottom: 10,
   },
   loginButton: {
     justifyContent: 'center',
@@ -142,7 +130,6 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   loginButtonText: {
-    //color: Colors.white,
     fontFamily: fonts.semiBold,
     fontWeight: '500',
     fontSize: 18,

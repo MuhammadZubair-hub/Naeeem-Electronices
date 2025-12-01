@@ -1,8 +1,5 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
-  Alert,
-  BackHandler,
-  ImageBackground,
   RefreshControl,
   StyleSheet,
   View,
@@ -12,24 +9,20 @@ import {
   StatusBar,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { RootState, AppDispatch } from '../../../redux/store';
 import { useTheme } from '../../../hooks/useTheme';
 import { Card } from '../../../components/common/Card';
 import Loader from '../../../components/common/Loader';
 import MainHeader from '../../../components/common/MainHeader';
-import { PieGraph } from '../../../components/charts/PieGraph';
 import { RegionList } from '../Regions/RegionList';
 import { API_Config } from '../../services/apiServices';
 import { fonts } from '../../../assets/fonts/Fonts';
 import { AppSizes } from '../../../utils/AppSizes';
-import { BarGraph } from '../../../components/charts/BarGraph';
 import { colors } from '../../../styles/theme';
 import { HorizontalStackedBarGraph } from '../../../components/charts/BarGraphHorizontal';
 import { showMessage } from 'react-native-flash-message';
-import Ionicons from '@react-native-vector-icons/ionicons';
 import { CommonStyles } from '../../../styles/GlobalStyle';
 import { useBackHandler } from '../../../components/common/useBackHandler';
 
@@ -92,12 +85,8 @@ export const CEO_GM_Dashboard: React.FC = () => {
         const formatted = data.map((item: any, index: number) => ({
           region: item.region,
           total: parseInt(String(item.instTotalAmount).replace(/,/g, ''), 10),
-
           paid: parseInt(String(item.instRecAmount).replace(/,/g, ''), 10),
           due: parseInt(String(item.instDueAmount).replace(/,/g, ''), 10),
-          // total: parseFloat(item.instTotalAmount),
-          // paid: parseFloat(item.instRecAmount),
-          // due: parseFloat(item.instDueAmount),
         }));
 
         setAllRegionsTotal(formatted);
@@ -135,38 +124,6 @@ export const CEO_GM_Dashboard: React.FC = () => {
   useEffect(() => {
     getAllDashboardData();
   }, [getAllDashboardData]);
-
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const backAction = () => {
-  //       Alert.alert(
-  //         '',
-  //         'Do you want to exit the app?',
-  //         [
-  //           {
-  //             text: 'Cancel',
-  //             onPress: () => null,
-  //             style: 'cancel',
-  //           },
-  //           {
-  //             text: 'YES',
-  //             onPress: () => BackHandler.exitApp(),
-  //           },
-  //         ],
-  //         { cancelable: true },
-  //       );
-  //       return true; // prevent default back behavior
-  //     };
-
-  //     const backHandler = BackHandler.addEventListener(
-  //       'hardwareBackPress',
-  //       backAction,
-  //     );
-
-  //     // Cleanup when leaving the screen
-  //     return () => backHandler.remove();
-  //   }, []),
-  // );
 
   const onRefresh = useCallback(() => {
     getAllDashboardData();

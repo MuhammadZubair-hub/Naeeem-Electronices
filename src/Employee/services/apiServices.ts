@@ -2,11 +2,27 @@ import { apicall_new } from '../../services';
 import { baseUrl, endPoints } from '../../utils/Constants/endPoints';
 
 export const API_Config = {
-  loginUser: async (empId: string, password: string) => {
+  // loginUser: async (empId: string, password: string) => {
+  //   return apicall_new({
+  //     endpoint: `${baseUrl}${endPoints.login}`,
+  //     method: 'POST',
+  //     data: { empId, password },
+  //   });
+  // },
+
+   loginUser: async (empId: string, password: string, macAddress: string) => {
     return apicall_new({
       endpoint: `${baseUrl}${endPoints.login}`,
       method: 'POST',
-      data: { empId, password },
+      data: { empId,password,macAddress },
+    });
+  },
+
+  updateUserPassword: async (empId: string, newPassword: string) => {
+    return apicall_new({
+      endpoint: `${baseUrl}${endPoints.updatePassword}`,
+      method: 'POST',
+      data: { empId, newPassword },
     });
   },
 

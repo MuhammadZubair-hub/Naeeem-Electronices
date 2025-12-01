@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -23,198 +23,184 @@ import { LoadingModal } from '../../../components/common/LoadingModal';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { fonts } from '../../../assets/fonts/Fonts';
 import { colors } from '../../../styles/theme';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 // import { BlurView } from '@react-native-community/blur';
+import { useBackHandler } from '../../../components/common/useBackHandler';
 
 const LoginScreen = () => {
   const { theme } = useTheme();
   const dispatch = useDispatch<AppDispatch>();
+
+  const navigation = useNavigation<any>();
   const [showPswd, setShowPswd] = useState<boolean>(true);
 
   const loginData = useLoginUser();
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const backAction = () => {
-        Alert.alert(
-          '',
-          'Do you want to exit the app?',
-          [
-            {
-              text: 'Cancel',
-              onPress: () => null,
-              style: 'cancel',
-            },
-            {
-              text: 'YES',
-              onPress: () => BackHandler.exitApp(),
-            },
-          ],
-          { cancelable: true },
-        );
-        return true; // prevent default back behavior
-      };
-
-      const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
-        backAction,
-      );
-
-      // Cleanup when leaving the screen
-      return () => backHandler.remove();
-    }, []),
-  );
-
+  useBackHandler();
   return (
-   
-      <SafeAreaView style={[styles.safeArea,{backgroundColor:theme.colors.white}]}>
-        <KeyboardAwareScrollView
-          enableOnAndroid
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={styles.scrollContainer}
-          showsVerticalScrollIndicator={false}
-        >
-          
-
-          <View style={styles.glassCard}>
-            {/* Header Section */}
-            {/* <View style={styles.headerContainer}>
+    <View style={[styles.safeArea, { backgroundColor: theme.colors.white }]}>
+      <KeyboardAwareScrollView
+        //enableOnAndroid
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.glassCard}>
+          {/* Header Section */}
+          {/* <View style={styles.headerContainer}>
               <Image
                 source={require('../../../assets/images/logo.png')}
                 style={{ width: 200, height: 170, resizeMode: 'contain' }}
               />
             </View> */}
-            {/* Card Header */}
+          {/* Card Header */}
 
-            {/* Input Fields Container */}
-            <View style={styles.inputFieldsContainer}>
-              {/* User ID Input */}
-              <View style={styles.fieldContainer}>
-                <Text
-                  style={[
-                    styles.fieldLabel,
-                    { color: theme.colors.secondaryDark },
-                  ]}
-                >
-                  User ID
-                </Text>
-                <View
-                  style={[
-                    styles.inputContainer,
-                    {
-                      backgroundColor: theme.colors.white,
-                      borderColor: 'rgba(255,255,255,0.3)',
-                    },
-                  ]}
-                >
-                  <View style={styles.iconContainer}>
-                    <Ionicons
-                      name="person-outline"
-                      size={AppSizes.Icon_Height_20}
-                      color={theme.colors.secondaryDark}
-                    />
-                  </View>
-                  <TextInput
-                    style={[
-                      styles.input,
-                      {
-                        color: theme.colors.textTertiary,
-                      },
-                    ]}
-                    value={loginData.credentials.empId}
-                    onChangeText={text => loginData.handleChange('empId', text)}
-                    placeholder="Enter your user ID"
-                    placeholderTextColor={theme.colors.textTertiary}
-                    autoCapitalize="none"
-                    autoCorrect={false}
+          {/* Input Fields Container */}
+          <View style={styles.inputFieldsContainer}>
+            {/* User ID Input */}
+            <View style={styles.fieldContainer}>
+              <Text
+                style={[
+                  styles.fieldLabel,
+                  { color: theme.colors.secondaryDark },
+                ]}
+              >
+                User ID
+              </Text>
+              <View
+                style={[
+                  styles.inputContainer,
+                  {
+                    backgroundColor: theme.colors.white,
+                    borderColor: 'rgba(255,255,255,0.3)',
+                  },
+                ]}
+              >
+                <View style={styles.iconContainer}>
+                  <Ionicons
+                    name="person-outline"
+                    size={AppSizes.Icon_Height_20}
+                    color={theme.colors.secondaryDark}
                   />
                 </View>
-              </View>
-
-              {/* Password Input */}
-              <View style={styles.fieldContainer}>
-                <Text
+                <TextInput
                   style={[
-                    styles.fieldLabel,
-                    { color: theme.colors.secondaryDark },
-                  ]}
-                >
-                  Password
-                </Text>
-                <View
-                  style={[
-                    styles.inputContainer,
+                    styles.input,
                     {
-                      backgroundColor: theme.colors.white,
-                      borderColor: 'rgba(255,255,255,0.3)',
+                      color: theme.colors.textTertiary,
                     },
                   ]}
-                >
-                  <View style={styles.iconContainer}>
-                    <Ionicons
-                      name="lock-closed-outline"
-                      size={AppSizes.Icon_Height_20}
-                      color={theme.colors.secondaryDark}
-                    />
-                  </View>
-                  <TextInput
-                    style={[
-                      styles.input,
-                      {
-                        color: theme.colors.textTertiary,
-                      },
-                    ]}
-                    value={loginData.credentials.password}
-                    onChangeText={text =>
-                      loginData.handleChange('password', text)
-                    }
-                    placeholder="Enter your password"
-                    placeholderTextColor={theme.colors.textTertiary}
-                    secureTextEntry={showPswd}
-                  />
-                  <TouchableOpacity
-                    style={styles.eyeIconContainer}
-                    onPress={() => setShowPswd(!showPswd)}
-                    activeOpacity={0.7}
-                  >
-                    <Ionicons
-                      name={showPswd ? 'eye-outline' : 'eye-off-outline'}
-                      size={22}
-                      color={theme.colors.secondaryDark}
-                    />
-                  </TouchableOpacity>
-                </View>
+                  value={loginData.credentials.empId}
+                  onChangeText={text => loginData.handleChange('empId', text)}
+                  placeholder="Enter your user ID"
+                  placeholderTextColor={theme.colors.textTertiary}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
               </View>
             </View>
 
-        
-        
-              <Button
-                variant="secondary"
-                title="Sign In"
-                onPress={() => loginData.handleLogin(loginData.credentials)}
-                style={styles.loginButton}
-              />
-           
+            {/* Password Input */}
+            <View style={styles.fieldContainer}>
+              <Text
+                style={[
+                  styles.fieldLabel,
+                  { color: theme.colors.secondaryDark },
+                ]}
+              >
+                Password
+              </Text>
+              <View
+                style={[
+                  styles.inputContainer,
+                  {
+                    backgroundColor: theme.colors.white,
+                    borderColor: 'rgba(255,255,255,0.3)',
+                  },
+                ]}
+              >
+                <View style={styles.iconContainer}>
+                  <Ionicons
+                    name="lock-closed-outline"
+                    size={AppSizes.Icon_Height_20}
+                    color={theme.colors.secondaryDark}
+                  />
+                </View>
+                <TextInput
+                  style={[
+                    styles.input,
+                    {
+                      color: theme.colors.textTertiary,
+                    },
+                  ]}
+                  value={loginData.credentials.password}
+                  onChangeText={text =>
+                    loginData.handleChange('password', text)
+                  }
+                  placeholder="Enter your password"
+                  placeholderTextColor={theme.colors.textTertiary}
+                  secureTextEntry={showPswd}
+                />
+                <TouchableOpacity
+                  style={styles.eyeIconContainer}
+                  onPress={() => setShowPswd(!showPswd)}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons
+                    name={showPswd ? 'eye-outline' : 'eye-off-outline'}
+                    size={22}
+                    color={theme.colors.secondaryDark}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate('UpdatePassword')}
+            >
+              {/* <Text
+                // style={{
+                //   textAlign: 'right',
+                //   fontSize: AppSizes.Font_14,
+                //   color: theme.colors.secondaryDark,
+                //   fontFamily: fonts.semiBold,
+                // }}
+                
+              > */}
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontFamily: fonts.medium,
+
+                  color: theme.colors.secondaryDark,
+                  textAlign: 'right',
+                }}
+              >
+                Change Password?
+              </Text>
+            </TouchableOpacity>
           </View>
 
-          {/* Footer Spacing */}
-          <View style={styles.footer} />
-        </KeyboardAwareScrollView>
+          <Button
+            variant="secondary"
+            title="Sign In"
+            onPress={() => loginData.handleLogin(loginData.credentials)}
+            style={styles.loginButton}
+          />
+        </View>
 
-              <LoadingModal visible={loginData.isLoading} />
+        {/* Footer Spacing */}
+        {/* <View style={styles.footer} /> */}
+      </KeyboardAwareScrollView>
 
-      </SafeAreaView>
-
-    
+      <LoadingModal visible={loginData.isLoading} />
+    </View>
   );
 };
 
 export default LoginScreen;
 
 const styles = StyleSheet.create({
-  
-
   safeArea: {
     flex: 1,
     //zIndex: 2,
@@ -226,7 +212,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     paddingHorizontal: AppSizes.Padding_Horizontal_10,
-    paddingVertical: AppSizes.Padding_Vertical_5,
+    // paddingVertical: AppSizes.Padding_Vertical_5,
   },
 
   // Header Styles
@@ -236,7 +222,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-   // marginBottom: 32,
+    // marginBottom: 32,
     marginVertical: AppSizes.Margin_Vertical_40,
   },
   brandTitle: {
@@ -270,7 +256,8 @@ const styles = StyleSheet.create({
   // Glass Card Effect
   glassCard: {
     borderRadius: 24,
-    padding: 12,
+    paddingHorizontal: 12,
+    // padding: 12,
     marginHorizontal: 4,
   },
   cardHeader: {

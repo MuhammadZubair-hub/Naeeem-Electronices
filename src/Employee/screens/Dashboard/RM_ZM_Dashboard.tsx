@@ -1,26 +1,13 @@
-import React, { use, useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-  ImageBackground,
-  Alert,
-  BackHandler,
   ScrollView,
   RefreshControl,
   StatusBar,
 } from 'react-native';
-import { Button } from '../../../components/common/Button';
-import {
-  useFocusEffect,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../hooks/useTheme';
-import { Header } from '../../../components/common/Header';
-import { screenName } from '../../navigation/ScreenName';
 import { API_Config } from '../../services/apiServices';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
@@ -31,7 +18,6 @@ import { Card } from '../../../components/common';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { showMessage } from 'react-native-flash-message';
 import { CommonStyles } from '../../../styles/GlobalStyle';
-import EmptyComponents from '../../../components/common/EmptyComponents';
 import MainHeader from '../../../components/common/MainHeader';
 import { HorizontalStackedBarGraph } from '../../../components/charts/BarGraphHorizontal';
 import { ZonesData } from '../Zones/ZoneList';

@@ -14,6 +14,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { AppSizes } from './src/utils/AppSizes';
 import { fonts } from './src/assets/fonts/Fonts';
 import { AppNavigator, AuthNavigator } from './src/Employee/navigation';
+import axios from 'axios';
 
 const App = () => (
   <Provider store={store}>
@@ -25,6 +26,8 @@ const App = () => (
     </PersistGate>
   </Provider>
 );
+
+
 
 const IDLE_TIMEOUT = 10 * 60 * 1000;
 
@@ -64,6 +67,10 @@ const AppContent = () => {
       },
     }),
   ).current;
+
+  
+
+
 
   useEffect(() => {
     console.log('Inactivity timer initialized');
