@@ -14,7 +14,6 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
 import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../../components/common/Button';
-import { Card } from '../../components/common/Card';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppSizes } from '../../utils/AppSizes';

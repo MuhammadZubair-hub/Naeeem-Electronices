@@ -33,6 +33,7 @@ const LoginScreen = () => {
 
   const navigation = useNavigation<any>();
   const [showPswd, setShowPswd] = useState<boolean>(true);
+  const [phoneNumber, setPhoneNumber] = useState<string>('2332');
 
   const loginData = useLoginUser();
 
@@ -158,15 +159,6 @@ const LoginScreen = () => {
             <TouchableOpacity
               onPress={() => navigation.navigate('UpdatePassword')}
             >
-              {/* <Text
-                // style={{
-                //   textAlign: 'right',
-                //   fontSize: AppSizes.Font_14,
-                //   color: theme.colors.secondaryDark,
-                //   fontFamily: fonts.semiBold,
-                // }}
-                
-              > */}
               <Text
                 style={{
                   fontSize: 14,
@@ -177,6 +169,21 @@ const LoginScreen = () => {
                 }}
               >
                 Change Password?
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('otp', {phoneNumbers:phoneNumber})}
+            >
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontFamily: fonts.medium,
+
+                  color: theme.colors.secondaryDark,
+                  textAlign: 'right',
+                }}
+              >
+                OTP
               </Text>
             </TouchableOpacity>
           </View>

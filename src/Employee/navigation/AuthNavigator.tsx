@@ -7,7 +7,8 @@ import UpdatePassword from '../screens/Auth/UpdatePassword';
 import CoustomerLoginScreen from '../../Customer/Auth/CoustomerLoginScreen';
 import MainAuth from '../../MainAuth';
 import CoustomerSignUpScreen from '../../Customer/Auth/SignUp';
-import ForgetPassword from '../../Customer/Auth/ForgetPassword';
+import ForgetPassword from '../../Customer/Auth/ForgetPassword'; 
+import OtpScreen from '../screens/Auth/OtpScreen';
 
 export type AuthStackParamList = {
   Login: undefined;
@@ -33,6 +34,7 @@ export const AuthNavigator: React.FC = () => {
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="UpdatePassword" component={UpdatePassword} />
       <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
+      <Stack.Screen name="otp" component={OtpScreen} />
     </Stack.Navigator>
   );
 };
