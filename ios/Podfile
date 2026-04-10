@@ -1,4 +1,3 @@
-# Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
     "react-native/scripts/react_native_pods.rb",
@@ -14,22 +13,130 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
+react_native_path = nil
+
 target 'Naeem_Electronics' do
   config = use_native_modules!
+  react_native_path = config[:reactNativePath]
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
+end
 
-  post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
-    react_native_post_install(
-      installer,
-      config[:reactNativePath],
-      :mac_catalyst_enabled => false,
-      # :ccache_enabled => true
+post_install do |installer|
+  react_native_post_install(
+    installer,
+    react_native_path,
+    :mac_catalyst_enabled => false,
+  )
+
+  # Patch react-native-screens for Apple Clang (Xcode 26+)
+  # Fix: "constexpr variable ... must be initialized by a constant expression"
+  rnscreens_header = File.join(Pod::Config.instance.installation_root, '..', 'node_modules', 'react-native-screens', 'ios', 'RNSScreenStackHeaderConfig.mm')
+  if File.exist?(rnscreens_header)
+    content = File.read(rnscreens_header)
+    patched = content
+      .gsub('static constexpr auto DEFAULT_TITLE_FONT_SIZE = @17;', 'static NSNumber *DEFAULT_TITLE_FONT_SIZE = @17;')
+      .gsub('static constexpr auto DEFAULT_TITLE_LARGE_FONT_SIZE = @34;', 'static NSNumber *DEFAULT_TITLE_LARGE_FONT_SIZE = @34;')
+    if patched != content
+      File.write(rnscreens_header, patched)
+      Pod::UI.puts "Patched react-native-screens RNSScreenStackHeaderConfig.mm constexpr NSNumber"
+    end
+  end
+
+  # Patch fmt/core.h to disable consteval on Apple Clang (Xcode 26+)
+  fmt_core = Dir[File.join(installer.sandbox.root, 'fmt/include/fmt/core.h')].first
+  if fmt_core && File.exist?(fmt_core)
+    content = File.read(fmt_core)
+    # Disable consteval which breaks on Apple Clang 17+
+    patched = content.gsub(
+      '#define FMT_USE_CONSTEVAL',
+      '#define FMT_USE_CONSTEVAL 0 //'
     )
+    File.write(fmt_core, patched) if patched != content
+    Pod::UI.puts "Patched fmt/core.h to disable consteval"
+  end
+
+  # Also patch format.h if present
+  fmt_format = Dir[File.join(installer.sandbox.root, 'fmt/include/fmt/format.h')].first
+  if fmt_format && File.exist?(fmt_format)
+    content = File.read(fmt_format)
+    patched = content.gsub(
+      '#define FMT_USE_CONSTEVAL',
+      '#define FMT_USE_CONSTEVAL 0 //'
+    )
+    File.write(fmt_format, patched) if patched != content
+  end
+
+  # Patch CocoaPods resources script for Xcode 26:
+  # - avoid `realpath -m` (not supported on macOS)
+  # - avoid writing temp files inside Pods/ (blocked by script sandboxing)
+  pods_resources_script = File.join(installer.sandbox.root, 'Target Support Files', 'Pods-Naeem_Electronics', 'Pods-Naeem_Electronics-resources.sh')
+  if File.exist?(pods_resources_script)
+    content = File.read(pods_resources_script)
+    patched = content
+      .gsub('echo "$(realpath -mq "${0}"):$1: error: Unexpected failure"', 'echo "$(/usr/bin/python3 -c \'import os,sys; print(os.path.realpath(sys.argv[1]))\' "${0}"):$1: error: Unexpected failure"')
+      .gsub('RESOURCES_TO_COPY=${PODS_ROOT}/resources-to-copy-${TARGETNAME}.txt', 'RESOURCES_TO_COPY=${TARGET_TEMP_DIR}/resources-to-copy-${TARGETNAME}.txt')
+    File.write(pods_resources_script, patched) if patched != content
+  end
+
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.4'
+      config.build_settings['COMPILER_INDEX_STORE_ENABLE'] = 'NO'
+      config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++20'
+      config.build_settings['CLANG_CXX_LIBRARY'] = 'libc++'
+      # Xcode 26 enables script sandboxing by default; several CocoaPods scripts
+      # write temporary files into Pods/ which gets blocked.
+      config.build_settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'NO'
+
+      # Strip unsupported flags
+      ['OTHER_CFLAGS', 'OTHER_CPLUSPLUSFLAGS'].each do |flag_key|
+        flags = config.build_settings[flag_key]
+        if flags.is_a?(Array)
+          config.build_settings[flag_key] = flags.reject { |f|
+            f == '-fno-experimental-new-pass-manager'
+          }
+        elsif flags.is_a?(String)
+          config.build_settings[flag_key] = flags.gsub('-fno-experimental-new-pass-manager', '').strip
+        end
+      end
+# Fix RNScreens constexpr issue on Apple Clang 17 (Xcode 26)
+if target.name == 'RNScreens'
+  config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'gnu++20'
+  config.build_settings['OTHER_CPLUSPLUSFLAGS'] = ['$(inherited)', 
+    '-Wno-error=unused-variable',
+    '-Wno-error=unused-function'
+  ]
+  config.build_settings['GCC_WARN_ABOUT_RETURN_TYPE'] = 'NO'
+  config.build_settings['CLANG_WARN_DOCUMENTATION_COMMENTS'] = 'NO'
+end
+      if target.name == 'fmt'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] |= [
+          'FMT_USE_CONSTEVAL=0',
+          'FMT_USE_NONTYPE_TEMPLATE_ARGS=0',
+          'FMT_HEADER_ONLY=0'
+        ]
+        # Force fmt to use c++17 to avoid consteval entirely
+        config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+      end
+
+      if target.name == 'Yoga'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] |= ['YOGA_USE_CXX17=1']
+      end
+    end
+  end
+
+  # Also apply to the user project targets (app project)
+  installer.aggregate_targets.each do |aggregate_target|
+    aggregate_target.user_project.native_targets.each do |t|
+      t.build_configurations.each do |c|
+        c.build_settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'NO'
+      end
+    end
   end
 end

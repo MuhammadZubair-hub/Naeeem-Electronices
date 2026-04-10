@@ -31,7 +31,7 @@ const CoustomerLoginScreen = () => {
   const [showPswd, setShowPswd] = useState<boolean>(true);
 
   const loginData = useLoginUser();
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   useFocusEffect(
     React.useCallback(() => {

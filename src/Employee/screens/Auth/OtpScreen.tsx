@@ -13,6 +13,7 @@ import {
 import { useTheme } from '../../../hooks/useTheme';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { colors } from '../../../styles/theme';
+import Ionicons from '@react-native-vector-icons/ionicons';
 
 const OTP_LENGTH = 4;
 const RESEND_COUNTDOWN = 30;
@@ -24,16 +25,14 @@ interface OtpScreenProps {
   onBack?: () => void;
 }
 
-const OtpScreen: React.FC<OtpScreenProps> = (
-  {
-    phoneNumber,
-    onVerify,
-    onResend,
-    onBack,
-  },
-) => {
+const OtpScreen: React.FC<OtpScreenProps> = ({
+  phoneNumber,
+  onVerify,
+  onResend,
+  onBack,
+}) => {
   const routes = useRoute();
-  const params:any = routes.params;
+  const params: any = routes.params;
   phoneNumber = params?.phoneNumbers;
   const { theme } = useTheme();
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
@@ -216,7 +215,7 @@ const OtpScreen: React.FC<OtpScreenProps> = (
         onPress={() => navigation.goBack()}
         activeOpacity={0.7}
       >
-        <Text style={s.backArrow}>←</Text>
+        <Ionicons name="chevron-back-outline" size={34} color={colors.secondary} />
       </TouchableOpacity>
 
       <Animated.View
@@ -305,7 +304,7 @@ const OtpScreen: React.FC<OtpScreenProps> = (
             </TouchableOpacity>
           ) : (
             <Text style={s.resendCountdown}>
-              Resend in{' '}
+              Resend in : {' '}
               <Text
                 style={[
                   s.countdownNumber,
@@ -361,7 +360,7 @@ const OtpScreen: React.FC<OtpScreenProps> = (
 
         {/* Footer note */}
         <Text style={s.footerNote}>
-          Didn't get the code? Check your spam folder or try a different number.
+          Didn't get the code? Check your spam folder aswell.
         </Text>
       </Animated.View>
     </View>
@@ -376,14 +375,15 @@ const makeStyles = (theme: any) =>
       paddingHorizontal: 24,
     },
     backBtn: {
-      marginTop: Platform.OS === 'ios' ? 56 : 20,
+      marginTop: Platform.OS === 'ios' ? 56 : 50,
       width: 40,
       height: 40,
       justifyContent: 'center',
+      flexDirection:'row'
     },
     backArrow: {
-      fontSize: 24,
-      color: theme.colors.secondaryDark,
+      fontSize: 34,
+      // color: theme.colors.secondaryDark,
       fontWeight: '600',
     },
     content: {
@@ -504,7 +504,7 @@ const makeStyles = (theme: any) =>
     footerNote: {
       marginTop: 20,
       fontSize: 12,
-      color: theme.colors.black,
+      color: colors.textSecondary,
       textAlign: 'center',
       lineHeight: 18,
       paddingHorizontal: 16,

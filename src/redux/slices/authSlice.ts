@@ -220,7 +220,7 @@ interface User {
   firstName: string;
   empId: string;
   designation: string;
-  loginDateTime: string;
+  // loginDateTime: string;
   avatar?: string; // optional
   region? : string;
   zone? :string;

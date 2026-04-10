@@ -77,7 +77,7 @@ export const useLoginUser = () => {
     getLocationNameFromCoordinates(coordinates.latitude, coordinates.longitude);
   };
 
-  const getLocationNameFromCoordinates = async (lat, lon) => {
+  const getLocationNameFromCoordinates = async (lat:any, lon:any) => {
     try {
       console.log('here');
       // For iOS and newer Android versions
@@ -116,7 +116,7 @@ export const useLoginUser = () => {
         console.log('JSON parse error. Raw response:', text);
         return 'Location name unavailable';
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log('Geocoding error:', error.message);
       return 'Location name unavailable';
     }
@@ -184,7 +184,7 @@ export const useLoginUser = () => {
       // );
       // console.log('API Response:', response);
 
-      const response = {
+      const response:any = {
         data: {
           status: true,
           message: 'EmployeeInfo retrieved successfully.',
