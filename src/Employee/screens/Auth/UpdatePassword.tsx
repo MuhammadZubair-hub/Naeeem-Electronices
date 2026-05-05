@@ -87,7 +87,9 @@ const UpdatePassword = () => {
           </View>
         </View>
 
-        <View style={styles.fieldContainer}>
+       {newPassword && (
+        <>
+         <View style={styles.fieldContainer}>
           <Text
             style={[styles.fieldLabel, { color: theme.colors.secondaryDark }]}
           >
@@ -136,6 +138,57 @@ const UpdatePassword = () => {
             </TouchableOpacity>
           </View>
         </View>
+        <View style={styles.fieldContainer}>
+          <Text
+            style={[styles.fieldLabel, { color: theme.colors.secondaryDark }]}
+          >
+            Confirm New Password
+          </Text>
+          <View
+            style={[
+              styles.inputContainer,
+              {
+                backgroundColor: theme.colors.white,
+                borderColor: 'rgba(255,255,255,0.3)',
+              },
+            ]}
+          >
+            <View style={styles.iconContainer}>
+              <Ionicons
+                name="lock-closed-outline"
+                size={AppSizes.Icon_Height_20}
+                color={theme.colors.secondaryDark}
+              />
+            </View>
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  color: theme.colors.textTertiary,
+                },
+              ]}
+              value={newPassword}
+              onChangeText={text => setNewPassword(text)}
+              placeholder="Enter Confirm New Password"
+              placeholderTextColor={theme.colors.textTertiary}
+              autoCapitalize="none"
+              autoCorrect={false}
+              secureTextEntry={showPassword}
+            />
+            <TouchableOpacity
+              style={styles.eyeIconContainer}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              <Ionicons
+                name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                size={AppSizes.Icon_Height_20}
+                color={theme.colors.secondaryDark}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+        </>
+       )}
         <LoadingModal visible={loginData.isLoading} />
       </View>
     );

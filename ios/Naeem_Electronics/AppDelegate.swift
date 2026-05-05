@@ -29,7 +29,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       launchOptions: launchOptions
     )
 
+    preventScreenCapture()
+
     return true
+  }
+
+  private func preventScreenCapture() {
+    guard let window = window else { return }
+    let secureField = UITextField()
+    secureField.isSecureTextEntry = true
+    secureField.translatesAutoresizingMaskIntoConstraints = false
+    window.addSubview(secureField)
+    // Reparent the window layer under the secure text field's layer,
+    // which causes iOS to blank the content in screenshots and screen recordings.
+    secureField.layer.sublayers?.first.map { window.layer.superlayer?.addSublayer($0) }
+    window.layer.superlayer?.addSublayer(window.layer)
+    secureField.layer.addSublayer(window.layer)
   }
 }
 

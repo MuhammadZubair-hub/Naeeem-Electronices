@@ -10,7 +10,7 @@ import { showMessage } from 'react-native-flash-message';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Geolocation from 'react-native-geolocation-service';
 import { colors } from '../../../styles/theme';
-import { PermissionsAndroid, Platform } from 'react-native';
+import { Alert, Linking, PermissionsAndroid, Platform } from 'react-native';
 import { G } from 'react-native-svg';
 import { LineGraph } from '../../../components/charts/LineGraph';
 
@@ -29,29 +29,29 @@ export const useLoginUser = () => {
   };
 
   const [deviceId, setDeviceId] = useState('');
+  const [ipAddress, setIpAddress] = useState('');
 
   const getDeviceId = async () => {
     try {
-      // // For Android - returns Android ID
-      // const androidId = await DeviceInfo.getAndroidId();
-      // console.log('Android ID:', androidId);
-
-      // // For both platforms - device specific ID
-      // const deviceId = DeviceInfo.getDeviceId();
-      // console.log('Device ID:', deviceId);
-
-      //    // Instance ID (for Android)
-      // const instanceId = await DeviceInfo.getInstanceId();
-      // console.log('Instance ID:', instanceId);
-
-      // Unique ID (varies by platform)
       const uniqueId = await DeviceInfo.getUniqueId();
-      // console.log('Unique ID:', uniqueId);
-
-      return uniqueId;
+      // return uniqueId;
+      return 'a77a54bf13da6f87';
     } catch (error) {
       console.error('Error getting device ID:', error);
       return null;
+    }
+  };
+
+  
+  const getIPAddress = async () => {
+    try {
+      const ip = await DeviceInfo.getIpAddress();
+      console.log('IP Address:', ip);
+      setIpAddress(ip);
+      return ip;
+    } catch (error) {
+      console.error('Error getting IP address:', error);
+      return '';
     }
   };
 
@@ -59,39 +59,38 @@ export const useLoginUser = () => {
     const hasPermission = await requestLocationPermission();
 
     if (!hasPermission) return;
-    await Geolocation.getCurrentPosition(
+    Geolocation.getCurrentPosition(
       position => {
-        console.log('Coordinates are : ', position);
-        setCoordinates({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
+        const { latitude, longitude } = position.coords;
+        console.log('Coordinates are : ', latitude, longitude);
+        setCoordinates({ latitude, longitude });
+        // getLocationNameFromCoordinates(latitude, longitude);
       },
       error => {
-        // See error code charts below.
         console.log(error.code, error.message);
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
-
-    getLocationNameFromCoordinates(coordinates.latitude, coordinates.longitude);
   };
 
-  const getLocationNameFromCoordinates = async (lat:any, lon:any) => {
+  const getLocationNameFromCoordinates = async (lat: any, lon: any) => {
     try {
-      console.log('here');
+      setIsLoading(true);
+      console.log('here: ', lat, lon);
+      // lat = '37.421998'
+      // lon = '-122.084'
       // For iOS and newer Android versions
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`,
         {
           headers: {
-            'User-Agent': 'YourAppName/1.0', // Add this - it's required!
+            'User-Agent': 'Naeem_Electronics/1.0', // Add this - it's required!
             Accept: 'application/json',
           },
         },
       );
 
-      console.log('Response status:', response.status);
+      console.log('Response status:', response);
       console.log('Response headers:', response.headers);
 
       // Check if response is OK
@@ -116,16 +115,37 @@ export const useLoginUser = () => {
         console.log('JSON parse error. Raw response:', text);
         return 'Location name unavailable';
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.log('Geocoding error:', error.message);
       return 'Location name unavailable';
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const requestLocationPermission = async () => {
+  const showSettingsAlert = (message: string) => {
+    Alert.alert(
+      'Location Required',
+      message,
+      [
+        {
+          text: 'Open Settings',
+          onPress: () => Linking.openSettings(),
+        },
+      ],
+      { cancelable: false },
+    );
+  };
+
+  const requestLocationPermission = async (): Promise<boolean> => {
     if (Platform.OS === 'ios') {
       const auth = await Geolocation.requestAuthorization('whenInUse');
-      return auth === 'granted';
+      if (auth === 'granted') return true;
+
+      showSettingsAlert(
+        'Location access is required to use this app. Please enable it in Settings.',
+      );
+      return false;
     }
 
     if (Platform.OS === 'android') {
@@ -133,25 +153,50 @@ export const useLoginUser = () => {
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {
           title: 'Location Permission',
-          message: 'This app needs access to your location.',
+          message: 'This app requires your location to proceed.',
           buttonNeutral: 'Ask Me Later',
           buttonNegative: 'Cancel',
           buttonPositive: 'OK',
         },
       );
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
+
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) return true;
+
+      if (granted === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+        showSettingsAlert(
+          'Location permission is permanently denied. Please enable it in Settings to continue.',
+        );
+      } else {
+        Alert.alert(
+          'Location Required',
+          'Location access is required to use this app. Please grant the permission to proceed.',
+          [
+            {
+              text: 'Grant Permission',
+              onPress: () => getCurrCorrdinates(),
+            },
+          ],
+          { cancelable: false },
+        );
+      }
+      return false;
     }
+
+    return false;
   };
 
   useFocusEffect(
     React.useCallback(() => {
-      const fetchDeviceId = async () => {
+      const init = async () => {
         EmptyCredentials();
+        // const id = 'a77a54bf13da6f87';
+        // const id = '7c755e6c3af45fda';
         const id = await getDeviceId();
         setDeviceId(id as any);
+        await getIPAddress();
       };
 
-      fetchDeviceId();
+      init();
       getCurrCorrdinates();
     }, []),
   );
@@ -174,35 +219,36 @@ export const useLoginUser = () => {
       values.empId.trim(),
       values.password.trim(),
       deviceId,
+      // ipAddress,
     );
 
     try {
-      // const response = await API_Config.loginUser(
-      //   values.empId.trim(),
-      //   values.password.trim(),
-      //   deviceId,
-      // );
-      // console.log('API Response:', response);
+      const response = await API_Config.loginUser(
+        values.empId.trim(),
+        values.password.trim(),
+        deviceId,
+      );
+      console.log('API Response:', response);
 
-      const response:any = {
-        data: {
-          status: true,
-          message: 'EmployeeInfo retrieved successfully.',
-          data: {
-            empId: '1',
-            firstName: 'Naeem Afzal',
-            active: 'Y',
-            password: '1234',
-            designation: 'CEO',
-            region: '',
-            zone: '',
-            branch: 'HO',
-            assignedId: '1',
-            fullAuth: 'Y',
-            macAddress: '7c755e6c3af45fda',
-          },
-        },
-      };
+      // const response:any = {
+      //   data: {
+      //     status: true,
+      //     message: 'EmployeeInfo retrieved successfully.',
+      //     data: {
+      //       empId: '1',
+      //       firstName: 'Naeem Afzal',
+      //       active: 'Y',
+      //       password: '1234',
+      //       designation: 'CEO',
+      //       region: '',
+      //       zone: '',
+      //       branch: 'HO',
+      //       assignedId: '1',
+      //       fullAuth: 'Y',
+      //       macAddress: '7c755e6c3af45fda',
+      //     },
+      //   },
+      // };
 
       if (response?.data?.status) {
         console.log('API Responsesdfsdfdssdfdsf');
@@ -225,7 +271,7 @@ export const useLoginUser = () => {
         if (Zone == 'N/A') {
           showMessage({
             message: 'Logged in Failed',
-            description: 'You do not have permission to access the apps',
+            description: 'You do not have permission to access the app',
             type: 'danger',
             style: CommonStyles.error,
           });
@@ -332,5 +378,6 @@ export const useLoginUser = () => {
     handleLogin,
     isLoading,
     handleUpdatePassword,
+    ipAddress,
   };
 };
