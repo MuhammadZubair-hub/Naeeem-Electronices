@@ -14,12 +14,17 @@ import { useTheme } from '../../../hooks/useTheme';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { colors } from '../../../styles/theme';
 import Ionicons from '@react-native-vector-icons/ionicons';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../../../redux/slices/authSlice';
+import { showMessage } from 'react-native-flash-message';
+import { CommonStyles } from '../../../styles/GlobalStyle';
 
 const OTP_LENGTH = 4;
 const RESEND_COUNTDOWN = 30;
 
 interface OtpScreenProps {
   phoneNumber?: string;
+  res?: any;
   onVerify?: (otp: string) => void;
   onResend?: () => void;
   onBack?: () => void;
@@ -27,13 +32,15 @@ interface OtpScreenProps {
 
 const OtpScreen: React.FC<OtpScreenProps> = ({
   phoneNumber,
+  res,
   onVerify,
   onResend,
   onBack,
 }) => {
   const routes = useRoute();
   const params: any = routes.params;
-  phoneNumber = params?.phoneNumbers;
+  res = params?.res;
+  // console.log('res',res)
   const { theme } = useTheme();
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [countdown, setCountdown] = useState(RESEND_COUNTDOWN);
@@ -50,6 +57,7 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
   const scaleAnim = useRef(new Animated.Value(0.95)).current;
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const boxScales = useRef(
     Array(OTP_LENGTH)
@@ -197,9 +205,27 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
       return;
     }
     setIsVerifying(true);
+
     await new Promise(res => setTimeout(res, 800)); // simulate async
-    setIsVerifying(false);
-    onVerify?.(otpString);
+
+    if (otpString === '1111') {
+      showMessage({
+        message: 'OTP successfully',
+        type: 'success',
+        style: CommonStyles.sucsses,
+      });
+
+      dispatch(loginSuccess({ data: res.data, token: res.data.token }));
+    } else {
+      showMessage({
+        message: 'OTP Failed',
+        type: 'danger',
+        style: CommonStyles.error,
+      });
+      setOtp(Array(OTP_LENGTH).fill(''));
+      setIsVerifying(false);
+      onVerify?.(otpString);
+    }
   };
 
   const isComplete = otp.every(d => d !== '');
@@ -215,7 +241,11 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
         onPress={() => navigation.goBack()}
         activeOpacity={0.7}
       >
-        <Ionicons name="chevron-back-outline" size={34} color={colors.secondary} />
+        <Ionicons
+          name="chevron-back-outline"
+          size={34}
+          color={colors.secondary}
+        />
       </TouchableOpacity>
 
       <Animated.View
@@ -248,7 +278,7 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
         </Text>
         <Text style={s.subtitle}>We sent a {OTP_LENGTH}-digit code to</Text>
         <Text style={[s.phone, { color: theme.colors.secondaryDark }]}>
-          {phoneNumber}
+          {/* {phoneNumber} */}1111
         </Text>
 
         {/* OTP Input Boxes */}
@@ -304,7 +334,7 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
             </TouchableOpacity>
           ) : (
             <Text style={s.resendCountdown}>
-              Resend in : {' '}
+              Resend in :{' '}
               <Text
                 style={[
                   s.countdownNumber,
@@ -379,7 +409,7 @@ const makeStyles = (theme: any) =>
       width: 40,
       height: 40,
       justifyContent: 'center',
-      flexDirection:'row'
+      flexDirection: 'row',
     },
     backArrow: {
       fontSize: 34,

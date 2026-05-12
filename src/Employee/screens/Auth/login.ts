@@ -219,7 +219,9 @@ export const useLoginUser = () => {
       values.empId.trim(),
       values.password.trim(),
       deviceId,
-      // ipAddress,
+      ipAddress,
+       coordinates.latitude,
+        coordinates.longitude
     );
 
     try {
@@ -227,6 +229,9 @@ export const useLoginUser = () => {
         values.empId.trim(),
         values.password.trim(),
         deviceId,
+        ipAddress,
+        coordinates.latitude.toString(),
+        coordinates.longitude.toString()
       );
       console.log('API Response:', response);
 
@@ -295,14 +300,16 @@ export const useLoginUser = () => {
           }
         }
 
-        dispatch(
-          loginSuccess({ data: response.data, token: response.data.token }),
-        );
+        // dispatch(
+        //   loginSuccess({ data: response.data, token: response.data.token }),
+        // );
         showMessage({
           message: 'Logged in successfully',
           type: 'success',
           style: CommonStyles.sucsses,
         });
+        //  navigation.navigate('otp',{p})
+         navigation.navigate('otp', {res:response})
         setCredentials({ empId: '', password: '' });
       } else {
         showMessage({

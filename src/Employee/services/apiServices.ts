@@ -10,11 +10,11 @@ export const API_Config = {
   //   });
   // },
 
-   loginUser: async (empId: string, password: string, macAddress: string) => {
+   loginUser: async (empId: string, password: string, macAddress: string,ipAddress: string,longitude: string,latitude: string) => {
     return apicall_new({
       endpoint: `${baseUrl}${endPoints.login}`,
       method: 'POST',
-      data: { empId,password,macAddress },
+      data: { empId,password,macAddress,ipAddress,longitude,latitude },
     });
   },
 
@@ -65,7 +65,12 @@ export const API_Config = {
       params: param,
     });
   },
-
+  getEmployeeLogs: async () => {
+    return apicall_new({
+      endpoint: `${baseUrl}${endPoints.GetEmployeeLogs}`,
+      method: 'GET',
+    });
+  },
   getAllCustomers: async (param: any) => {
     return apicall_new({
       endpoint: `${baseUrl}${endPoints.getallcustomers}`,

@@ -5,19 +5,22 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
+  ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { AppSizes } from '../../utils/AppSizes';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../redux/store';
 import { logout } from '../../redux/slices/authSlice';
 import { showMessage } from 'react-native-flash-message';
 import { CommonStyles } from '../../styles/GlobalStyle';
 import BaseModal from './BaseModal';
 import { fonts } from '../../assets/fonts/Fonts';
 import { Button } from './Button';
-import { colors } from '../../styles/theme';
+import { API_Config } from '../../Employee/services/apiServices';
+import { current } from '@reduxjs/toolkit';
 
 interface MainHeaderProps {
   title: string | undefined;
@@ -30,8 +33,15 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [logoutConfirmVisible, setLogoutConfirmVisible] = useState(false);
   const [changePasswordVisible, setChangePasswordVisible] = useState(false);
+  const [loginHistoryVisible, setLoginHistoryVisible] = useState(false);
+  const [loginHistoryLoading, setLoginHistoryLoading] = useState(false);
+  const [loginHistoryData, setLoginHistoryData] = useState<any[]>([]);
+  const [loginHistoryError, setLoginHistoryError] = useState('');
   const [showPswd, setShowPswd] = useState<boolean>(true);
   const [showNewPswd, setShowNewPswd] = useState<boolean>(true);
+  const [pswd, setPswd] = useState({ curpswd: '', newpswd: '' });
+
+  const users = useSelector((state: RootState) => state.auth.user);
 
   const handleLogout = () => {
     setMenuVisible(false);
@@ -42,9 +52,30 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
     setChangePasswordVisible(true);
   };
 
-  const UpdatePassword = () => {
-    setChangePasswordVisible(false);
-    setMenuVisible(true);
+  const handleViewLoginHistory = async () => {
+    setMenuVisible(false);
+    setLoginHistoryVisible(true);
+    setLoginHistoryError('');
+    setLoginHistoryLoading(true);
+
+    const response = await API_Config.getEmployeeLogs();
+    if (response.success && response.data?.status) {
+      const items = Array.isArray(response.data.data) ? response.data.data : [];
+      console.log('🚀 ~ :63 ~ handleViewLoginHistory ~ items:', items);
+      setLoginHistoryData(items);
+      if (items.length === 0) {
+        setLoginHistoryError('No login history found.');
+      }
+    } else {
+      setLoginHistoryData([]);
+      setLoginHistoryError(
+        response.data?.message ||
+          response.message ||
+          'Unable to fetch login history.',
+      );
+    }
+
+    setLoginHistoryLoading(false);
   };
 
   const confirmLogout = () => {
@@ -57,6 +88,60 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
     });
   };
 
+  const UpdatePassword = async () => {
+    console.log('User: ', users);
+    console.log('pswd: ', pswd);
+    if (pswd.curpswd === '' || pswd.newpswd === '') {
+      showMessage({
+        message: 'Validation Error',
+        description: 'Please enter both New Password and Confirm Password',
+        type: 'danger',
+        style: CommonStyles.error,
+      });
+      return;
+    }
+    if (pswd?.curpswd !== pswd.newpswd) {
+      showMessage({
+        message: 'Validation Error',
+        description: 'New Password and Confirm Password do not match',
+        type: 'danger',
+        style: CommonStyles.error,
+      });
+      return;
+    }
+    console.log('here');
+    //  const user = empId.trim();
+    const user:any = users?.empId;
+    const pass = pswd.newpswd.trim();
+    try {
+      const response = await API_Config.updateUserPassword(user, pass);
+
+      console.log('response : ', response);
+      if (response?.data?.status === true) {
+        showMessage({
+          message: 'Congrats',
+          description: 'Password is Updated',
+          type: 'success',
+          style: CommonStyles.sucsses,
+        });
+        setTimeout(() => {
+          confirmLogout();
+        }, 500);
+      }
+    } catch (error: any) {
+      // setPswd(null)
+      showMessage({
+        message: 'Error',
+        description: error?.message || 'Password is Updated',
+        type: 'danger',
+        style: CommonStyles.error,
+      });
+    } finally {
+      console.log('object');
+    }
+    // setChangePasswordVisible(false);
+    // setMenuVisible(true);
+  };
   const menuItems = [
     {
       icon: 'lock-closed-outline',
@@ -66,7 +151,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
     {
       icon: 'time-outline',
       label: 'View Login History',
-      onPress: () => setMenuVisible(false),
+      onPress: () => handleViewLoginHistory(),
     },
   ];
 
@@ -260,6 +345,156 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
         </View>
       </BaseModal>
 
+      {/* Login History Modal  */}
+      <BaseModal
+        headerText="Login History"
+        visible={loginHistoryVisible}
+        onClose={() => setLoginHistoryVisible(false)}
+        modalHeight="80%"
+      >
+        <View style={styles.confirmBody}>
+          {loginHistoryLoading ? (
+            <ActivityIndicator
+              size="large"
+              color={theme.colors.secondaryDark}
+              style={{ marginTop: AppSizes.Margin_Vertical_20 }}
+            />
+          ) : loginHistoryError ? (
+            <Text
+              style={[
+                styles.confirmText,
+                { color: theme.colors.secondaryDark },
+              ]}
+            >
+              {loginHistoryError}
+            </Text>
+          ) : (
+            <ScrollView
+              style={styles.historyScroll}
+              contentContainerStyle={styles.historyScrollContent}
+            >
+              {loginHistoryData.map((item, index) => (
+                <View key={index} style={styles.historyItem}>
+                  <View style={styles.historyHeader}>
+                    <Text
+                      style={[
+                        styles.historyLabel,
+                        { color: theme.colors.secondaryDark },
+                      ]}
+                    >
+                      Time
+                    </Text>
+                    <Text
+                      style={[
+                        styles.historyValue,
+                        { color: theme.colors.textTertiary },
+                      ]}
+                    >
+                      {item.loginTime || '-'}
+                    </Text>
+                  </View>
+                  <View style={styles.historyRow}>
+                    <Text
+                      style={[
+                        styles.historyLabel,
+                        { color: theme.colors.secondaryDark },
+                      ]}
+                    >
+                      Status
+                    </Text>
+                    <Text
+                      style={[
+                        styles.historyValue,
+                        { color: theme.colors.textTertiary },
+                      ]}
+                    >
+                      {' '}
+                      {item.status || '-'}
+                    </Text>
+                  </View>
+                  <View style={styles.historyRow}>
+                    <Text
+                      style={[
+                        styles.historyLabel,
+                        { color: theme.colors.secondaryDark },
+                      ]}
+                    >
+                      IP
+                    </Text>
+                    <Text
+                      style={[
+                        styles.historyValue,
+                        { color: theme.colors.textTertiary },
+                      ]}
+                    >
+                      {' '}
+                      {item.ipAddress || '-'}
+                    </Text>
+                  </View>
+                  <View style={styles.historyRow}>
+                    <Text
+                      style={[
+                        styles.historyLabel,
+                        { color: theme.colors.secondaryDark },
+                      ]}
+                    >
+                      MAC
+                    </Text>
+                    <Text
+                      style={[
+                        styles.historyValue,
+                        { color: theme.colors.textTertiary },
+                      ]}
+                    >
+                      {' '}
+                      {item.macAddress || '-'}
+                    </Text>
+                  </View>
+                  <View style={styles.historyRow}>
+                    <Text
+                      style={[
+                        styles.historyLabel,
+                        { color: theme.colors.secondaryDark },
+                      ]}
+                    >
+                      Longitude
+                    </Text>
+                    <Text
+                      style={[
+                        styles.historyValue,
+                        { color: theme.colors.textTertiary },
+                      ]}
+                    >
+                      {' '}
+                      {item.longitude || '-'}
+                    </Text>
+                  </View>
+                  <View style={styles.historyRow}>
+                    <Text
+                      style={[
+                        styles.historyLabel,
+                        { color: theme.colors.secondaryDark },
+                      ]}
+                    >
+                      Latitude
+                    </Text>
+                    <Text
+                      style={[
+                        styles.historyValue,
+                        { color: theme.colors.textTertiary },
+                      ]}
+                    >
+                      {' '}
+                      {item.latitude || '-'}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
+          )}
+        </View>
+      </BaseModal>
+
       {/* Change Password Modal  */}
       <BaseModal
         headerText="Change Password"
@@ -268,34 +503,11 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
         modalHeight="88%"
       >
         <View style={styles.confirmBody}>
-          <View
-          // style={[
-          //   styles.confirmIconWrap,
-          //   { backgroundColor: theme.colors.error + '15' },
-          // ]}
-          >
-            {/* <Ionicons
-              name="lock-closed-outline"
-              size={AppSizes.Icon_Height_30}
-              color={theme.colors.error}
-            /> */}
-            {/* <Text
-              style={{
-                color: colors.secondaryDark,
-                fontSize: 16,
-                // paddingVertical: 10,
-                fontFamily: fonts.medium,
-              }}
-            >
-              Update Your Password
-            </Text> */}
-          </View>
-
           <View style={styles.fieldContainer}>
             <Text
               style={[styles.fieldLabel, { color: theme.colors.secondaryDark }]}
             >
-              Current Password
+              New Password
             </Text>
             <View
               style={[
@@ -320,11 +532,11 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
                     color: theme.colors.textTertiary,
                   },
                 ]}
-                // value={loginData.credentials.password}
-                // onChangeText={text =>
-                //   loginData.handleChange('password', text)
-                // }
-                placeholder="Enter Current password"
+                value={pswd.curpswd}
+                onChangeText={text =>
+                  setPswd(pre => ({ ...pre, curpswd: text }))
+                }
+                placeholder="Enter enter New Password"
                 placeholderTextColor={theme.colors.textTertiary}
                 secureTextEntry={showPswd}
               />
@@ -334,7 +546,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
                 activeOpacity={0.7}
               >
                 <Ionicons
-                  name={showNewPswd ? 'eye-outline' : 'eye-off-outline'}
+                  name={showPswd ? 'eye-off-outline' : 'eye-outline'}
                   size={22}
                   color={theme.colors.secondaryDark}
                 />
@@ -345,7 +557,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
             <Text
               style={[styles.fieldLabel, { color: theme.colors.secondaryDark }]}
             >
-              New Password
+              Confirm Password
             </Text>
             <View
               style={[
@@ -372,11 +584,11 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
                     color: theme.colors.textTertiary,
                   },
                 ]}
-                // value={loginData.credentials.password}
-                // onChangeText={text =>
-                //   loginData.handleChange('password', text)
-                // }
-                placeholder="Enter Your New Password"
+                value={pswd.newpswd}
+                onChangeText={text =>
+                  setPswd(pre => ({ ...pre, newpswd: text }))
+                }
+                placeholder="Please Confirm your Password"
                 placeholderTextColor={theme.colors.textTertiary}
                 secureTextEntry={showNewPswd}
               />
@@ -386,7 +598,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
                 activeOpacity={0.7}
               >
                 <Ionicons
-                  name={showNewPswd ? 'eye-outline' : 'eye-off-outline'}
+                  name={showNewPswd ? 'eye-off-outline' : 'eye-outline'}
                   size={22}
                   color={theme.colors.secondaryDark}
                 />
@@ -513,6 +725,42 @@ const styles = StyleSheet.create({
     fontFamily: fonts.medium,
     marginBottom: 8,
     marginLeft: 4,
+  },
+  historyScroll: {
+    width: '100%',
+  },
+  historyScrollContent: {
+    paddingVertical: AppSizes.Padding_Horizontal_10,
+  },
+  historyItem: {
+    backgroundColor: '#F7F7F7',
+    borderRadius: AppSizes.Radius_15,
+    padding: AppSizes.Padding_Horizontal_10,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.05)',
+    marginBottom: AppSizes.Margin_Vertical_10,
+  },
+  historyHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  historyRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  historyLabel: {
+    fontSize: 14,
+    fontFamily: fonts.medium,
+  },
+  historyValue: {
+    fontSize: 14,
+    fontFamily: fonts.regular,
+    textAlign: 'right',
+    flex: 1,
+    marginLeft: 12,
   },
   inputContainer: {
     flexDirection: 'row',

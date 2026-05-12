@@ -15,6 +15,8 @@ export const endPoints = {
   getcustomerdetails: 'Common/GetCustomerDetail',
   regioncount: 'Dashboard/GetTotalofRegions',
   avocountdetial: 'Common/GetAVODetail',
+  
+  GetEmployeeLogs: 'Common/GetEmployeeLogs',
 };
 
 
