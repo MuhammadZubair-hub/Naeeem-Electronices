@@ -171,7 +171,7 @@ const LoginScreen = () => {
                 Change Password?
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => navigation.navigate('otp', {phoneNumbers:phoneNumber})}
             >
               <Text
@@ -185,7 +185,7 @@ const LoginScreen = () => {
               >
                 OTP
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
           <Button

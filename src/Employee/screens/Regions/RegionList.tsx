@@ -47,29 +47,30 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
         </Text>
       )}
       ListHeaderComponentStyle={{ padding: AppSizes.Padding_Vertical_10 }}
-      ListEmptyComponent={() => <EmptyComponents emptyMessage='Not any Region found' />}
-      keyExtractor={item => item.id}
+      ListEmptyComponent={() => (
+        <EmptyComponents emptyMessage="Not any Region found" />
+      )}
+      keyExtractor={(item, index) => item.id || item.region || `region-${index}`}
       contentContainerStyle={CommonStyles.list}
       renderItem={({ item }) => (
-        <View
-          style={CommonStyles.item}
-        >
+        <View style={CommonStyles.item}>
           <Text
             style={[
               CommonStyles.title,
               {
                 color: theme.colors.secondaryDark,
-
               },
             ]}
           >
             {item.region}
           </Text>
 
-          <View
-            style={CommonStyles.row}
-          >
-            <Text style={[  CommonStyles.subtitle,{color: theme.colors.textSecondary, }, ]}
+          <View style={CommonStyles.row}>
+            <Text
+              style={[
+                CommonStyles.subtitle,
+                { color: theme.colors.textSecondary },
+              ]}
             >
               Regional Manager :
             </Text>
@@ -78,22 +79,18 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
                 CommonStyles.value,
                 {
                   color: theme.colors.secondaryDark,
-
                 },
               ]}
             >
               {item.rmName || 'N/A'}
             </Text>
           </View>
-          <View
-            style={CommonStyles.row}
-          >
+          <View style={CommonStyles.row}>
             <Text
               style={[
                 CommonStyles.subtitle,
                 {
                   color: theme.colors.textSecondary,
-
                 },
               ]}
             >
@@ -104,7 +101,6 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
                 CommonStyles.value,
                 {
                   color: theme.colors.secondary,
-
                 },
               ]}
             >
@@ -112,15 +108,12 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
             </Text>
           </View>
 
-          <View
-            style={CommonStyles.row}
-          >
+          <View style={CommonStyles.row}>
             <Text
               style={[
                 CommonStyles.subtitle,
                 {
                   color: theme.colors.textSecondary,
-
                 },
               ]}
             >
@@ -138,15 +131,12 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
             </Text>
           </View>
 
-          <View
-            style={CommonStyles.row}
-          >
+          <View style={CommonStyles.row}>
             <Text
               style={[
                 CommonStyles.subtitle,
                 {
                   color: theme.colors.textSecondary,
-
                 },
               ]}
             >
@@ -157,7 +147,6 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
                 CommonStyles.value,
                 {
                   color: theme.colors.warning,
-
                 },
               ]}
             >
@@ -172,9 +161,7 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
             size="sm"
             style={{ marginTop: 22 }}
           />
-          <View
-            style={CommonStyles.divider}
-          ></View>
+          <View style={CommonStyles.divider}></View>
         </View>
       )}
     />

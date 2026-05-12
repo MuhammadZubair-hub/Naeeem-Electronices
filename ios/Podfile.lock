@@ -1683,6 +1683,35 @@ PODS:
     - React-Core
   - react-native-geolocation-service (5.3.1):
     - React
+  - react-native-netinfo (12.0.1):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - react-native-safe-area-context (5.6.1):
     - boost
     - DoubleConversion
@@ -2658,6 +2687,7 @@ DEPENDENCIES:
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-biometrics (from `../node_modules/react-native-biometrics`)
   - react-native-geolocation-service (from `../node_modules/react-native-geolocation-service`)
+  - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-vector-icons-ionicons (from `../node_modules/@react-native-vector-icons/ionicons`)"
   - "react-native-vector-icons-material-icons (from `../node_modules/@react-native-vector-icons/material-icons`)"
@@ -2795,6 +2825,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-biometrics"
   react-native-geolocation-service:
     :path: "../node_modules/react-native-geolocation-service"
+  react-native-netinfo:
+    :path: "../node_modules/@react-native-community/netinfo"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-vector-icons-ionicons:
@@ -2925,6 +2957,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: 8ff9cb220a8efa625b5885996bd69e69db9edf02
   react-native-biometrics: 43ed5b828646a7862dbc7945556446be00798e7d
   react-native-geolocation-service: 32b2c2a3b91e70ce2a8d0c684801aaeb0a07e0ec
+  react-native-netinfo: c1a8da443295308b4a9243d33d5dcc81631e9f3b
   react-native-safe-area-context: 8ed800930eb7d0b6651218f69656e823d37b6ef7
   react-native-vector-icons-ionicons: ad07e944a092a5cf71b8b569d8f5ce2bf674c415
   react-native-vector-icons-material-icons: eff7417eb1ac6c740ab802837ad34b8233fded34
@@ -2971,4 +3004,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 372ffb498ad2e739c36bd838b12fe81f4193fd4b
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

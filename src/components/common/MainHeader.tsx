@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+} from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { AppSizes } from '../../utils/AppSizes';
@@ -9,6 +15,9 @@ import { logout } from '../../redux/slices/authSlice';
 import { showMessage } from 'react-native-flash-message';
 import { CommonStyles } from '../../styles/GlobalStyle';
 import BaseModal from './BaseModal';
+import { fonts } from '../../assets/fonts/Fonts';
+import { Button } from './Button';
+import { colors } from '../../styles/theme';
 
 interface MainHeaderProps {
   title: string | undefined;
@@ -20,10 +29,22 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [menuVisible, setMenuVisible] = useState(false);
   const [logoutConfirmVisible, setLogoutConfirmVisible] = useState(false);
+  const [changePasswordVisible, setChangePasswordVisible] = useState(false);
+  const [showPswd, setShowPswd] = useState<boolean>(true);
+  const [showNewPswd, setShowNewPswd] = useState<boolean>(true);
 
   const handleLogout = () => {
     setMenuVisible(false);
     setLogoutConfirmVisible(true);
+  };
+  const handleChangePassword = () => {
+    setMenuVisible(false);
+    setChangePasswordVisible(true);
+  };
+
+  const UpdatePassword = () => {
+    setChangePasswordVisible(false);
+    setMenuVisible(true);
   };
 
   const confirmLogout = () => {
@@ -40,7 +61,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
     {
       icon: 'lock-closed-outline',
       label: 'Change Password',
-      onPress: () => setMenuVisible(false),
+      onPress: () => handleChangePassword(),
     },
     {
       icon: 'time-outline',
@@ -172,6 +193,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
         </View>
       </BaseModal>
 
+      {/* Logout Out Modal  */}
       <BaseModal
         headerText="Logout"
         visible={logoutConfirmVisible}
@@ -235,6 +257,149 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
               </Text>
             </TouchableOpacity>
           </View>
+        </View>
+      </BaseModal>
+
+      {/* Change Password Modal  */}
+      <BaseModal
+        headerText="Change Password"
+        visible={changePasswordVisible}
+        onClose={() => setChangePasswordVisible(false)}
+        modalHeight="88%"
+      >
+        <View style={styles.confirmBody}>
+          <View
+          // style={[
+          //   styles.confirmIconWrap,
+          //   { backgroundColor: theme.colors.error + '15' },
+          // ]}
+          >
+            {/* <Ionicons
+              name="lock-closed-outline"
+              size={AppSizes.Icon_Height_30}
+              color={theme.colors.error}
+            /> */}
+            {/* <Text
+              style={{
+                color: colors.secondaryDark,
+                fontSize: 16,
+                // paddingVertical: 10,
+                fontFamily: fonts.medium,
+              }}
+            >
+              Update Your Password
+            </Text> */}
+          </View>
+
+          <View style={styles.fieldContainer}>
+            <Text
+              style={[styles.fieldLabel, { color: theme.colors.secondaryDark }]}
+            >
+              Current Password
+            </Text>
+            <View
+              style={[
+                styles.inputContainer,
+                {
+                  backgroundColor: theme.colors.white,
+                  borderColor: 'rgba(255,255,255,0.3)',
+                },
+              ]}
+            >
+              <View style={styles.iconContainer}>
+                <Ionicons
+                  name="lock-closed-outline"
+                  size={AppSizes.Icon_Height_20}
+                  color={theme.colors.secondaryDark}
+                />
+              </View>
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    color: theme.colors.textTertiary,
+                  },
+                ]}
+                // value={loginData.credentials.password}
+                // onChangeText={text =>
+                //   loginData.handleChange('password', text)
+                // }
+                placeholder="Enter Current password"
+                placeholderTextColor={theme.colors.textTertiary}
+                secureTextEntry={showPswd}
+              />
+              <TouchableOpacity
+                style={styles.eyeIconContainer}
+                onPress={() => setShowPswd(!showPswd)}
+                activeOpacity={0.7}
+              >
+                <Ionicons
+                  name={showNewPswd ? 'eye-outline' : 'eye-off-outline'}
+                  size={22}
+                  color={theme.colors.secondaryDark}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.fieldContainer}>
+            <Text
+              style={[styles.fieldLabel, { color: theme.colors.secondaryDark }]}
+            >
+              New Password
+            </Text>
+            <View
+              style={[
+                styles.inputContainer,
+                {
+                  backgroundColor: theme.colors.white,
+                  borderColor: 'rgba(255,255,255,0.3)',
+                },
+              ]}
+            >
+              <View style={styles.iconContainer}>
+                <Ionicons
+                  name={
+                    showNewPswd ? 'lock-closed-outline' : 'lock-closed-outline'
+                  }
+                  size={AppSizes.Icon_Height_20}
+                  color={theme.colors.secondaryDark}
+                />
+              </View>
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    color: theme.colors.textTertiary,
+                  },
+                ]}
+                // value={loginData.credentials.password}
+                // onChangeText={text =>
+                //   loginData.handleChange('password', text)
+                // }
+                placeholder="Enter Your New Password"
+                placeholderTextColor={theme.colors.textTertiary}
+                secureTextEntry={showNewPswd}
+              />
+              <TouchableOpacity
+                style={styles.eyeIconContainer}
+                onPress={() => setShowNewPswd(!showNewPswd)}
+                activeOpacity={0.7}
+              >
+                <Ionicons
+                  name={showNewPswd ? 'eye-outline' : 'eye-off-outline'}
+                  size={22}
+                  color={theme.colors.secondaryDark}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <Button
+            variant="secondary"
+            title="Update"
+            onPress={() => UpdatePassword()}
+            style={styles.loginButton}
+          />
         </View>
       </BaseModal>
     </>
@@ -338,6 +503,62 @@ const styles = StyleSheet.create({
   confirmBtnText: {
     fontSize: AppSizes.Font_16,
     fontFamily: 'Poppins-SemiBold',
+  },
+  fieldContainer: {
+    marginBottom: AppSizes.Margin_Vertical_20,
+    width: '90%',
+  },
+  fieldLabel: {
+    fontSize: 14,
+    fontFamily: fonts.medium,
+    marginBottom: 8,
+    marginLeft: 4,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderRadius: AppSizes.Radius_10,
+    paddingHorizontal: 16,
+    minHeight: 56,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  iconContainer: {
+    marginRight: AppSizes.Margin_Horizontal_10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: AppSizes.Margin_Vertical_5,
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: 'Poppins-Regular',
+    //paddingVertical: AppSizes.Padding_Vertical_15,
+  },
+  eyeIconContainer: {
+    padding: 4,
+    marginLeft: 8,
+  },
+
+  loginButton: {
+    maxHeight: 56,
+    width: '90%',
+    borderRadius: AppSizes.Radius_10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
 });
 

@@ -35,7 +35,7 @@ export const useLoginUser = () => {
     try {
       const uniqueId = await DeviceInfo.getUniqueId();
       // return uniqueId;
-      return 'a77a54bf13da6f87';
+      return '7c755e6c3af45fda';
     } catch (error) {
       console.error('Error getting device ID:', error);
       return null;
