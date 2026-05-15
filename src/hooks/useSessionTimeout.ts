@@ -5,9 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/slices/authSlice';
 import { RootState } from '../redux/store';
 
-const IDLE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+ const IDLE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 const LAST_ACTIVE_KEY = 'lastActive';
-const ACTIVITY_DEBOUNCE = 10 * 1000; // min gap between AsyncStorage writes
+const ACTIVITY_DEBOUNCE = 10 * 1000; 
 
 export const useSessionTimeout = () => {
   const dispatch = useDispatch();

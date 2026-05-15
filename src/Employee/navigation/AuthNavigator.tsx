@@ -16,7 +16,8 @@ export type AuthStackParamList = {
   MainAuth: undefined;
   SignUp: undefined;
   ForgetPassword: undefined;
-  UpdatePassword: undefined;
+  UpdatePassword: { otpVerified?: boolean; userID?: string } | undefined;
+  otp: { res?: any; flow?: 'login' | 'updatePassword'; userID?: string } | undefined;
 };
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();

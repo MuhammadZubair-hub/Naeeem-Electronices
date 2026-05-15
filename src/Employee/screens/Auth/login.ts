@@ -20,7 +20,7 @@ export const useLoginUser = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
-  const navigation = useNavigation();
+  const navigation:any = useNavigation();
   const handleChange = (field: string, value: string) => {
     setCredentials(prev => ({ ...prev, [field]: value }));
   };
@@ -303,11 +303,11 @@ export const useLoginUser = () => {
         // dispatch(
         //   loginSuccess({ data: response.data, token: response.data.token }),
         // );
-        showMessage({
-          message: 'Logged in successfully',
-          type: 'success',
-          style: CommonStyles.sucsses,
-        });
+        // showMessage({
+        //   message: 'Logged in successfully',
+        //   type: 'success',
+        //   style: CommonStyles.sucsses,
+        // });
         //  navigation.navigate('otp',{p})
          navigation.navigate('otp', {res:response})
         setCredentials({ empId: '', password: '' });
@@ -361,7 +361,8 @@ export const useLoginUser = () => {
           style: CommonStyles.sucsses,
         });
 
-        navigation.goBack();
+        // navigation.goBack();
+        navigation.navigate('MainAuth')
       } else {
         console.log('erroosssr: ', response?.data?.message);
         showMessage({

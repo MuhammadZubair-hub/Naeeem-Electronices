@@ -40,7 +40,8 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
   const routes = useRoute();
   const params: any = routes.params;
   res = params?.res;
-  // console.log('res',res)
+  const flow: string | undefined = params?.flow;
+  const paramUserID: string | undefined = params?.userID;
   const { theme } = useTheme();
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [countdown, setCountdown] = useState(RESEND_COUNTDOWN);
@@ -209,13 +210,16 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
     await new Promise(res => setTimeout(res, 800)); // simulate async
 
     if (otpString === '1111') {
-      showMessage({
-        message: 'OTP successfully',
-        type: 'success',
-        style: CommonStyles.sucsses,
-      });
-
-      dispatch(loginSuccess({ data: res.data, token: res.data.token }));
+      if (flow === 'updatePassword') {
+        (navigation as any).navigate('UpdatePassword', { otpVerified: true, userID: paramUserID });
+      } else {
+        dispatch(loginSuccess({ data: res.data, token: res.data.token }));
+        showMessage({
+          message: 'Logged in successfully',
+          type: 'success',
+          style: CommonStyles.sucsses,
+        });
+      }
     } else {
       showMessage({
         message: 'OTP Failed',
@@ -324,27 +328,22 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
 
         {/* Countdown / Resend */}
         <View style={s.resendRow}>
-          {canResend ? (
-            <TouchableOpacity onPress={handleResend} activeOpacity={0.7}>
-              <Text
-                style={[s.resendActive, { color: theme.colors.secondaryDark }]}
-              >
-                Resend OTP?
-              </Text>
-            </TouchableOpacity>
-          ) : (
-            <Text style={s.resendCountdown}>
-              Resend in :{' '}
-              <Text
-                style={[
-                  s.countdownNumber,
-                  { color: theme.colors.secondaryDark },
-                ]}
-              >
-                {String(countdown).padStart(2, '0')}s
-              </Text>
+          <Text style={s.resendCountdown}>
+            Didn't receive the code?{' '}
+            <Text
+              style={[
+                s.resendActive,
+                {
+                  color: canResend
+                    ? theme.colors.secondaryDark
+                    : theme.colors.secondaryDark + '50',
+                },
+              ]}
+              onPress={canResend ? handleResend : undefined}
+            >
+              Resend{!canResend ? ` (${String(countdown).padStart(2, '0')}s)` : ''}
             </Text>
-          )}
+          </Text>
         </View>
 
         {/* Countdown Ring */}
@@ -389,9 +388,9 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
         </TouchableOpacity>
 
         {/* Footer note */}
-        <Text style={s.footerNote}>
+        {/* <Text style={s.footerNote}>
           Didn't get the code? Check your spam folder aswell.
-        </Text>
+        </Text> */}
       </Animated.View>
     </View>
   );

@@ -1,4 +1,4 @@
-import React, { createRef, useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,15 +6,10 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  ImageBackground,
-  BackHandler,
   Alert,
 } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../../redux/store';
 import { useTheme } from '../../../hooks/useTheme';
 import { Button } from '../../../components/common/Button';
-import { Card } from '../../../components/common/Card';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppSizes } from '../../../utils/AppSizes';
@@ -22,180 +17,44 @@ import { LoadingModal } from '../../../components/common/LoadingModal';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { fonts } from '../../../assets/fonts/Fonts';
 import { colors } from '../../../styles/theme';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useLoginUser } from './login';
-
-// Define the different screen modes
-type ForgetPasswordMode = 'ENTER_CNIC' | 'ENTER_OTP' | 'CREATE_PASSWORD';
 
 const UpdatePassword = () => {
   const { theme } = useTheme();
-  const dispatch = useDispatch<AppDispatch>();
-  const navigation = useNavigation();
+  const navigation:any = useNavigation();
+  const route = useRoute();
+  const params: any = route.params;
+
+  const otpVerified = params?.otpVerified === true;
+  const verifiedUserID: string = params?.userID ?? '';
 
   const loginData = useLoginUser();
 
-  // State for different modes
-  const [userID, setUserID] = useState<string>('');
+  const [userID, setUserID] = useState<string>(verifiedUserID);
   const [newPassword, setNewPassword] = useState<string>('');
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState<boolean>(false);
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
 
-  const CreatePasswordForm = () => {
-    return (
-      <View style={styles.inputFieldsContainer}>
-        <View style={styles.fieldContainer}>
-          <Text
-            style={[styles.fieldLabel, { color: theme.colors.secondaryDark }]}
-          >
-            User ID
-          </Text>
-          <View
-            style={[
-              styles.inputContainer,
-              {
-                backgroundColor: theme.colors.white,
-                borderColor: 'rgba(255,255,255,0.3)',
-              },
-            ]}
-          >
-            <View style={styles.iconContainer}>
-              <Ionicons
-                name="person-outline"
-                size={AppSizes.Icon_Height_20}
-                color={theme.colors.secondaryDark}
-              />
-            </View>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  color: theme.colors.textTertiary,
-                },
-              ]}
-              value={userID}
-              onChangeText={text => setUserID(text)}
-              placeholder="Enter User ID"
-              placeholderTextColor={theme.colors.textTertiary}
-              autoCapitalize="none"
-              autoCorrect={false}
-              // secureTextEntry={showPassword}
-            />
-          </View>
-        </View>
-
-       {newPassword && (
-        <>
-         <View style={styles.fieldContainer}>
-          <Text
-            style={[styles.fieldLabel, { color: theme.colors.secondaryDark }]}
-          >
-            New Password
-          </Text>
-          <View
-            style={[
-              styles.inputContainer,
-              {
-                backgroundColor: theme.colors.white,
-                borderColor: 'rgba(255,255,255,0.3)',
-              },
-            ]}
-          >
-            <View style={styles.iconContainer}>
-              <Ionicons
-                name="lock-closed-outline"
-                size={AppSizes.Icon_Height_20}
-                color={theme.colors.secondaryDark}
-              />
-            </View>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  color: theme.colors.textTertiary,
-                },
-              ]}
-              value={newPassword}
-              onChangeText={text => setNewPassword(text)}
-              placeholder="Enter new password"
-              placeholderTextColor={theme.colors.textTertiary}
-              autoCapitalize="none"
-              autoCorrect={false}
-              secureTextEntry={showPassword}
-            />
-            <TouchableOpacity
-              style={styles.eyeIconContainer}
-              onPress={() => setShowPassword(!showPassword)}
-            >
-              <Ionicons
-                name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                size={AppSizes.Icon_Height_20}
-                color={theme.colors.secondaryDark}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.fieldContainer}>
-          <Text
-            style={[styles.fieldLabel, { color: theme.colors.secondaryDark }]}
-          >
-            Confirm New Password
-          </Text>
-          <View
-            style={[
-              styles.inputContainer,
-              {
-                backgroundColor: theme.colors.white,
-                borderColor: 'rgba(255,255,255,0.3)',
-              },
-            ]}
-          >
-            <View style={styles.iconContainer}>
-              <Ionicons
-                name="lock-closed-outline"
-                size={AppSizes.Icon_Height_20}
-                color={theme.colors.secondaryDark}
-              />
-            </View>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  color: theme.colors.textTertiary,
-                },
-              ]}
-              value={newPassword}
-              onChangeText={text => setNewPassword(text)}
-              placeholder="Enter Confirm New Password"
-              placeholderTextColor={theme.colors.textTertiary}
-              autoCapitalize="none"
-              autoCorrect={false}
-              secureTextEntry={showPassword}
-            />
-            <TouchableOpacity
-              style={styles.eyeIconContainer}
-              onPress={() => setShowPassword(!showPassword)}
-            >
-              <Ionicons
-                name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                size={AppSizes.Icon_Height_20}
-                color={theme.colors.secondaryDark}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-        </>
-       )}
-        <LoadingModal visible={loginData.isLoading} />
-      </View>
-    );
-  };
-
-  const handleBack = () => {
-    navigation.goBack();
+  const handlePress = () => {
+    if (!otpVerified) {
+      if (!userID.trim()) {
+        Alert.alert('Validation', 'Please enter a User ID');
+        return;
+      }
+      (navigation as any).navigate('otp', { flow: 'updatePassword', userID: userID.trim() });
+    } else {
+      if (!newPassword.trim() || !confirmPassword.trim()) {
+        Alert.alert('Validation', 'Please enter and confirm your new password');
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        Alert.alert('Validation', 'Passwords do not match');
+        return;
+      }
+      loginData.handleUpdatePassword(verifiedUserID || userID, newPassword);
+    }
   };
 
   return (
@@ -209,8 +68,8 @@ const UpdatePassword = () => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.glassCard}>
-          {/* Back Button */}
-          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('MainAuth')}>
+          {/* <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}> */}
             <Ionicons
               name="arrow-back-outline"
               size={AppSizes.Icon_Height_25}
@@ -229,23 +88,148 @@ const UpdatePassword = () => {
             <Text
               style={[
                 styles.title,
-                {
-                  color: theme.colors.secondaryDark,
-                  fontFamily: fonts.medium,
-                },
+                { color: theme.colors.secondaryDark, fontFamily: fonts.medium },
               ]}
             >
-              Change your password
+              {otpVerified ? 'Create New Password' : 'Change your password'}
             </Text>
 
-            {CreatePasswordForm()}
+            <View style={styles.inputFieldsContainer}>
+              {/* User ID field */}
+              <View style={styles.fieldContainer}>
+                <Text style={[styles.fieldLabel, { color: theme.colors.secondaryDark }]}>
+                  User ID
+                </Text>
+                <View
+                  style={[
+                    styles.inputContainer,
+                    {
+                      backgroundColor: otpVerified
+                        ? '#ebedef' 
+                        : theme.colors.white,
+                      borderColor: 'rgba(255,255,255,1)',
+                    },
+                  ]}
+                >
+                  <View style={styles.iconContainer}>
+                    <Ionicons
+                      name="person-outline"
+                      size={AppSizes.Icon_Height_20}
+                      color={theme.colors.secondaryDark}
+                    />
+                  </View>
+                  <TextInput
+                    style={[styles.input, { color: theme.colors.textTertiary }]}
+                    value={otpVerified ? verifiedUserID : userID}
+                    onChangeText={text => setUserID(text)}
+                    placeholder="Enter User ID"
+                    placeholderTextColor={theme.colors.textTertiary}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    editable={!otpVerified}
+                  />
+                  {otpVerified && (
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={AppSizes.Icon_Height_20}
+                      color={theme.colors.secondaryDark}
+                    />
+                  )}
+                </View>
+              </View>
+
+              {/* Password fields — shown only after OTP verified */}
+              {otpVerified && (
+                <>
+                  <View style={styles.fieldContainer}>
+                    <Text style={[styles.fieldLabel, { color: theme.colors.secondaryDark }]}>
+                      New Password
+                    </Text>
+                    <View
+                      style={[
+                        styles.inputContainer,
+                        { backgroundColor: theme.colors.white, borderColor: 'rgba(255,255,255,0.3)' },
+                      ]}
+                    >
+                      <View style={styles.iconContainer}>
+                        <Ionicons
+                          name="lock-closed-outline"
+                          size={AppSizes.Icon_Height_20}
+                          color={theme.colors.secondaryDark}
+                        />
+                      </View>
+                      <TextInput
+                        style={[styles.input, { color: theme.colors.textTertiary }]}
+                        value={newPassword}
+                        onChangeText={text => setNewPassword(text)}
+                        placeholder="Enter new password"
+                        placeholderTextColor={theme.colors.textTertiary}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        secureTextEntry={!showPassword}
+                      />
+                      <TouchableOpacity
+                        style={styles.eyeIconContainer}
+                        onPress={() => setShowPassword(p => !p)}
+                      >
+                        <Ionicons
+                          name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                          size={AppSizes.Icon_Height_20}
+                          color={theme.colors.secondaryDark}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  <View style={styles.fieldContainer}>
+                    <Text style={[styles.fieldLabel, { color: theme.colors.secondaryDark }]}>
+                      Confirm New Password
+                    </Text>
+                    <View
+                      style={[
+                        styles.inputContainer,
+                        { backgroundColor: theme.colors.white, borderColor: 'rgba(255,255,255,0.3)' },
+                      ]}
+                    >
+                      <View style={styles.iconContainer}>
+                        <Ionicons
+                          name="lock-closed-outline"
+                          size={AppSizes.Icon_Height_20}
+                          color={theme.colors.secondaryDark}
+                        />
+                      </View>
+                      <TextInput
+                        style={[styles.input, { color: theme.colors.textTertiary }]}
+                        value={confirmPassword}
+                        onChangeText={text => setConfirmPassword(text)}
+                        placeholder="Confirm new password"
+                        placeholderTextColor={theme.colors.textTertiary}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        secureTextEntry={!showConfirmPassword}
+                      />
+                      <TouchableOpacity
+                        style={styles.eyeIconContainer}
+                        onPress={() => setShowConfirmPassword(p => !p)}
+                      >
+                        <Ionicons
+                          name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'}
+                          size={AppSizes.Icon_Height_20}
+                          color={theme.colors.secondaryDark}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </>
+              )}
+
+              <LoadingModal visible={loginData.isLoading} />
+            </View>
 
             <Button
               variant="secondary"
-              title={'Update'}
-              onPress={() =>
-                loginData.handleUpdatePassword(userID, newPassword)
-              }
+              title={otpVerified ? 'Update Password' : 'Send OTP'}
+              onPress={handlePress}
               style={styles.actionButton}
             />
           </View>
@@ -253,8 +237,6 @@ const UpdatePassword = () => {
 
         <View style={styles.footer} />
       </KeyboardAwareScrollView>
-
-      {/* <LoadingModal visible={loginData.isLoading} /> */}
     </SafeAreaView>
   );
 };
