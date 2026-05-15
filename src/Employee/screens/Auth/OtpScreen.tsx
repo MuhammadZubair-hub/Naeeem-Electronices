@@ -18,6 +18,7 @@ import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../../redux/slices/authSlice';
 import { showMessage } from 'react-native-flash-message';
 import { CommonStyles } from '../../../styles/GlobalStyle';
+import { API_Config } from '../../services/apiServices';
 
 const OTP_LENGTH = 4;
 const RESEND_COUNTDOWN = 30;
@@ -25,6 +26,7 @@ const RESEND_COUNTDOWN = 30;
 interface OtpScreenProps {
   phoneNumber?: string;
   res?: any;
+  userID?: any;
   onVerify?: (otp: string) => void;
   onResend?: () => void;
   onBack?: () => void;
@@ -33,6 +35,7 @@ interface OtpScreenProps {
 const OtpScreen: React.FC<OtpScreenProps> = ({
   phoneNumber,
   res,
+  userID,
   onVerify,
   onResend,
   onBack,
@@ -40,6 +43,10 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
   const routes = useRoute();
   const params: any = routes.params;
   res = params?.res;
+  // console.log("🚀 ~ :46 ~ OtpScreen ~ res:", res)
+  onVerify = params?.onVerify;
+  userID = params?.userID;
+  // console.log('🚀 ~ :48 ~ OtpScreen ~ userID:', userID);
   const flow: string | undefined = params?.flow;
   const paramUserID: string | undefined = params?.userID;
   const { theme } = useTheme();
@@ -113,12 +120,18 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
     }, 1000);
   }, []);
 
+  const CallOtpAPI = async () => {
+    const respone = await API_Config.getEmployeeLogs();
+    console.log('OTP call response: ', respone);
+  };
+
   const handleResend = useCallback(() => {
     if (!canResend) return;
     setOtp(Array(OTP_LENGTH).fill(''));
     inputRefs.current[0]?.focus();
     startCountdown();
     // onResend?.();
+    CallOtpAPI();
   }, [canResend, startCountdown]);
   // }, [canResend, startCountdown, onResend]);
 
@@ -208,10 +221,13 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
     setIsVerifying(true);
 
     await new Promise(res => setTimeout(res, 800)); // simulate async
-
+    // have to call verify OTP API
     if (otpString === '1111') {
       if (flow === 'updatePassword') {
-        (navigation as any).navigate('UpdatePassword', { otpVerified: true, userID: paramUserID });
+        (navigation as any).navigate('UpdatePassword', {
+          otpVerified: true,
+          userID: paramUserID,
+        });
       } else {
         dispatch(loginSuccess({ data: res.data, token: res.data.token }));
         showMessage({
@@ -341,7 +357,8 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
               ]}
               onPress={canResend ? handleResend : undefined}
             >
-              Resend{!canResend ? ` (${String(countdown).padStart(2, '0')}s)` : ''}
+              Resend
+              {!canResend ? ` (${String(countdown).padStart(2, '0')}s)` : ''}
             </Text>
           </Text>
         </View>

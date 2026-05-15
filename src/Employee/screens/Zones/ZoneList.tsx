@@ -133,7 +133,7 @@ export const ZonesData = ({
       scrollEnabled
       onRefresh={onRefresh}
       refreshing={refreshing}
-      keyExtractor={item => item.id}
+      keyExtractor={(item, index) => item.id?.toString() ?? index.toString()}
       ListEmptyComponent={() => <EmptyComponents />}
       contentContainerStyle={CommonStyles.list}
       renderItem={({ item }) => (

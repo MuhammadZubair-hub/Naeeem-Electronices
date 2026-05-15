@@ -21,6 +21,8 @@ import { fonts } from '../../assets/fonts/Fonts';
 import { Button } from './Button';
 import { API_Config } from '../../Employee/services/apiServices';
 import { current } from '@reduxjs/toolkit';
+import { formatDate, formatDateTime, formatTime } from '../../utils/formatters';
+import { colors } from '../../styles/theme';
 
 interface MainHeaderProps {
   title: string | undefined;
@@ -63,6 +65,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
       const items = Array.isArray(response.data.data) ? response.data.data : [];
       console.log('🚀 ~ :63 ~ handleViewLoginHistory ~ items:', items);
       setLoginHistoryData(items);
+
       if (items.length === 0) {
         setLoginHistoryError('No login history found.');
       }
@@ -91,7 +94,9 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
   const UpdatePassword = async () => {
     console.log('User: ', users);
     console.log('pswd: ', pswd);
-    if (pswd.curpswd === '' || pswd.newpswd === '') {
+   
+    if (!pswd.curpswd|| !pswd.newpswd) {
+    // if (pswd.curpswd === '' || pswd.newpswd === '') {
       showMessage({
         message: 'Validation Error',
         description: 'Please enter both New Password and Confirm Password',
@@ -109,9 +114,19 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
       });
       return;
     }
+
+     if (pswd.curpswd.length < 4 || pswd.newpswd.length < 4) {
+      showMessage({
+        message: 'Error',
+        description: 'Password must be at least 4 characters long',
+        type: 'danger',
+        style: CommonStyles.error,
+      });
+      return;
+    }
     console.log('here');
     //  const user = empId.trim();
-    const user:any = users?.empId;
+    const user: any = users?.empId;
     const pass = pswd.newpswd.trim();
     try {
       const response = await API_Config.updateUserPassword(user, pass);
@@ -360,14 +375,24 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
               style={{ marginTop: AppSizes.Margin_Vertical_20 }}
             />
           ) : loginHistoryError ? (
-            <Text
-              style={[
-                styles.confirmText,
-                { color: theme.colors.secondaryDark },
-              ]}
-            >
-              {loginHistoryError}
-            </Text>
+            <>
+              <Text
+                style={[
+                  styles.confirmText,
+                  { color: theme.colors.secondaryDark },
+                ]}
+              >
+                {loginHistoryError}
+              </Text>
+
+              <TouchableOpacity style={{ padding: 10 }}>
+                <Ionicons
+                  name="reload-circle"
+                  size={20}
+                  color={colors.primary}
+                />
+              </TouchableOpacity>
+            </>
           ) : (
             <ScrollView
               style={styles.historyScroll}
@@ -375,6 +400,24 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
             >
               {loginHistoryData.map((item, index) => (
                 <View key={index} style={styles.historyItem}>
+                  <View style={styles.historyHeader}>
+                    <Text
+                      style={[
+                        styles.historyLabel,
+                        { color: theme.colors.secondaryDark },
+                      ]}
+                    >
+                      Date
+                    </Text>
+                    <Text
+                      style={[
+                        styles.historyValue,
+                        { color: theme.colors.textTertiary },
+                      ]}
+                    >
+                      {formatDate(item.loginTime) || '-'}
+                    </Text>
+                  </View>
                   <View style={styles.historyHeader}>
                     <Text
                       style={[
@@ -390,28 +433,11 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
                         { color: theme.colors.textTertiary },
                       ]}
                     >
-                      {item.loginTime || '-'}
+                      {formatTime(item.loginTime) || '-'}
+                      {/* {item.loginTime.split(' ')[1] || '-'} */}
                     </Text>
                   </View>
-                  <View style={styles.historyRow}>
-                    <Text
-                      style={[
-                        styles.historyLabel,
-                        { color: theme.colors.secondaryDark },
-                      ]}
-                    >
-                      Status
-                    </Text>
-                    <Text
-                      style={[
-                        styles.historyValue,
-                        { color: theme.colors.textTertiary },
-                      ]}
-                    >
-                      {' '}
-                      {item.status || '-'}
-                    </Text>
-                  </View>
+
                   <View style={styles.historyRow}>
                     <Text
                       style={[
@@ -486,6 +512,26 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
                     >
                       {' '}
                       {item.latitude || '-'}
+                    </Text>
+                  </View>
+
+                  <View style={styles.historyRow}>
+                    <Text
+                      style={[
+                        styles.historyLabel,
+                        { color: theme.colors.secondaryDark },
+                      ]}
+                    >
+                      Status
+                    </Text>
+                    <Text
+                      style={[
+                        styles.historyValue,
+                        { color: theme.colors.textTertiary },
+                      ]}
+                    >
+                      {' '}
+                      {item.status || '-'}
                     </Text>
                   </View>
                 </View>
