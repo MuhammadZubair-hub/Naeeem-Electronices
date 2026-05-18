@@ -123,7 +123,6 @@ export const ZonesData = ({
 
   const handleZonePress = (zone: any) => {
     navigation.navigate(screenName.BranchList, { Zone: zone });
-    //  navigation.navigate(screenName.BranchList,);
   };
 
   return (

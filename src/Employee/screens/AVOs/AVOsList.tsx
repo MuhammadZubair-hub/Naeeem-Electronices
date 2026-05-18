@@ -127,17 +127,14 @@ export const AvosData = ({ avos, refreshing, onRefresh }: AvoDataProps) => {
         style: CommonStyles.error,
       });
       return;
-    }
-
-    //console.log('navigating to the customers list', item?.assigenedId);
-
+    } 
     navigation.navigate(screenName.CustomerList, { AvoId: item?.assigenedId });
   };
 
   return (
     <FlatList
       data={avos}
-      keyExtractor={item => item.id}
+      keyExtractor={(item, index) => item.id?.toString() ?? index.toString()}
       onRefresh={() => onRefresh()}
       refreshing={refreshing}
       ListEmptyComponent={() => (

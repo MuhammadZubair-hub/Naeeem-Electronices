@@ -1,18 +1,13 @@
-import { Region, Zone } from './../../../types/index';
 import { API_Config } from '../../services/apiServices';
 
 import DeviceInfo from 'react-native-device-info';
-import React, { useEffect, useState } from 'react';
+import React, {  useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../../../redux/slices/authSlice';
 import { CommonStyles } from '../../../styles/GlobalStyle';
 import { showMessage } from 'react-native-flash-message';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Geolocation from 'react-native-geolocation-service';
-import { colors } from '../../../styles/theme';
-import { Alert, Linking, PermissionsAndroid, Platform } from 'react-native';
-import { G } from 'react-native-svg';
-import { LineGraph } from '../../../components/charts/LineGraph';
+import { Alert, Linking, PermissionsAndroid, Platform } from 'react-native'; 
 
 export const useLoginUser = () => {
   const [credentials, setCredentials] = useState({ empId: '', password: '' });
@@ -35,8 +30,10 @@ export const useLoginUser = () => {
     try {
       const uniqueId = await DeviceInfo.getUniqueId();
       // return uniqueId;
-      return '7c755e6c3af45fda';
+      // return '7c755e6c3af45sa';  // wrong MAC Address
+      return '7c755e6c3af45fda'; // right MAC Address
     } catch (error) {
+      
       console.error('Error getting device ID:', error);
       return null;
     }
@@ -312,6 +309,7 @@ export const useLoginUser = () => {
          navigation.navigate('otp', {res:response})
         setCredentials({ empId: '', password: '' });
       } else {
+        EmptyCredentials()
         showMessage({
           message: 'Logged in Failed',
           description:

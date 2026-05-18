@@ -30,8 +30,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { showMessage } from 'react-native-flash-message';
 import { CommonStyles } from '../../../styles/GlobalStyle';
 import EmptyComponents from '../../../components/common/EmptyComponents';
-
-// Branch interface is now imported from mockDataService
+ 
 type RootStackParamList = {
   AVOsList: { branch: string };
 };
@@ -96,107 +95,7 @@ export const BranchList: React.FC = () => {
       <Header title="Branches" subtitle="Zone's Branches" showBackButton />
       {loading ? (
         <Loader title={'Loading Branches'} />
-      ) : (
-        // <FlatList
-        //   data={branches}
-        //   keyExtractor={item => item.id}
-        //   contentContainerStyle={CommonStyles.list}
-        //   onRefresh={() => getAllBranches()}
-        //   refreshing={loading}
-        //   ListEmptyComponent={() => (
-        //     <EmptyComponents emptyMessage="Something went wrong " />
-        //   )}
-        //   renderItem={({ item }) => (
-        //     <View
-        //       style={[
-        //         { backgroundColor: theme.colors.surface },
-        //         CommonStyles.item,
-        //       ]}
-        //     >
-        //       <View style={CommonStyles.row}>
-        //         <Text
-        //           style={[
-        //             CommonStyles.title,
-        //             {
-        //               color: theme.colors.secondaryDark,
-        //               fontFamily: fonts.bold,
-        //               fontSize: AppSizes.Font_20,
-        //             },
-        //           ]}
-        //         >
-        //           {item.branchName}
-        //         </Text>
-        //         <Text
-        //           style={[
-        //             CommonStyles.subtitle,
-        //             { color: theme.colors.secondary, flex: 0 },
-        //           ]}
-        //         >
-        //           ( {item?.branchCode || 'N/A'})
-        //         </Text>
-        //       </View>
-
-        //       {/* Amounts */}
-        //       <View style={CommonStyles.row}>
-        //         <Text
-        //           style={[
-        //             CommonStyles.subtitle,
-        //             { color: theme.colors.textSecondary },
-        //           ]}
-        //         >
-        //           Total Outstand :
-        //         </Text>
-        //         <Text
-        //           style={[CommonStyles.value, { color: theme.colors.black }]}
-        //         >
-        //           {item.instTotalAmount || 'N/A'}
-        //         </Text>
-        //       </View>
-
-        //       <View style={CommonStyles.row}>
-        //         <Text
-        //           style={[
-        //             CommonStyles.subtitle,
-        //             { color: theme.colors.textSecondary },
-        //           ]}
-        //         >
-        //           Total Paid :
-        //         </Text>
-        //         <Text
-        //           style={[CommonStyles.value, { color: theme.colors.success }]}
-        //         >
-        //           {item.instRecAmount || 'N/A'}
-        //         </Text>
-        //       </View>
-
-        //       <View style={CommonStyles.row}>
-        //         <Text
-        //           style={[
-        //             CommonStyles.subtitle,
-        //             { color: theme.colors.textSecondary },
-        //           ]}
-        //         >
-        //           Total Due :
-        //         </Text>
-        //         <Text
-        //           style={[CommonStyles.value, { color: theme.colors.warning }]}
-        //         >
-        //           {item.instDueAmount || 'N/A'}
-        //         </Text>
-        //       </View>
-
-        //       <Button
-        //         title="View Branch AVO's"
-        //         onPress={() => handleBranchPress(item)}
-        //         variant="secondary"
-        //         size="sm"
-        //         style={{ marginTop: 22 }}
-        //       />
-        //       <View style={CommonStyles.divider} />
-        //     </View>
-        //   )}
-        // />
-
+      ) : ( 
         <BranchesData
           branchdata={branches}
           onRefresh={getAllBranches}
@@ -222,15 +121,13 @@ export const BranchesData = ({
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const handleBranchPress = (item: any) => {
-    console.log('iam presss');
-    //console.log('itme passsing is ', item);
     navigation.navigate('AVOsList', { branch: item?.branchCode });
   };
 
   return (
     <FlatList
       data={branchdata}
-      keyExtractor={item => item.id}
+      keyExtractor={(item, index) => item.id?.toString() ?? index.toString()}
       contentContainerStyle={CommonStyles.list}
       onRefresh={() => onRefresh()}
       refreshing={refreshing}
