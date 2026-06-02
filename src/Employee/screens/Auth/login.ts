@@ -1,13 +1,15 @@
 import { API_Config } from '../../services/apiServices';
 
 import DeviceInfo from 'react-native-device-info';
-import React, {  useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { CommonStyles } from '../../../styles/GlobalStyle';
 import { showMessage } from 'react-native-flash-message';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Geolocation from 'react-native-geolocation-service';
-import { Alert, Linking, PermissionsAndroid, Platform } from 'react-native'; 
+import { Alert, Linking, PermissionsAndroid, Platform } from 'react-native';
+import { loginSuccess } from '../../../redux/slices/authSlice';
+import { toString } from 'lodash';
 
 export const useLoginUser = () => {
   const [credentials, setCredentials] = useState({ empId: '', password: '' });
@@ -15,7 +17,7 @@ export const useLoginUser = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
-  const navigation:any = useNavigation();
+  const navigation: any = useNavigation();
   const handleChange = (field: string, value: string) => {
     setCredentials(prev => ({ ...prev, [field]: value }));
   };
@@ -33,13 +35,11 @@ export const useLoginUser = () => {
       // return '7c755e6c3af45sa';  // wrong MAC Address
       return '7c755e6c3af45fda'; // right MAC Address
     } catch (error) {
-      
       console.error('Error getting device ID:', error);
       return null;
     }
   };
 
-  
   const getIPAddress = async () => {
     try {
       const ip = await DeviceInfo.getIpAddress();
@@ -54,7 +54,6 @@ export const useLoginUser = () => {
 
   const getCurrCorrdinates = async () => {
     const hasPermission = await requestLocationPermission();
-
     if (!hasPermission) return;
     Geolocation.getCurrentPosition(
       position => {
@@ -217,9 +216,21 @@ export const useLoginUser = () => {
       values.password.trim(),
       deviceId,
       ipAddress,
-       coordinates.latitude,
-        coordinates.longitude
+      coordinates.latitude,
+      coordinates.longitude,
     );
+
+    const payloadforOTP = {
+      employeeId: values.empId.trim(),
+      password: values.password.trim(),
+      deviceId: deviceId,
+      ipAddress: ipAddress,
+      latitude: coordinates.latitude.toString(),
+      longitude: coordinates.longitude.toString(),
+      verified: 'y',
+    };
+
+    console.log('payload: ', payloadforOTP);
 
     try {
       const response = await API_Config.loginUser(
@@ -228,9 +239,10 @@ export const useLoginUser = () => {
         deviceId,
         ipAddress,
         coordinates.latitude.toString(),
-        coordinates.longitude.toString()
+        coordinates.longitude.toString(),
+        'N',
       );
-      console.log('API Response:', response);
+      console.log('Login API Response:', response);
 
       // const response:any = {
       //   data: {
@@ -253,11 +265,10 @@ export const useLoginUser = () => {
       // };
 
       if (response?.data?.status) {
-        console.log('API Responsesdfsdfdssdfdsf');
-        const role = response.data.data.designation;
-        const Region = response.data.data.region;
-        const Zone = response.data.data.zone;
-        const fullAuth = response.data.data.fullAuth;
+        const role = response?.data?.data?.designation;
+        const Region = response?.data?.data?.region;
+        const Zone = response?.data?.data?.zone;
+        const fullAuth = response?.data?.data?.fullAuth;
         console.log('User Role:', role);
         //console.log('Full Auth:', fullAuth);
 
@@ -296,27 +307,45 @@ export const useLoginUser = () => {
             return;
           }
         }
-
-        // dispatch(
-        //   loginSuccess({ data: response.data, token: response.data.token }),
-        // );
-        // showMessage({
-        //   message: 'Logged in successfully',
-        //   type: 'success',
-        //   style: CommonStyles.sucsses,
-        // });
-        //  navigation.navigate('otp',{p})
-         navigation.navigate('otp', {res:response})
-        setCredentials({ empId: '', password: '' });
+        if (response?.data?.message === 'Please Verify OTP') {
+          navigation.navigate('otp', {
+            res: response?.data?.data,
+            payloadforOTP,
+          });
+        } else {
+          dispatch(
+            loginSuccess({ data: response.data, token: response.data.token }),
+          );
+          showMessage({
+            message: 'Logged in successfully',
+            type: 'success',
+            style: CommonStyles.sucsses,
+          });
+        }
       } else {
-        EmptyCredentials()
-        showMessage({
-          message: 'Logged in Failed',
-          description:
-            response?.data?.message || 'Login failed. Please try again.',
-          type: 'danger',
-          style: CommonStyles.error,
-        });
+        console.log('in else', response);
+        if (response?.data?.message === 'Please Verify OTP') {
+          navigation.navigate('otp', {
+            res: response?.data?.data,
+            payloadforOTP,
+          });
+          showMessage({
+            message: 'Please Verify OTP',
+            // description:
+            //   response?.data?.message || 'Login failed. Please try again.',
+            type: 'success',
+            style: CommonStyles.sucsses,
+          });
+        } else {
+          // EmptyCredentials();
+          showMessage({
+            message: 'Logged in Failed',
+            description:
+              response?.data?.message || 'Login failed. Please try again.',
+            type: 'danger',
+            style: CommonStyles.error,
+          });
+        }
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -345,7 +374,7 @@ export const useLoginUser = () => {
     try {
       const response = await API_Config.updateUserPassword(user, pswd);
 
-      console.log('API Response:', response);
+      console.log('Login API Response:', response);
 
       if (response?.data?.status) {
         console.log('response is : ', response.data);
@@ -360,7 +389,7 @@ export const useLoginUser = () => {
         });
 
         // navigation.goBack();
-        navigation.navigate('MainAuth')
+        navigation.navigate('MainAuth');
       } else {
         console.log('erroosssr: ', response?.data?.message);
         showMessage({

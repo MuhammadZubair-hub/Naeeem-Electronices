@@ -13,3 +13,5 @@ export { GradientButton } from './GradientButton';
 export { StatusBadge } from './StatusBadge';
 export { LoadingSkeleton, SkeletonCard, SkeletonList } from './LoadingSkeleton';
 export { EmptyState, EmptyStateCard } from './EmptyState';
+export { default as OtpInput } from './OtpInput';
+export type { OtpInputHandle } from './OtpInput';

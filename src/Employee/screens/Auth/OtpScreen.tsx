@@ -1,80 +1,59 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Keyboard,
-  StatusBar,
   Animated,
   Platform,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { useTheme } from '../../../hooks/useTheme';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { colors } from '../../../styles/theme';
-import Ionicons from '@react-native-vector-icons/ionicons';
 import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../../../redux/slices/authSlice';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { showMessage } from 'react-native-flash-message';
+
+import { useTheme } from '../../../hooks/useTheme';
+import { useOtpManager } from '../../../hooks/useOtpManager';
+import OtpInput, { OtpInputHandle } from '../../../components/common/OtpInput';
+import { loginSuccess } from '../../../redux/slices/authSlice';
 import { CommonStyles } from '../../../styles/GlobalStyle';
+import { colors } from '../../../styles/theme';
 import { API_Config } from '../../services/apiServices';
 
-const OTP_LENGTH = 4;
-const RESEND_COUNTDOWN = 30;
-
-interface OtpScreenProps {
-  phoneNumber?: string;
-  res?: any;
-  userID?: any;
-  onVerify?: (otp: string) => void;
-  onResend?: () => void;
-  onBack?: () => void;
-}
-
-const OtpScreen: React.FC<OtpScreenProps> = ({
-  phoneNumber,
-  res,
-  userID,
-  onVerify,
-  onResend,
-  onBack,
-}) => {
-  const routes = useRoute();
-  const params: any = routes.params;
-  res = params?.res;
-  // console.log("🚀 ~ :46 ~ OtpScreen ~ res:", res)
-  onVerify = params?.onVerify;
-  userID = params?.userID;
-  // console.log('🚀 ~ :48 ~ OtpScreen ~ userID:', userID);
+const OtpScreen: React.FC = () => {
+  const route = useRoute();
+  const params: any = route.params;
+  const res = params?.res;
+  const payloadforOTP = params?.payloadforOTP;
+  // console.log("🚀 ~ :27 ~ OtpScreen ~ res:", res)
+  // console.log("🚀 ~ :28 ~ OtpScreen ~ payloadforOTP:", payloadforOTP)
   const flow: string | undefined = params?.flow;
   const paramUserID: string | undefined = params?.userID;
+  // const phoneNumber: string | undefined = '923000734015';
+  // const phoneNumber: string | undefined = params?.phoneNumber ?? '923000704015';
+
   const { theme } = useTheme();
-  const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
-  const [countdown, setCountdown] = useState(RESEND_COUNTDOWN);
-  const [canResend, setCanResend] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
-
-  const inputRefs = useRef<(TextInput | null)[]>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Animated values
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(30)).current;
-  const shakeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.95)).current;
-
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  const boxScales = useRef(
-    Array(OTP_LENGTH)
-      .fill(null)
-      .map(() => new Animated.Value(1)),
-  ).current;
+  const otpInputRef = useRef<OtpInputHandle>(null);
+  const currentOtp = useRef('');
+
+  const { sendOtp, verifyOtp, resendOtp, countdown, canResend, isSending } =
+    useOtpManager({
+      onOtpRead: code => {
+        currentOtp.current = code;
+        otpInputRef.current?.autoFill(code);
+      },
+    });
+
+  // Entrance animations
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+  const scaleAnim = useRef(new Animated.Value(0.95)).current;
 
   useEffect(() => {
-    // Entrance animation
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -95,167 +74,153 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
       }),
     ]).start();
 
-    startCountdown();
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
-
-  const startCountdown = useCallback(() => {
-    setCountdown(RESEND_COUNTDOWN);
-    setCanResend(false);
-
-    if (timerRef.current) clearInterval(timerRef.current);
-
-    timerRef.current = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          clearInterval(timerRef.current!);
-          setCanResend(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  }, []);
-
-  const CallOtpAPI = async () => {
-    const respone = await API_Config.getEmployeeLogs();
-    console.log('OTP call response: ', respone);
-  };
-
-  const handleResend = useCallback(() => {
-    if (!canResend) return;
-    setOtp(Array(OTP_LENGTH).fill(''));
-    inputRefs.current[0]?.focus();
-    startCountdown();
-    // onResend?.();
-    CallOtpAPI();
-  }, [canResend, startCountdown]);
-  // }, [canResend, startCountdown, onResend]);
-
-  const animateBox = (index: number) => {
-    Animated.sequence([
-      Animated.spring(boxScales[index], {
-        toValue: 1.12,
-        tension: 200,
-        friction: 5,
-        useNativeDriver: true,
-      }),
-      Animated.spring(boxScales[index], {
-        toValue: 1,
-        tension: 200,
-        friction: 5,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
-
-  const shakeBoxes = () => {
-    Animated.sequence([
-      Animated.timing(shakeAnim, {
-        toValue: 10,
-        duration: 60,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shakeAnim, {
-        toValue: -10,
-        duration: 60,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shakeAnim, {
-        toValue: 8,
-        duration: 60,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shakeAnim, {
-        toValue: -8,
-        duration: 60,
-        useNativeDriver: true,
-      }),
-      Animated.timing(shakeAnim, {
-        toValue: 0,
-        duration: 60,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
-
-  const handleChange = (text: string, index: number) => {
-    const digit = text.replace(/[^0-9]/g, '').slice(-1);
-    const newOtp = [...otp];
-    newOtp[index] = digit;
-    setOtp(newOtp);
-
-    if (digit) {
-      animateBox(index);
-      if (index < OTP_LENGTH - 1) {
-        inputRefs.current[index + 1]?.focus();
-      } else {
-        Keyboard.dismiss();
-      }
-    }
-  };
-
-  const handleKeyPress = (key: string, index: number) => {
-    if (key === 'Backspace') {
-      const newOtp = [...otp];
-      if (otp[index]) {
-        newOtp[index] = '';
-        setOtp(newOtp);
-      } else if (index > 0) {
-        newOtp[index - 1] = '';
-        setOtp(newOtp);
-        inputRefs.current[index - 1]?.focus();
-      }
-    }
-  };
-
-  const handleVerify = async () => {
-    const otpString = otp.join('');
-    if (otpString.length < OTP_LENGTH) {
-      shakeBoxes();
-      return;
-    }
-    setIsVerifying(true);
-
-    await new Promise(res => setTimeout(res, 800)); // simulate async
-    // have to call verify OTP API
-    if (otpString === '1111') {
-      if (flow === 'updatePassword') {
-        (navigation as any).navigate('UpdatePassword', {
-          otpVerified: true,
-          userID: paramUserID,
-        });
-      } else {
-        dispatch(loginSuccess({ data: res.data, token: res.data.token }));
+    // Auto-send OTP on first mount
+    sendOtp(res ?? '').then(result => {
+      console.log('OTP result: ', result);
+      if (!result.success) {
         showMessage({
-          message: 'Logged in successfully',
-          type: 'success',
-          style: CommonStyles.sucsses,
+          message: 'Could not send OTP',
+          description: result.error,
+          type: 'danger',
+          style: CommonStyles.error,
         });
       }
-    } else {
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const maskPhone = (phone: string) => {
+    if (!phone || phone.length < 7) return phone;
+    return phone.slice(0, 7) + ' ***' + phone.slice(-2);
+  };
+
+  const formatCountdown = (secs: number) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
+
+  const handleResend = async () => {
+    otpInputRef.current?.clear();
+    currentOtp.current = '';
+    const result = await resendOtp();
+    if (!result.success) {
       showMessage({
-        message: 'OTP Failed',
+        message: 'Could not resend OTP',
+        description: result.error,
         type: 'danger',
         style: CommonStyles.error,
       });
-      setOtp(Array(OTP_LENGTH).fill(''));
-      setIsVerifying(false);
-      onVerify?.(otpString);
+    }
+    // OTP will auto-fill via onOtpRead when the new SMS arrives
+  };
+
+  const handleVerify = async () => {
+    const entered = currentOtp.current;
+    if (entered.length < 4) {
+      otpInputRef.current?.shake();
+      return;
+    }
+
+    const result = verifyOtp(entered);
+
+    if (!result.success) {
+      showMessage({
+        message: result.error ?? 'Verification failed',
+        type: 'danger',
+        style: CommonStyles.error,
+      });
+      otpInputRef.current?.shake();
+      if (result.error?.includes("Time's up")) {
+        otpInputRef.current?.clear();
+        currentOtp.current = '';
+      }
+      return;
+    }
+
+    if (flow === 'updatePassword') {
+      (navigation as any).navigate('UpdatePassword', {
+        otpVerified: true,
+        userID: paramUserID,
+      });
+    } else {
+      try {
+        const response = await API_Config.loginUser(
+          payloadforOTP.employeeId,
+          payloadforOTP.password,
+          payloadforOTP.deviceId,
+          payloadforOTP.ipAddress,
+          payloadforOTP.latitude,
+          payloadforOTP.longitude,
+          'Y',
+        );
+        console.log('Login API Response:', response);
+        if (response?.data?.status) {
+          const role = response?.data?.data?.designation;
+          const Region = response?.data?.data?.region;
+          const Zone = response?.data?.data?.zone;
+          const fullAuth = response?.data?.data?.fullAuth;
+          console.log('User Role:', role);
+          //console.log('Full Auth:', fullAuth);
+
+          if (Region == 'N/A') {
+            showMessage({
+              message: 'Logged in Failed',
+              description: 'You do not have permission to access the apps',
+              type: 'danger',
+              style: CommonStyles.error,
+            });
+            return;
+          }
+          if (Zone == 'N/A') {
+            showMessage({
+              message: 'Logged in Failed',
+              description: 'You do not have permission to access the app',
+              type: 'danger',
+              style: CommonStyles.error,
+            });
+            return;
+          }
+
+          if (
+            role !== 'RM' &&
+            role !== 'ZM' &&
+            role !== 'AVM' &&
+            role !== 'AVO'
+          ) {
+            if (fullAuth == 'N') {
+              showMessage({
+                message: 'Access Denied',
+                description: 'You do not have access to this application.',
+                type: 'danger',
+                style: CommonStyles.error,
+              });
+              return;
+            }
+          }
+
+          dispatch(
+            loginSuccess({ data: response.data, token: response.data.token }),
+          );
+          showMessage({
+            message: 'Logged in successfully',
+            type: 'success',
+            style: CommonStyles.sucsses,
+          });
+        }
+      } catch {
+        console.log('in Catch');
+      }
+      // dispatch(loginSuccess({ data: res?.data, token: res?.data?.token }));
     }
   };
 
-  const isComplete = otp.every(d => d !== '');
   const s = makeStyles(theme);
 
   return (
     <View style={s.root}>
       <StatusBar barStyle="dark-content" backgroundColor={theme.colors.white} />
 
-      {/* Back Button */}
       <TouchableOpacity
         style={s.backBtn}
         onPress={() => navigation.goBack()}
@@ -277,7 +242,7 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
           },
         ]}
       >
-        {/* Icon / Badge */}
+        {/* Icon badge */}
         <View style={s.iconWrapper}>
           <View
             style={[
@@ -292,63 +257,39 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
           />
         </View>
 
-        {/* Title */}
         <Text style={[s.title, { color: theme.colors.secondaryDark }]}>
           Verification Code
         </Text>
-        <Text style={s.subtitle}>We sent a {OTP_LENGTH}-digit code to</Text>
+        <Text style={s.subtitle}>We sent a 4-digit code to</Text>
         <Text style={[s.phone, { color: theme.colors.secondaryDark }]}>
-          {/* {phoneNumber} */}1111
+          {maskPhone(res ?? 'Phone Number')}
         </Text>
 
-        {/* OTP Input Boxes */}
-        <Animated.View
-          style={[s.otpRow, { transform: [{ translateX: shakeAnim }] }]}
-        >
-          {otp.map((digit, index) => {
-            const isFocusedOrFilled = digit !== '';
-            return (
-              <Animated.View
-                key={index}
-                style={[{ transform: [{ scale: boxScales[index] }] }]}
-              >
-                <TextInput
-                  ref={(ref: any) => (inputRefs.current[index] = ref)}
-                  style={[
-                    s.otpBox,
-                    {
-                      borderColor: isFocusedOrFilled
-                        ? theme.colors.secondaryDark
-                        : theme.colors.secondaryDark + '30',
-                      backgroundColor: isFocusedOrFilled
-                        ? theme.colors.secondaryDark + '08'
-                        : theme.colors.white,
-                      color: theme.colors.secondaryDark,
-                    },
-                  ]}
-                  value={digit}
-                  onChangeText={text => handleChange(text, index)}
-                  onKeyPress={({ nativeEvent }) =>
-                    handleKeyPress(nativeEvent.key, index)
-                  }
-                  keyboardType="number-pad"
-                  maxLength={1}
-                  textAlign="center"
-                  selectTextOnFocus
-                  caretHidden
-                />
-              </Animated.View>
-            );
-          })}
-        </Animated.View>
+        {/* Reusable OTP input */}
+        <View style={s.otpRow}>
+          <OtpInput
+            ref={otpInputRef}
+            length={4}
+            themeColor={theme.colors.secondaryDark}
+            backgroundColor={theme.colors.white}
+            disabled={isSending}
+            onChange={otp => {
+              currentOtp.current = otp;
+            }}
+            onComplete={code => {
+              currentOtp.current = code;
+              // handleVerify();
+            }}
+          />
+        </View>
 
-        {/* Countdown / Resend */}
+        {/* Resend row */}
         <View style={s.resendRow}>
-          <Text style={s.resendCountdown}>
+          <Text style={s.resendText}>
             Didn't receive the code?{' '}
             <Text
               style={[
-                s.resendActive,
+                s.resendAction,
                 {
                   color: canResend
                     ? theme.colors.secondaryDark
@@ -357,14 +298,13 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
               ]}
               onPress={canResend ? handleResend : undefined}
             >
-              Resend
-              {!canResend ? ` (${String(countdown).padStart(2, '0')}s)` : ''}
+              {canResend ? 'Resend' : `Resend (${formatCountdown(countdown)})`}
             </Text>
           </Text>
         </View>
 
-        {/* Countdown Ring */}
-        {!canResend && (
+        {/* Countdown progress bar — only visible while waiting to resend */}
+        {!canResend && countdown > 0 && (
           <View style={s.timerRow}>
             <View
               style={[
@@ -372,14 +312,12 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
                 { backgroundColor: theme.colors.secondaryDark + '15' },
               ]}
             >
-              <Animated.View
+              <View
                 style={[
                   s.timerFill,
                   {
                     backgroundColor: theme.colors.secondaryDark,
-                    width: `${
-                      ((RESEND_COUNTDOWN - countdown) / RESEND_COUNTDOWN) * 100
-                    }%`,
+                    width: `${((300 - countdown) / 300) * 100}%`,
                   },
                 ]}
               />
@@ -387,27 +325,14 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
           </View>
         )}
 
-        {/* Verify Button */}
+        {/* Verify button */}
         <TouchableOpacity
-          style={[
-            s.verifyBtn,
-            {
-              backgroundColor: theme.colors.secondaryDark,
-            },
-          ]}
+          style={[s.verifyBtn, { backgroundColor: theme.colors.secondaryDark }]}
           onPress={handleVerify}
           activeOpacity={0.85}
-          disabled={!isComplete || isVerifying}
         >
-          <Text style={s.verifyBtnText}>
-            {isVerifying ? 'Verifying...' : 'Verify OTP'}
-          </Text>
+          <Text style={s.verifyBtnText}>Verify OTP</Text>
         </TouchableOpacity>
-
-        {/* Footer note */}
-        {/* <Text style={s.footerNote}>
-          Didn't get the code? Check your spam folder aswell.
-        </Text> */}
       </Animated.View>
     </View>
   );
@@ -426,11 +351,6 @@ const makeStyles = (theme: any) =>
       height: 40,
       justifyContent: 'center',
       flexDirection: 'row',
-    },
-    backArrow: {
-      fontSize: 34,
-      // color: theme.colors.secondaryDark,
-      fontWeight: '600',
     },
     content: {
       flex: 1,
@@ -457,9 +377,7 @@ const makeStyles = (theme: any) =>
       borderRadius: 54,
       borderWidth: 1.5,
     },
-    iconEmoji: {
-      fontSize: 38,
-    },
+    iconEmoji: { fontSize: 38 },
     title: {
       fontSize: 26,
       fontWeight: '700',
@@ -478,37 +396,17 @@ const makeStyles = (theme: any) =>
       marginBottom: 36,
     },
     otpRow: {
-      flexDirection: 'row',
-      gap: 12,
       marginBottom: 24,
-    },
-    otpBox: {
-      width: 62,
-      height: 68,
-      borderRadius: 14,
-      borderWidth: 2,
-      fontSize: 26,
-      fontWeight: '700',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.06,
-      shadowRadius: 6,
-      // elevation: 2,
     },
     resendRow: {
       alignItems: 'center',
       marginBottom: 10,
     },
-    resendCountdown: {
+    resendText: {
       fontSize: 13,
       color: '#9CA3AF',
-      fontWeight: '400',
     },
-    countdownNumber: {
-      fontWeight: '700',
-      fontSize: 14,
-    },
-    resendActive: {
+    resendAction: {
       fontSize: 14,
       fontWeight: '700',
       textDecorationLine: 'underline',
@@ -535,25 +433,11 @@ const makeStyles = (theme: any) =>
       alignItems: 'center',
       justifyContent: 'center',
       marginTop: 8,
-      shadowColor: theme.colors.secondaryDark,
-      // shadowOffset: { width: 0, height: 4 },
-      // shadowOpacity: 0.12,
-      // shadowRadius: 10,
-      // elevation: 4,
     },
     verifyBtnText: {
       color: colors.white,
       fontSize: 16,
-      // fontWeight: '700',
       letterSpacing: 0.3,
-    },
-    footerNote: {
-      marginTop: 20,
-      fontSize: 12,
-      color: colors.textSecondary,
-      textAlign: 'center',
-      lineHeight: 18,
-      paddingHorizontal: 16,
     },
   });
 

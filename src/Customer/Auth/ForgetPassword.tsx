@@ -422,7 +422,7 @@
 //   },
 // });
 
-import React, { createRef, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -430,15 +430,12 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  ImageBackground,
   BackHandler,
   Alert,
 } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../redux/store';
 import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../../components/common/Button';
-import { Card } from '../../components/common/Card';
+import OtpInput, { OtpInputHandle } from '../../components/common/OtpInput';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppSizes } from '../../utils/AppSizes';
@@ -446,132 +443,105 @@ import { useLoginUser } from './login';
 import { LoadingModal } from '../../components/common/LoadingModal';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { fonts } from '../../assets/fonts/Fonts';
-import { colors } from '../../styles/theme';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useOtpManager } from '../../hooks/useOtpManager';
+import { showMessage } from 'react-native-flash-message';
+import { CommonStyles } from '../../styles/GlobalStyle';
 
 // Define the different screen modes
 type ForgetPasswordMode = 'ENTER_CNIC' | 'ENTER_OTP' | 'CREATE_PASSWORD';
 
 const ForgetPassword = () => {
   const { theme } = useTheme();
-  const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
   const loginData = useLoginUser();
 
   const [mode, setMode] = useState<ForgetPasswordMode>('ENTER_CNIC');
   const [showPassword, setShowPassword] = useState<boolean>(true);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(true);
-
-  // State for different modes
   const [cnic, setCnic] = useState<string>('');
-  const [otp, setOtp] = useState<string[]>(['', '', '', '']);
   const [newPassword, setNewPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+  // Phone number resolved from CNIC lookup — replace with real API value
+  const [lookupPhone, setLookupPhone] = useState<string>('');
 
-  const otpRefs = useRef(
-    Array(4)
-      .fill(0)
-      .map(() => createRef<TextInput>()),
-  );
+  const otpInputRef = useRef<OtpInputHandle>(null);
+  const currentOtp = useRef('');
 
-  // OTP Input Component
-  const OTPInput = ({ value, index, onChangeText, onBlur, onKeyPress }) => {
-    return (
-      <View
-        style={[
-          styles.otpInputContainer,
-          {
-            backgroundColor: theme.colors.white,
-            borderColor: theme.colors.secondaryDark,
-            borderWidth: 1.5,
-            alignItems: 'center',
-          },
-        ]}
-      >
-        <TextInput
-          style={[
-            styles.otpInput,
-            {
-              color: theme.colors.textTertiary,
-            },
-          ]}
-          keyboardType="numeric"
-          ref={otpRefs.current[index]}
-          value={value}
-          placeholderTextColor={theme.colors.primaryDark}
-          onChangeText={text => onChangeText(text, index)}
-          onKeyPress={e => onKeyPress(e, index)} // Add this line
-          onBlur={onBlur}
-          maxLength={1}
-          selectTextOnFocus
-          onSubmitEditing={() => {
-            if (index < 3) {
-              otpRefs.current[index + 1]?.current?.focus();
-            }
-          }}
-        />
-      </View>
-    );
-  };
+  const { sendOtp, verifyOtp, resendOtp, countdown, canResend, isSending: isOtpSending } =
+    useOtpManager({
+      onOtpRead: code => {
+        currentOtp.current = code;
+        otpInputRef.current?.autoFill(code);
+      },
+    });
 
-  const OTPVerify = () => {
-    const handleOtpChange = (text: string, index: number) => {
-      // Only allow numbers
-      const numericText = text.replace(/[^0-9]/g, '');
+  // Auto-send OTP the first time user enters OTP mode
+  useEffect(() => {
+    if (mode === 'ENTER_OTP') {
+      sendOtp(lookupPhone).then(result => {
+        if (!result.success) {
+          showMessage({
+            message: 'Could not send OTP',
+            description: result.error,
+            type: 'danger',
+            style: CommonStyles.error,
+          });
+        }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode]);
 
-      const newOtp = [...otp];
-      newOtp[index] = numericText;
-      setOtp(newOtp);
-
-      // Auto-focus next input
-      if (numericText && index < 3) {
-        console.log('Focusing next input', index);
-        setTimeout(() => {
-          otpRefs.current[index + 1]?.current?.focus();
-        }, 10);
-      }
+  const OTPSection = () => {
+    const formatCountdown = (secs: number) => {
+      const m = Math.floor(secs / 60);
+      const s = secs % 60;
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     };
 
-    const handleKeyPress = ({ nativeEvent }: any, index: number) => {
-      console.log('Key pressed:', nativeEvent.key);
-      if (nativeEvent.key === 'Backspace' && otp[index] === '' && index > 0) {
-        console.log('Backspace on empty field, focusing previous');
-        setTimeout(() => {
-          otpRefs.current[index - 1]?.current?.focus();
-        }, 10);
+    const handleResend = async () => {
+      otpInputRef.current?.clear();
+      currentOtp.current = '';
+      const result = await resendOtp();
+      if (!result.success) {
+        showMessage({
+          message: 'Could not resend OTP',
+          description: result.error,
+          type: 'danger',
+          style: CommonStyles.error,
+        });
       }
     };
-
-    // Auto-focus first input when component mounts
-    //   useEffect(() => {
-    //     const timer = setTimeout(() => {
-    //       otpRefs.current[0]?.current?.focus();
-    //     }, 300);
-
-    //     return () => clearTimeout(timer);
-    //   }, []);
 
     return (
       <View style={styles.otpContainer}>
-        <View style={styles.otpInputsRow}>
-          {otp.map((digit, index) => (
-            <OTPInput
-              key={index}
-              value={digit}
-              index={index}
-              onChangeText={handleOtpChange}
-              onKeyPress={handleKeyPress} // Pass the function here
-              onBlur={() => {}}
-            />
-          ))}
-        </View>
-        <TouchableOpacity style={styles.resendContainer}>
+        <OtpInput
+          ref={otpInputRef}
+          length={4}
+          themeColor={theme.colors.secondaryDark}
+          backgroundColor={theme.colors.white}
+          disabled={isOtpSending}
+          onChange={code => { currentOtp.current = code; }}
+        />
+        <TouchableOpacity
+          style={styles.resendContainer}
+          onPress={canResend ? handleResend : undefined}
+          disabled={!canResend && countdown > 0}
+        >
           <Text style={[styles.resendText, { color: theme.colors.gray400 }]}>
             Didn't receive code?{' '}
             <Text
-              style={[styles.resendLink, { color: theme.colors.secondaryDark }]}
+              style={[
+                styles.resendLink,
+                {
+                  color: canResend
+                    ? theme.colors.secondaryDark
+                    : theme.colors.secondaryDark + '50',
+                },
+              ]}
             >
-              Resend OTP
+              {canResend ? 'Resend OTP' : `Resend (${formatCountdown(countdown)})`}
             </Text>
           </Text>
         </TouchableOpacity>
@@ -767,7 +737,7 @@ const ForgetPassword = () => {
         break;
       case 'ENTER_OTP':
         // Handle OTP verification
-        console.log('OTP submitted:', otp.join(''));
+        // console.log('OTP submitted:', otp.join(''));
         setMode('CREATE_PASSWORD');
         break;
       case 'CREATE_PASSWORD':
@@ -831,7 +801,7 @@ const ForgetPassword = () => {
       case 'ENTER_CNIC':
         return <CNICForm />;
       case 'ENTER_OTP':
-        return <OTPVerify />;
+        // return <OTPVerify />;
       case 'CREATE_PASSWORD':
         return <CreatePasswordForm />;
       default:

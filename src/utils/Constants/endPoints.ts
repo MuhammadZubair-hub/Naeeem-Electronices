@@ -5,6 +5,7 @@ export const baseUrl = Test;
 // export const baseUrl = 'https://c21209app02p01.cloudiax.com:13000/api/';
 
 export const endPoints = {
+  EmployeeInfo: 'Auth/EmployeeInfo',
   login: 'Auth/login',
   updatePassword: 'Auth/updatepassword',
   region: 'Common/GetRegion',
@@ -17,6 +18,9 @@ export const endPoints = {
   avocountdetial: 'Common/GetAVODetail',
   
   GetEmployeeLogs: 'Common/GetEmployeeLogs',
+
+  sendOtp: 'Auth/sendOtp',
+  verifyOtp: 'Auth/verifyOtp',
 };
 
 

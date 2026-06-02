@@ -19,10 +19,13 @@ import { fonts } from '../../../assets/fonts/Fonts';
 import { colors } from '../../../styles/theme';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useLoginUser } from './login';
+import { CommonStyles } from '../../../styles/GlobalStyle';
+import { showMessage } from 'react-native-flash-message';
+import { API_Config } from '../../services/apiServices';
 
 const UpdatePassword = () => {
   const { theme } = useTheme();
-  const navigation:any = useNavigation();
+  const navigation: any = useNavigation();
   const route = useRoute();
   const params: any = route.params;
 
@@ -35,18 +38,40 @@ const UpdatePassword = () => {
   const [newPassword, setNewPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
 
-  const handlePress = () => {
+  const handlePress = async () => {
     if (!otpVerified) {
       if (!userID.trim()) {
-        Alert.alert('Validation', 'Please enter a User ID');
+        // Alert.alert('Validation', 'Please enter a User ID');
+        showMessage({
+          message: 'Validation Error',
+          description: 'Please enter a User ID',
+          type: 'danger',
+          style: CommonStyles.error,
+        });
         return;
       }
-      (navigation as any).navigate('otp', { flow: 'updatePassword', userID: userID.trim() });
+
+      const response = await API_Config.EmployeeInfo({ EmpId: userID.trim() });
+      console.log('response:', response?.data?.data?.mobile);
+      // return;
+
+      (navigation as any).navigate('otp', {
+        flow: 'updatePassword',
+        userID: userID.trim(),
+        res: response?.data?.data?.mobile
+      });
     } else {
       if (!newPassword.trim() || !confirmPassword.trim()) {
-        Alert.alert('Validation', 'Please enter and confirm your new password');
+        showMessage({
+          message: 'Validation Error',
+          description: 'Please enter and confirm your new password',
+          type: 'danger',
+          style: CommonStyles.error,
+        });
+        // Alert.alert('Validation', 'Please enter and confirm your new password');
         return;
       }
       if (newPassword !== confirmPassword) {
@@ -68,8 +93,11 @@ const UpdatePassword = () => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.glassCard}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('MainAuth')}>
-          {/* <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}> */}
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.navigate('MainAuth')}
+          >
+            {/* <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}> */}
             <Ionicons
               name="arrow-back-outline"
               size={AppSizes.Icon_Height_25}
@@ -97,7 +125,12 @@ const UpdatePassword = () => {
             <View style={styles.inputFieldsContainer}>
               {/* User ID field */}
               <View style={styles.fieldContainer}>
-                <Text style={[styles.fieldLabel, { color: theme.colors.secondaryDark }]}>
+                <Text
+                  style={[
+                    styles.fieldLabel,
+                    { color: theme.colors.secondaryDark },
+                  ]}
+                >
                   User ID
                 </Text>
                 <View
@@ -105,7 +138,7 @@ const UpdatePassword = () => {
                     styles.inputContainer,
                     {
                       backgroundColor: otpVerified
-                        ? '#ebedef' 
+                        ? '#ebedef'
                         : theme.colors.white,
                       borderColor: 'rgba(255,255,255,1)',
                     },
@@ -142,13 +175,21 @@ const UpdatePassword = () => {
               {otpVerified && (
                 <>
                   <View style={styles.fieldContainer}>
-                    <Text style={[styles.fieldLabel, { color: theme.colors.secondaryDark }]}>
+                    <Text
+                      style={[
+                        styles.fieldLabel,
+                        { color: theme.colors.secondaryDark },
+                      ]}
+                    >
                       New Password
                     </Text>
                     <View
                       style={[
                         styles.inputContainer,
-                        { backgroundColor: theme.colors.white, borderColor: 'rgba(255,255,255,0.3)' },
+                        {
+                          backgroundColor: theme.colors.white,
+                          borderColor: 'rgba(255,255,255,0.3)',
+                        },
                       ]}
                     >
                       <View style={styles.iconContainer}>
@@ -159,7 +200,10 @@ const UpdatePassword = () => {
                         />
                       </View>
                       <TextInput
-                        style={[styles.input, { color: theme.colors.textTertiary }]}
+                        style={[
+                          styles.input,
+                          { color: theme.colors.textTertiary },
+                        ]}
                         value={newPassword}
                         onChangeText={text => setNewPassword(text)}
                         placeholder="Enter new password"
@@ -173,7 +217,9 @@ const UpdatePassword = () => {
                         onPress={() => setShowPassword(p => !p)}
                       >
                         <Ionicons
-                          name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                          name={
+                            showPassword ? 'eye-off-outline' : 'eye-outline'
+                          }
                           size={AppSizes.Icon_Height_20}
                           color={theme.colors.secondaryDark}
                         />
@@ -182,13 +228,21 @@ const UpdatePassword = () => {
                   </View>
 
                   <View style={styles.fieldContainer}>
-                    <Text style={[styles.fieldLabel, { color: theme.colors.secondaryDark }]}>
+                    <Text
+                      style={[
+                        styles.fieldLabel,
+                        { color: theme.colors.secondaryDark },
+                      ]}
+                    >
                       Confirm New Password
                     </Text>
                     <View
                       style={[
                         styles.inputContainer,
-                        { backgroundColor: theme.colors.white, borderColor: 'rgba(255,255,255,0.3)' },
+                        {
+                          backgroundColor: theme.colors.white,
+                          borderColor: 'rgba(255,255,255,0.3)',
+                        },
                       ]}
                     >
                       <View style={styles.iconContainer}>
@@ -199,7 +253,10 @@ const UpdatePassword = () => {
                         />
                       </View>
                       <TextInput
-                        style={[styles.input, { color: theme.colors.textTertiary }]}
+                        style={[
+                          styles.input,
+                          { color: theme.colors.textTertiary },
+                        ]}
                         value={confirmPassword}
                         onChangeText={text => setConfirmPassword(text)}
                         placeholder="Confirm new password"
@@ -213,7 +270,11 @@ const UpdatePassword = () => {
                         onPress={() => setShowConfirmPassword(p => !p)}
                       >
                         <Ionicons
-                          name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'}
+                          name={
+                            showConfirmPassword
+                              ? 'eye-off-outline'
+                              : 'eye-outline'
+                          }
                           size={AppSizes.Icon_Height_20}
                           color={theme.colors.secondaryDark}
                         />

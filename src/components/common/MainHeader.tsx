@@ -94,9 +94,9 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
   const UpdatePassword = async () => {
     console.log('User: ', users);
     console.log('pswd: ', pswd);
-   
-    if (!pswd.curpswd|| !pswd.newpswd) {
-    // if (pswd.curpswd === '' || pswd.newpswd === '') {
+
+    if (!pswd.curpswd || !pswd.newpswd) {
+      // if (pswd.curpswd === '' || pswd.newpswd === '') {
       showMessage({
         message: 'Validation Error',
         description: 'Please enter both New Password and Confirm Password',
@@ -115,7 +115,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
       return;
     }
 
-     if (pswd.curpswd.length < 4 || pswd.newpswd.length < 4) {
+    if (pswd.curpswd.length < 4 || pswd.newpswd.length < 4) {
       showMessage({
         message: 'Error',
         description: 'Password must be at least 4 characters long',
@@ -534,6 +534,10 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
                       {item.status || '-'}
                     </Text>
                   </View>
+                  {/* <View>
+                    <Text>App Version:</Text>
+                    <Text>1.0.2</Text>
+                  </View> */}
                 </View>
               ))}
             </ScrollView>
@@ -582,7 +586,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
                 onChangeText={text =>
                   setPswd(pre => ({ ...pre, curpswd: text }))
                 }
-                placeholder="Enter enter New Password"
+                placeholder="Enter New Password"
                 placeholderTextColor={theme.colors.textTertiary}
                 secureTextEntry={showPswd}
               />
@@ -634,7 +638,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
                 onChangeText={text =>
                   setPswd(pre => ({ ...pre, newpswd: text }))
                 }
-                placeholder="Please Confirm your Password"
+                placeholder="Confirm your Password"
                 placeholderTextColor={theme.colors.textTertiary}
                 secureTextEntry={showNewPswd}
               />

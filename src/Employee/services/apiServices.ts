@@ -10,13 +10,31 @@ export const API_Config = {
   //   });
   // },
 
-   loginUser: async (empId: string, password: string, macAddress: string,ipAddress: string,longitude: string,latitude: string) => {
+  loginUser: async (
+    empId: string,
+    password: string,
+    macAddress: string,
+    ipAddress: string,
+    longitude: string,
+    latitude: string,
+    verified: string,
+  ) => {
     return apicall_new({
       endpoint: `${baseUrl}${endPoints.login}`,
       method: 'POST',
-      data: { empId,password,macAddress,ipAddress,longitude,latitude },
+      data: {
+        empId,
+        password,
+        macAddress,
+        ipAddress,
+        longitude,
+        latitude,
+        verified,
+      },
     });
   },
+
+
 
   updateUserPassword: async (empId: string, newPassword: string) => {
     return apicall_new({
@@ -26,6 +44,13 @@ export const API_Config = {
     });
   },
 
+  EmployeeInfo: async (param: any) => {
+    return apicall_new({
+      endpoint: `${baseUrl}${endPoints.EmployeeInfo}`,
+      method: 'GET',
+      params: param,
+    });
+  },
   getRegionCount: async (param: any) => {
     return apicall_new({
       endpoint: `${baseUrl}${endPoints.regioncount}`,
@@ -93,8 +118,20 @@ export const API_Config = {
       params: param,
     });
   },
+
+  sendSmsOtp: async (phoneNumber: string, otpCode: string) => {
+    return apicall_new({
+      endpoint: `${baseUrl}${endPoints.sendOtp}`,
+      method: 'POST',
+      data: { phoneNumber, otpCode },
+    });
+  },
+
+  verifySmsOtp: async (phoneNumber: string, otpCode: string) => {
+    return apicall_new({
+      endpoint: `${baseUrl}${endPoints.verifyOtp}`,
+      method: 'POST',
+      data: { phoneNumber, otpCode },
+    });
+  },
 };
-
-
-
-

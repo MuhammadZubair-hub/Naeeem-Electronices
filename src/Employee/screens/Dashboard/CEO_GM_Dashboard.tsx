@@ -7,6 +7,7 @@ import {
   ScrollView,
   Dimensions,
   StatusBar,
+  TouchableOpacity,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
@@ -164,7 +165,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
                   //marginTop: AppSizes.Margin_Vertical_20,
                 }}
               >
-                <View
+                <TouchableOpacity
                   style={[
                     styles.cardtitle,
                     { backgroundColor: colors.secondaryDark },
@@ -174,8 +175,8 @@ export const CEO_GM_Dashboard: React.FC = () => {
                   <Text style={{ color: 'white', fontFamily: fonts.medium }}>
                     {regionsCountData.totalCount}
                   </Text>
-                </View>
-                <View
+                </TouchableOpacity>
+                <TouchableOpacity
                   style={[
                     styles.cardtitle,
                     { backgroundColor: theme.colors.success },
@@ -185,9 +186,9 @@ export const CEO_GM_Dashboard: React.FC = () => {
                   <Text style={{ color: 'white', fontFamily: fonts.medium }}>
                     {regionsCountData.paidCount}
                   </Text>
-                </View>
+                </TouchableOpacity>
 
-                <View
+                <TouchableOpacity
                   style={[
                     styles.cardtitle,
                     { backgroundColor: theme.colors.warning },
@@ -197,7 +198,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
                   <Text style={{ color: 'white', fontFamily: fonts.medium }}>
                     {regionsCountData.dueCount}
                   </Text>
-                </View>
+                </TouchableOpacity>
               </Card>
 
               <RegionList data={regionsData} />
