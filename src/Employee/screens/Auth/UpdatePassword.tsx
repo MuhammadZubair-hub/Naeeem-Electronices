@@ -22,6 +22,8 @@ import { useLoginUser } from './login';
 import { CommonStyles } from '../../../styles/GlobalStyle';
 import { showMessage } from 'react-native-flash-message';
 import { API_Config } from '../../services/apiServices';
+import DeviceInfo from 'react-native-device-info';
+import { data } from '../../../Customer/screens/data';
 
 const UpdatePassword = () => {
   const { theme } = useTheme();
@@ -29,40 +31,93 @@ const UpdatePassword = () => {
   const route = useRoute();
   const params: any = route.params;
 
-  const otpVerified = params?.otpVerified === true;
+  // const otpVerified = params?.otpVerified === true;
+  // const otpVerified = params?.otpVerified === true;
   const verifiedUserID: string = params?.userID ?? '';
 
   const loginData = useLoginUser();
 
   const [userID, setUserID] = useState<string>(verifiedUserID);
   const [newPassword, setNewPassword] = useState<string>('');
+  const [data, setData] = useState<any>();
+  const [currPassword, setCurrPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [otpVerified, setOTPVerified] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
 
+  const getDeviceId = async () => {
+    try {
+      const uniqueId = await DeviceInfo.getUniqueId();
+      return uniqueId;
+    } catch (error) {
+      console.error('Error getting device ID:', error);
+      return null;
+    }
+  };
   const handlePress = async () => {
     if (!otpVerified) {
-      if (!userID.trim()) {
+      if (!userID.trim() || !currPassword.trim()) {
         // Alert.alert('Validation', 'Please enter a User ID');
         showMessage({
           message: 'Validation Error',
-          description: 'Please enter a User ID',
+          description: 'Please enter a User ID and Password',
           type: 'danger',
           style: CommonStyles.error,
         });
         return;
       }
+      const id = await getDeviceId();
+      console.log('id: ', userID, ' pswd: ', currPassword, ' mac: ', id);
 
       const response = await API_Config.EmployeeInfo({ EmpId: userID.trim() });
-      console.log('response:', response?.data?.data?.mobile);
-      // return;
-
-      (navigation as any).navigate('otp', {
-        flow: 'updatePassword',
-        userID: userID.trim(),
-        res: response?.data?.data?.mobile
-      });
+      // console.log('response:', response?.data?.data?.mobile);
+      console.log('response:', response);
+      // console.log('response:', response?.data?.data);
+      const data = response?.data?.data;
+      setData(data);
+      if (data) {
+        if (data?.password === currPassword) {
+          console.log('pswd same');
+        } else {
+          showMessage({
+            message: 'Validation Error',
+            description: 'Password is incorrect',
+            type: 'danger',
+            style: CommonStyles.error,
+          });
+          return;
+        }
+        // e4972c4089b12734
+        if (data?.macAddress === 'e4972c4089b12734') {
+          console.log('same mac add');
+        } else {
+          showMessage({
+            message: 'Validation Error',
+            description: 'MAC Address is incorrect',
+            type: 'danger',
+            style: CommonStyles.error,
+          });
+          return;
+        }
+      } else {
+        showMessage({
+          message: 'Validation Error',
+          description: 'User ID is incorrect',
+          type: 'danger',
+          style: CommonStyles.error,
+        });
+        return;
+      }
+      console.log('everything is correct');
+      setOTPVerified(true);
+      return;
+      // (navigation as any).navigate('otp', {
+      //   flow: 'updatePassword',
+      //   userID: userID.trim(),
+      //   res: response?.data?.data?.mobile
+      // });
     } else {
       if (!newPassword.trim() || !confirmPassword.trim()) {
         showMessage({
@@ -71,11 +126,36 @@ const UpdatePassword = () => {
           type: 'danger',
           style: CommonStyles.error,
         });
-        // Alert.alert('Validation', 'Please enter and confirm your new password');
+
         return;
       }
       if (newPassword !== confirmPassword) {
-        Alert.alert('Validation', 'Passwords do not match');
+        showMessage({
+          message: 'Validation Error',
+          description: 'New Password do not match',
+          type: 'danger',
+          style: CommonStyles.error,
+        });
+
+        return;
+      }
+      if (newPassword === data?.password) {
+        showMessage({
+          message: 'Validation Error',
+          description: "Current and New Password can't be same",
+          type: 'danger',
+          style: CommonStyles.error,
+        });
+        return;
+      }
+
+      if (newPassword.length < 4) {
+        showMessage({
+          message: 'Validation Error',
+          description: 'New Password must be at least 4 characters long',
+          type: 'danger',
+          style: CommonStyles.error,
+        });
         return;
       }
       loginData.handleUpdatePassword(verifiedUserID || userID, newPassword);
@@ -156,6 +236,52 @@ const UpdatePassword = () => {
                     value={otpVerified ? verifiedUserID : userID}
                     onChangeText={text => setUserID(text)}
                     placeholder="Enter User ID"
+                    placeholderTextColor={theme.colors.textTertiary}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    editable={!otpVerified}
+                  />
+                  {otpVerified && (
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={AppSizes.Icon_Height_20}
+                      color={theme.colors.secondaryDark}
+                    />
+                  )}
+                </View>
+              </View>
+              <View style={styles.fieldContainer}>
+                <Text
+                  style={[
+                    styles.fieldLabel,
+                    { color: theme.colors.secondaryDark },
+                  ]}
+                >
+                  Current Password
+                </Text>
+                <View
+                  style={[
+                    styles.inputContainer,
+                    {
+                      backgroundColor: otpVerified
+                        ? '#ebedef'
+                        : theme.colors.white,
+                      borderColor: 'rgba(255,255,255,1)',
+                    },
+                  ]}
+                >
+                  <View style={styles.iconContainer}>
+                    <Ionicons
+                      name="person-outline"
+                      size={AppSizes.Icon_Height_20}
+                      color={theme.colors.secondaryDark}
+                    />
+                  </View>
+                  <TextInput
+                    style={[styles.input, { color: theme.colors.textTertiary }]}
+                    value={currPassword}
+                    onChangeText={text => setCurrPassword(text)}
+                    placeholder="Enter Current Password"
                     placeholderTextColor={theme.colors.textTertiary}
                     autoCapitalize="none"
                     autoCorrect={false}
@@ -289,7 +415,7 @@ const UpdatePassword = () => {
 
             <Button
               variant="secondary"
-              title={otpVerified ? 'Update Password' : 'Send OTP'}
+              title={otpVerified ? 'Update Password' : 'Verify'}
               onPress={handlePress}
               style={styles.actionButton}
             />

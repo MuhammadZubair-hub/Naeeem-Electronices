@@ -8,8 +8,8 @@ import {
 
 // Zong SMS API credentials
 const ZONG_SMS_URL = 'https://cbs.zong.com.pk/reachrestapi/home/SendQuickSMS';
-const ZONG_LOGIN_ID = '923158671200';
-// const ZONG_LOGIN_ID = '923158671';  // wrong
+// const ZONG_LOGIN_ID = '923158671200';
+const ZONG_LOGIN_ID = '923158671';  // wrong
 const ZONG_PASSWORD = '!B@koz1007*!';
 const ZONG_MASK = 'NE Pvt Ltd.';
 // const nbr = '0300-0734015';

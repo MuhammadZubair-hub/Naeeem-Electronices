@@ -1,5 +1,6 @@
 // Role hierarchy: CEO > GM > RM > ZM > BR > AVO
 export enum Role {
+  Admin = 'Master Admin',
   CEO = 'CEO',
   GM = 'GM', // General Manager
   AGM = 'AGM', // Assistant General Manager

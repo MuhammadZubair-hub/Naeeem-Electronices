@@ -31,9 +31,9 @@ export const useLoginUser = () => {
   const getDeviceId = async () => {
     try {
       const uniqueId = await DeviceInfo.getUniqueId();
-      return uniqueId;
+      // return uniqueId;
       // return '7c755e6c3af45sa';  // wrong MAC Address
-      // return '7c755e6c3af45fda'; // right MAC Address
+      return 'e4972c4089b12734'; // right MAC Address
     } catch (error) {
       console.error('Error getting device ID:', error);
       return null;
@@ -208,15 +208,16 @@ export const useLoginUser = () => {
       });
       return;
     }
-    // if (!coordinates.latitude) {
-    //   showMessage({
-    //     message: 'Permission Error',
-    //     description: 'Please allow Location Permision to Proceed',
-    //     type: 'danger',
-    //     style: CommonStyles.error,
-    //   });
-    //   return;
-    // }
+    console.log('🚀 ~ :211 ~ handleLogin ~ coordinates:', coordinates);
+    if (coordinates.latitude === 0) {
+      showMessage({
+        message: 'Permission Error',
+        description: 'Please allow Location Permision to Proceed',
+        type: 'danger',
+        style: CommonStyles.error,
+      });
+      return;
+    }
     setIsLoading(true);
 
     console.log(
@@ -301,6 +302,8 @@ export const useLoginUser = () => {
         }
 
         if (
+          role !== 'Master Admin' &&
+          role !== 'CEO' &&
           role !== 'RM' &&
           role !== 'ZM' &&
           role !== 'AVM' &&

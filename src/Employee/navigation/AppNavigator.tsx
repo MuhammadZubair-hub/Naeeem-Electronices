@@ -126,6 +126,7 @@ const RoleBasedNavigator = () => {
       <Stack.Screen
         name="RegionList"
         component={RoleGuard(RegionList, [
+          Role.Admin,
           Role.CEO,
           Role.GM,
           Role.RM,
@@ -133,7 +134,7 @@ const RoleBasedNavigator = () => {
           Role.AVM,
           Role.AVO,
         ])}
-      />
+        />
 
       <Stack.Screen
         name="ZoneList"
@@ -144,59 +145,65 @@ const RoleBasedNavigator = () => {
           Role.AVO,
           Role.GM,
           Role.CEO,
+          Role.Admin,
         ])}
-      />
+        />
       <Stack.Screen
         name="BranchList"
         component={RoleGuard(BranchList, [
+          Role.Admin,
           Role.CEO,
           Role.GM,
-
+          
           Role.RM,
           Role.ZM,
           Role.AVM,
           Role.AVO,
         ])}
-      />
+        />
       <Stack.Screen
         name="CustomerList"
         component={RoleGuard(CustomerList, [
+          Role.Admin,
           Role.CEO,
           Role.GM,
-
+          
           Role.RM,
           Role.ZM,
           Role.AVM,
           Role.AVO,
         ])}
-      />
+        />
       <Stack.Screen
         name="CustomerDetail"
         component={RoleGuard(CustomerDetail, [
+          Role.Admin,
           Role.CEO,
           Role.GM,
-
+          
           Role.RM,
           Role.ZM,
           Role.AVM,
           Role.AVO,
         ])}
-      />
+        />
       <Stack.Screen
         name="AVOsList"
         component={RoleGuard(AVOsList, [
+          Role.Admin,
           Role.CEO,
           Role.GM,
-
+          
           Role.RM,
           Role.ZM,
           Role.AVM,
           Role.AVO,
         ])}
-      />
+        />
     </Stack.Navigator>
   );
 };
+
 
 export const AppNavigator = () => {
   let isActive = 'Employee';

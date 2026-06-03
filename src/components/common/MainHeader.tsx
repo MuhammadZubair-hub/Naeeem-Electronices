@@ -20,9 +20,7 @@ import BaseModal from './BaseModal';
 import { fonts } from '../../assets/fonts/Fonts';
 import { Button } from './Button';
 import { API_Config } from '../../Employee/services/apiServices';
-import { current } from '@reduxjs/toolkit';
-import { formatDate, formatDateTime, formatTime } from '../../utils/formatters';
-import { colors } from '../../styles/theme';
+import { formatDate, formatTime } from '../../utils/formatters';
 
 interface MainHeaderProps {
   title: string | undefined;
@@ -39,6 +37,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
   const [loginHistoryLoading, setLoginHistoryLoading] = useState(false);
   const [loginHistoryData, setLoginHistoryData] = useState<any[]>([]);
   const [loginHistoryError, setLoginHistoryError] = useState('');
+  const [searchEmpId, setSearchEmpId] = useState('');
   const [showPswd, setShowPswd] = useState<boolean>(true);
   const [showNewPswd, setShowNewPswd] = useState<boolean>(true);
   const [pswd, setPswd] = useState({ curpswd: '', newpswd: '' });
@@ -57,17 +56,25 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
   const handleViewLoginHistory = async () => {
     setMenuVisible(false);
     setLoginHistoryVisible(true);
+    setSearchEmpId('');
+    setLoginHistoryData([]);
+    setLoginHistoryError('');
+  };
+
+  const fetchLoginHistory = async (empId: string) => {
+    if (!empId.trim()) {
+      setLoginHistoryError('Please enter an Employee ID.');
+      return;
+    }
     setLoginHistoryError('');
     setLoginHistoryLoading(true);
 
-    const response = await API_Config.getEmployeeLogs();
+    const response = await API_Config.getEmployeeLogs(empId.trim());
     if (response.success && response.data?.status) {
       const items = Array.isArray(response.data.data) ? response.data.data : [];
-      console.log('🚀 ~ :63 ~ handleViewLoginHistory ~ items:', items);
       setLoginHistoryData(items);
-
       if (items.length === 0) {
-        setLoginHistoryError('No login history found.');
+        setLoginHistoryError('No login history found for this employee.');
       }
     } else {
       setLoginHistoryData([]);
@@ -77,7 +84,6 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
           'Unable to fetch login history.',
       );
     }
-
     setLoginHistoryLoading(false);
   };
 
@@ -157,17 +163,23 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
     // setChangePasswordVisible(false);
     // setMenuVisible(true);
   };
+  const isAdmin = users?.designation === 'Master Admin';
+
   const menuItems = [
     {
       icon: 'lock-closed-outline',
       label: 'Change Password',
       onPress: () => handleChangePassword(),
     },
-    {
-      icon: 'time-outline',
-      label: 'View Login History',
-      onPress: () => handleViewLoginHistory(),
-    },
+    ...(isAdmin
+      ? [
+          {
+            icon: 'time-outline',
+            label: 'View Login History',
+            onPress: () => handleViewLoginHistory(),
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -368,6 +380,53 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
         modalHeight="80%"
       >
         <View style={styles.confirmBody}>
+          {/* Employee ID search row */}
+          <View style={styles.searchRow}>
+            <View
+              style={[
+                styles.searchInputWrap,
+                {
+                  backgroundColor: theme.colors.white,
+                  borderColor: theme.colors.surfaceVariant,
+                },
+              ]}
+            >
+              <Ionicons
+                name="person-outline"
+                size={AppSizes.Icon_Height_20}
+                color={theme.colors.secondaryDark}
+                style={{ marginRight: 8 }}
+              />
+              <TextInput
+                style={[
+                  styles.searchInput,
+                  { color: theme.colors.textTertiary },
+                ]}
+                value={searchEmpId}
+                onChangeText={setSearchEmpId}
+                placeholder="Enter Employee ID"
+                placeholderTextColor={theme.colors.textTertiary}
+                autoCapitalize="none"
+                returnKeyType="search"
+                onSubmitEditing={() => fetchLoginHistory(searchEmpId)}
+              />
+            </View>
+            <TouchableOpacity
+              style={[
+                styles.searchBtn,
+                { backgroundColor: theme.colors.secondaryDark },
+              ]}
+              onPress={() => fetchLoginHistory(searchEmpId)}
+              activeOpacity={0.8}
+            >
+              <Ionicons
+                name="search"
+                size={AppSizes.Icon_Height_20}
+                color={theme.colors.white}
+              />
+            </TouchableOpacity>
+          </View>
+
           {loginHistoryLoading ? (
             <ActivityIndicator
               size="large"
@@ -375,25 +434,15 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
               style={{ marginTop: AppSizes.Margin_Vertical_20 }}
             />
           ) : loginHistoryError ? (
-            <>
-              <Text
-                style={[
-                  styles.confirmText,
-                  { color: theme.colors.secondaryDark },
-                ]}
-              >
-                {loginHistoryError}
-              </Text>
-
-              <TouchableOpacity style={{ padding: 10 }}>
-                <Ionicons
-                  name="reload-circle"
-                  size={20}
-                  color={colors.primary}
-                />
-              </TouchableOpacity>
-            </>
-          ) : (
+            <Text
+              style={[
+                styles.confirmText,
+                { color: theme.colors.secondaryDark, marginTop: 12 },
+              ]}
+            >
+              {loginHistoryError}
+            </Text>
+          ) : loginHistoryData.length > 0 ? (
             <ScrollView
               style={styles.historyScroll}
               contentContainerStyle={styles.historyScrollContent}
@@ -415,7 +464,9 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
                         { color: theme.colors.textTertiary },
                       ]}
                     >
-                      {formatDate(item.loginTime) || '-'}
+                      {formatDate(item.loginTime) !== 'Invalid Date'
+                        ? formatDate(item.loginTime)
+                        : '-'}
                     </Text>
                   </View>
                   <View style={styles.historyHeader}>
@@ -433,8 +484,10 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
                         { color: theme.colors.textTertiary },
                       ]}
                     >
-                      {formatTime(item.loginTime) || '-'}
-                      {/* {item.loginTime.split(' ')[1] || '-'} */}
+                      {/* {formatTime(item.loginTime) !== "Invalide Date" ? formatTime(item.loginTime) : '-'} */}
+                      {formatTime(item.loginTime) !== 'Invalid Date'
+                        ? formatTime(item.loginTime)
+                        : '-'}
                     </Text>
                   </View>
 
@@ -541,7 +594,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
                 </View>
               ))}
             </ScrollView>
-          )}
+          ) : null}
         </View>
       </BaseModal>
 
@@ -780,6 +833,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   historyScrollContent: {
+    paddingBottom: 100,
     paddingVertical: AppSizes.Padding_Horizontal_10,
   },
   historyItem: {
@@ -857,6 +911,34 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
+  },
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    gap: 8,
+    marginBottom: 12,
+  },
+  searchInputWrap: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderRadius: AppSizes.Radius_10,
+    paddingHorizontal: 12,
+    minHeight: 48,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+  },
+  searchBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: AppSizes.Radius_10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

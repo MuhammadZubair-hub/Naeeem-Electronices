@@ -183,6 +183,8 @@ const OtpScreen: React.FC = () => {
           }
 
           if (
+            role !== 'Master Admin' &&
+            role !== 'CEO' &&
             role !== 'RM' &&
             role !== 'ZM' &&
             role !== 'AVM' &&

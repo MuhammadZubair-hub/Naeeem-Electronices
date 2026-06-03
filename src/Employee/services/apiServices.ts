@@ -90,10 +90,11 @@ export const API_Config = {
       params: param,
     });
   },
-  getEmployeeLogs: async () => {
+  getEmployeeLogs: async (empId?: string) => {
     return apicall_new({
       endpoint: `${baseUrl}${endPoints.GetEmployeeLogs}`,
       method: 'GET',
+      params: empId ? { empId } : undefined,
     });
   },
   getAllCustomers: async (param: any) => {
