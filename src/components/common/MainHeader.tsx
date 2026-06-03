@@ -445,7 +445,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
                         { color: theme.colors.secondaryDark },
                       ]}
                     >
-                      IP
+                      IP Address
                     </Text>
                     <Text
                       style={[
@@ -464,7 +464,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
                         { color: theme.colors.secondaryDark },
                       ]}
                     >
-                      MAC
+                      MAC Address
                     </Text>
                     <Text
                       style={[
