@@ -321,16 +321,16 @@ export const AvosCoustomerData = ({
 
   const openWhatsApp = (phoneNumber: string) => {
     if (phoneNumber) {
-      let cleanNumber = phoneNumber.replace(/[^\d+]/g, '');
-
-      if (!cleanNumber.startsWith('+')) {
-        cleanNumber = cleanNumber.startsWith('0')
-          ? '+92' + cleanNumber.substring(1)
-          : '+92' + cleanNumber;
+      let clean = phoneNumber.replace(/[^\d]/g, '');
+      if (clean.startsWith('92') && clean.length >= 12) {
+        // already has country code, use as-is
+      } else if (clean.startsWith('0')) {
+        clean = '92' + clean.substring(1);
+      } else {
+        clean = '92' + clean;
       }
-
-      const whatsappNumber = cleanNumber.replace('+', '');
-      const whatsappUrl = `whatsapp://send?phone=${whatsappNumber}`;
+      console.log('nbr: ', clean);
+      const whatsappUrl = `https://wa.me/${clean}`;
 
       Linking.openURL(whatsappUrl).catch(err => {
         console.error('Error opening WhatsApp:', err);

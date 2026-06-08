@@ -72,7 +72,10 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
     const response = await API_Config.getEmployeeLogs(empId.trim());
     if (response.success && response.data?.status) {
       const items = Array.isArray(response.data.data) ? response.data.data : [];
-      setLoginHistoryData(items);
+      console.log("🚀 ~ :75 ~ fetchLoginHistory ~ items:", items)
+      const logs = items.filter((item:any)=>item.status==="Login successful.")
+      console.log("🚀 ~ :77 ~ fetchLoginHistory ~ logs:", logs)
+      setLoginHistoryData(logs);
       if (items.length === 0) {
         setLoginHistoryError('No login history found for this employee.');
       }
@@ -163,6 +166,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
     // setChangePasswordVisible(false);
     // setMenuVisible(true);
   };
+  // const isAdmin = users?.designation === 'CEO';
   const isAdmin = users?.designation === 'Master Admin';
 
   const menuItems = [

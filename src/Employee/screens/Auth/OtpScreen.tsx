@@ -163,24 +163,24 @@ const OtpScreen: React.FC = () => {
           console.log('User Role:', role);
           //console.log('Full Auth:', fullAuth);
 
-          if (Region == 'N/A') {
-            showMessage({
-              message: 'Logged in Failed',
-              description: 'You do not have permission to access the apps',
-              type: 'danger',
-              style: CommonStyles.error,
-            });
-            return;
-          }
-          if (Zone == 'N/A') {
-            showMessage({
-              message: 'Logged in Failed',
-              description: 'You do not have permission to access the app',
-              type: 'danger',
-              style: CommonStyles.error,
-            });
-            return;
-          }
+          // if (Region == 'N/A') {
+          //   showMessage({
+          //     message: 'Logged in Failed',
+          //     description: 'You do not have permission to access the apps',
+          //     type: 'danger',
+          //     style: CommonStyles.error,
+          //   });
+          //   return;
+          // }
+          // if (Zone == 'N/A') {
+          //   showMessage({
+          //     message: 'Logged in Failed',
+          //     description: 'You do not have permission to access the app',
+          //     type: 'danger',
+          //     style: CommonStyles.error,
+          //   });
+          //   return;
+          // }
 
           if (
             role !== 'Master Admin' &&
@@ -213,7 +213,6 @@ const OtpScreen: React.FC = () => {
       } catch {
         console.log('in Catch');
       }
-      // dispatch(loginSuccess({ data: res?.data, token: res?.data?.token }));
     }
   };
 

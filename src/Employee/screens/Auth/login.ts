@@ -31,9 +31,8 @@ export const useLoginUser = () => {
   const getDeviceId = async () => {
     try {
       const uniqueId = await DeviceInfo.getUniqueId();
-      // return uniqueId;
-      // return '7c755e6c3af45sa';  // wrong MAC Address
-      return 'e4972c4089b12734'; // right MAC Address
+      return uniqueId;
+      // return 'a77a54bf13da6f87';
     } catch (error) {
       console.error('Error getting device ID:', error);
       return null;
@@ -42,8 +41,12 @@ export const useLoginUser = () => {
 
   const getIPAddress = async () => {
     try {
-      const ip = await DeviceInfo.getIpAddress();
-      console.log('IP Address:', ip);
+      // const localIP = await DeviceInfo.getIpAddress();
+      // console.log("🚀 ~ :46 ~ getIPAddress ~ localIP:", localIP)
+
+      const response = await fetch('https://api.ipify.org');
+      const ip = await response.text();
+      console.log('🚀 ~ :49 ~ getIPAddress ~ ip:', ip);
       setIpAddress(ip);
       return ip;
     } catch (error) {
@@ -198,7 +201,15 @@ export const useLoginUser = () => {
   );
 
   const handleLogin = async (values: { empId: string; password: string }) => {
-    console.log('Corr: ', coordinates);
+    if (ipAddress === '') {
+      showMessage({
+        message: 'Unable to obtain IP address',
+        description: 'Please restart the application',
+        type: 'danger',
+        style: CommonStyles.error,
+      });
+      return;
+    }
     if (!values.empId || !values.password) {
       showMessage({
         message: 'Validation Error',
@@ -282,24 +293,24 @@ export const useLoginUser = () => {
         console.log('User Role:', role);
         //console.log('Full Auth:', fullAuth);
 
-        if (Region == 'N/A') {
-          showMessage({
-            message: 'Logged in Failed',
-            description: 'You do not have permission to access the apps',
-            type: 'danger',
-            style: CommonStyles.error,
-          });
-          return;
-        }
-        if (Zone == 'N/A') {
-          showMessage({
-            message: 'Logged in Failed',
-            description: 'You do not have permission to access the app',
-            type: 'danger',
-            style: CommonStyles.error,
-          });
-          return;
-        }
+        // if (Region == 'N/A') {
+        //   showMessage({
+        //     message: 'Logged in Failed',
+        //     description: 'You do not have permission to access the apps',
+        //     type: 'danger',
+        //     style: CommonStyles.error,
+        //   });
+        //   return;
+        // }
+        // if (Zone == 'N/A') {
+        //   showMessage({
+        //     message: 'Logged in Failed',
+        //     description: 'You do not have permission to access the app',
+        //     type: 'danger',
+        //     style: CommonStyles.error,
+        //   });
+        //   return;
+        // }
 
         if (
           role !== 'Master Admin' &&
