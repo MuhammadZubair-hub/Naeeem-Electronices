@@ -5,30 +5,28 @@ import { Role } from '../../types';
 import { RootState } from '../../redux/store';
 import { useTheme } from '../../hooks/useTheme';
 
-
 interface RoleGuardProps {
   children: React.ReactNode;
 }
 
-// Role hierarchy: CEO > GM > RM > ZM > BR > AVO
+
 const ROLE_HIERARCHY: Record<Role, number> = {
-  [Role.CEO]: 8,
-  [Role.GM]: 7,
-  [Role.AGM]: 6,
-  [Role.RM]: 5,
-  [Role.ZM]: 4,
-  [Role.AVM]: 3,
-  [Role.BR]: 2,
+  [Role.Admin]: 7,
+  [Role.CEO]: 6,
+  [Role.AGM]: 5,
+  [Role.RM]: 4,
+  [Role.ZM]: 3,
+  [Role.BM]: 2,
   [Role.AVO]: 1,
 };
 
 const mapDesignationToRole = (designation: string): Role | null => {
   if (!designation) return null;
   switch (designation.toUpperCase()) {
+    case 'Master Admin':
+      return Role.Admin;
     case 'CEO':
       return Role.CEO;
-    case 'GM':
-      return Role.GM;
     case 'AGM':
       return Role.AGM;
     case 'RM':
@@ -36,9 +34,7 @@ const mapDesignationToRole = (designation: string): Role | null => {
     case 'ZM':
       return Role.ZM;
     case 'BR':
-      return Role.BR;
-    case 'AVM':
-      return Role.AVM;
+      return Role.BM;
     case 'AVO':
       return Role.AVO;
     default:

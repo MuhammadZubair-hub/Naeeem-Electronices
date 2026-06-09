@@ -31,8 +31,8 @@ export const useLoginUser = () => {
   const getDeviceId = async () => {
     try {
       const uniqueId = await DeviceInfo.getUniqueId();
+      // return 'e4972c4089b12734';
       return uniqueId;
-      // return 'a77a54bf13da6f87';
     } catch (error) {
       console.error('Error getting device ID:', error);
       return null;
@@ -41,9 +41,6 @@ export const useLoginUser = () => {
 
   const getIPAddress = async () => {
     try {
-      // const localIP = await DeviceInfo.getIpAddress();
-      // console.log("🚀 ~ :46 ~ getIPAddress ~ localIP:", localIP)
-
       const response = await fetch('https://api.ipify.org');
       const ip = await response.text();
       console.log('🚀 ~ :49 ~ getIPAddress ~ ip:', ip);
@@ -188,8 +185,6 @@ export const useLoginUser = () => {
     React.useCallback(() => {
       const init = async () => {
         EmptyCredentials();
-        // const id = 'a77a54bf13da6f87';
-        // const id = '7c755e6c3af45fda';
         const id = await getDeviceId();
         setDeviceId(id as any);
         await getIPAddress();
@@ -317,7 +312,8 @@ export const useLoginUser = () => {
           role !== 'CEO' &&
           role !== 'RM' &&
           role !== 'ZM' &&
-          role !== 'AVM' &&
+          role !== 'AGM' &&
+          role !== 'BM' &&
           role !== 'AVO'
         ) {
           if (fullAuth == 'N') {
@@ -328,8 +324,17 @@ export const useLoginUser = () => {
               style: CommonStyles.error,
             });
             return;
+          } else {
+            showMessage({
+              message: 'Access Denied',
+              description: 'You are not Authorised.',
+              type: 'danger',
+              style: CommonStyles.error,
+            });
+            return;
           }
         }
+
         if (response?.data?.message === 'Please Verify OTP') {
           navigation.navigate('otp', {
             res: response?.data?.data,
@@ -354,8 +359,6 @@ export const useLoginUser = () => {
           });
           showMessage({
             message: 'Please Verify OTP',
-            // description:
-            //   response?.data?.message || 'Login failed. Please try again.',
             type: 'success',
             style: CommonStyles.sucsses,
           });

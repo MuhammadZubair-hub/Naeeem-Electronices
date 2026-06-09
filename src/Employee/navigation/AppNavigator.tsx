@@ -69,22 +69,18 @@ const RoleBasedNavigator = () => {
 
   switch (designation) {
     case Role.CEO:
-    case Role.GM:
       initialScreen = screenName.CEO_GM_Dashboard;
       break;
     case 'RM':
-      // initialScreen = screenName.ZoneList;
       initialScreen = screenName.RM_ZM_Dashboard;
       break;
     case Role.ZM:
       initialScreen = screenName.ZM_BR_Dashboard;
       break;
-
-    case Role.AVM:
+    case Role.BM:
       initialScreen = screenName.BR_AVO_Dashboard;
       break;
     case Role.AVO:
-      // initialScreen = screenName.CustomerList;
       initialScreen = screenName.AVO_AllCustomers;
       break;
     default:
@@ -128,82 +124,65 @@ const RoleBasedNavigator = () => {
         component={RoleGuard(RegionList, [
           Role.Admin,
           Role.CEO,
-          Role.GM,
           Role.RM,
           Role.ZM,
-          Role.AVM,
           Role.AVO,
         ])}
-        />
+      />
 
       <Stack.Screen
         name="ZoneList"
         component={RoleGuard(ZoneList, [
           Role.RM,
           Role.ZM,
-          Role.AVM,
           Role.AVO,
-          Role.GM,
           Role.CEO,
           Role.Admin,
         ])}
-        />
+      />
       <Stack.Screen
         name="BranchList"
         component={RoleGuard(BranchList, [
           Role.Admin,
           Role.CEO,
-          Role.GM,
-          
           Role.RM,
           Role.ZM,
-          Role.AVM,
           Role.AVO,
         ])}
-        />
+      />
       <Stack.Screen
         name="CustomerList"
         component={RoleGuard(CustomerList, [
           Role.Admin,
           Role.CEO,
-          Role.GM,
-          
           Role.RM,
           Role.ZM,
-          Role.AVM,
           Role.AVO,
         ])}
-        />
+      />
       <Stack.Screen
         name="CustomerDetail"
         component={RoleGuard(CustomerDetail, [
           Role.Admin,
           Role.CEO,
-          Role.GM,
-          
           Role.RM,
           Role.ZM,
-          Role.AVM,
           Role.AVO,
         ])}
-        />
+      />
       <Stack.Screen
         name="AVOsList"
         component={RoleGuard(AVOsList, [
           Role.Admin,
           Role.CEO,
-          Role.GM,
-          
           Role.RM,
           Role.ZM,
-          Role.AVM,
           Role.AVO,
         ])}
-        />
+      />
     </Stack.Navigator>
   );
 };
-
 
 export const AppNavigator = () => {
   let isActive = 'Employee';

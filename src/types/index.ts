@@ -1,15 +1,14 @@
-// Role hierarchy: CEO > GM > RM > ZM > BR > AVO
 export enum Role {
   Admin = 'Master Admin',
   CEO = 'CEO',
-  GM = 'GM', // General Manager
-  AGM = 'AGM', // Assistant General Manager
   RM = 'RM', // Regional Manager
+  AGM = 'AGM', // Assistant General Manager
   ZM = 'ZM', // Zone Manager
-  BR = 'BR', // Branch Manager
+  BM = 'BM', // Branch Manager
   AVO = 'AVO',
-  AVM = 'AVM' // Area Sales Officer
 }
+
+// AVO, RM, ZM, BM, AGM, CEO , Master Admin
 
 export interface User {
   id: string;
@@ -220,7 +219,11 @@ export interface Permission {
   conditions?: Record<string, any>;
 }
 
-export type PermissionCheck = (user: User, resource: string, action: string) => boolean;
+export type PermissionCheck = (
+  user: User,
+  resource: string,
+  action: string,
+) => boolean;
 
 // API Response Types
 export interface ApiResponse<T> {
