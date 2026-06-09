@@ -183,13 +183,14 @@ const OtpScreen: React.FC = () => {
           // }
 
           if (
-            role !== 'Master Admin' &&
-            role !== 'CEO' &&
-            role !== 'RM' &&
-            role !== 'ZM' &&
-            role !== 'AGM' &&
-            role !== 'BM' &&
-            role !== 'AVO'
+              role !== 'Master Admin' &&
+          role !== 'CEO' &&
+          role !== 'RM' &&
+          role !== 'ZM' &&
+          role !== 'AGM' &&
+          role !== 'BM' &&
+          role !== 'AVO' &&
+          fullAuth !== 'Y'
           ) {
             if (fullAuth == 'N') {
               showMessage({

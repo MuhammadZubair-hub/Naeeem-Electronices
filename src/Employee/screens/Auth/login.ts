@@ -258,8 +258,7 @@ export const useLoginUser = () => {
         coordinates.longitude.toString(),
         'N',
       );
-      console.log('Login API Response:', response);
-
+      
       // const response:any = {
       //   data: {
       //     status: true,
@@ -269,7 +268,7 @@ export const useLoginUser = () => {
       //       firstName: 'Naeem Afzal',
       //       active: 'Y',
       //       password: '1234',
-      //       designation: 'CEO',
+      //       designation: 'CsEO',
       //       region: '',
       //       zone: '',
       //       branch: 'HO',
@@ -279,7 +278,8 @@ export const useLoginUser = () => {
       //     },
       //   },
       // };
-
+      
+      console.log('Login API Response:', response);
       if (response?.data?.status) {
         const role = response?.data?.data?.designation;
         const Region = response?.data?.data?.region;
@@ -314,7 +314,8 @@ export const useLoginUser = () => {
           role !== 'ZM' &&
           role !== 'AGM' &&
           role !== 'BM' &&
-          role !== 'AVO'
+          role !== 'AVO' &&
+          fullAuth !== 'Y'
         ) {
           if (fullAuth == 'N') {
             showMessage({
