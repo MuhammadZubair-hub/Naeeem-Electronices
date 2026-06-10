@@ -90,7 +90,7 @@ const UpdatePassword = () => {
           return;
         }
         // e4972c4089b12734
-        if (data?.macAddress === id) {
+        if (data?.macAddress === id || data?.macAddress === '') {
           console.log('same mac add');
         } else {
           showMessage({

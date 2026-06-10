@@ -15,18 +15,19 @@ export const useLoginUser = () => {
   const [credentials, setCredentials] = useState({ empId: '', password: '' });
   const [coordinates, setCoordinates] = useState({ latitude: 0, longitude: 0 });
   const [isLoading, setIsLoading] = useState(false);
-  const dispatch = useDispatch();
+  const [deviceId, setDeviceId] = useState('');
+  const [ipAddress, setIpAddress] = useState('');
 
+  const dispatch = useDispatch();
   const navigation: any = useNavigation();
+
   const handleChange = (field: string, value: string) => {
     setCredentials(prev => ({ ...prev, [field]: value }));
   };
+
   const EmptyCredentials = () => {
     setCredentials({ empId: '', password: '' });
   };
-
-  const [deviceId, setDeviceId] = useState('');
-  const [ipAddress, setIpAddress] = useState('');
 
   const getDeviceId = async () => {
     try {
@@ -196,10 +197,11 @@ export const useLoginUser = () => {
   );
 
   const handleLogin = async (values: { empId: string; password: string }) => {
+    // await getIPAddress();
     if (ipAddress === '') {
       showMessage({
-        message: 'Unable to obtain IP address',
-        description: 'Please restart the application',
+        message: 'Network Error',
+        description: 'Unable to obtain IP address',
         type: 'danger',
         style: CommonStyles.error,
       });
@@ -214,7 +216,6 @@ export const useLoginUser = () => {
       });
       return;
     }
-    console.log('🚀 ~ :211 ~ handleLogin ~ coordinates:', coordinates);
     if (coordinates.latitude === 0) {
       showMessage({
         message: 'Permission Error',
@@ -232,8 +233,9 @@ export const useLoginUser = () => {
       values.password.trim(),
       deviceId,
       ipAddress,
-      coordinates.latitude,
-      coordinates.longitude,
+      coordinates.latitude.toString(),
+      coordinates.longitude.toString(),
+      'N',
     );
 
     const payloadforOTP = {
@@ -246,7 +248,7 @@ export const useLoginUser = () => {
       verified: 'Y',
     };
 
-    console.log('payload: ', payloadforOTP);
+    // console.log('payloadforOTP: ', payloadforOTP);
 
     try {
       const response = await API_Config.loginUser(
@@ -258,7 +260,7 @@ export const useLoginUser = () => {
         coordinates.longitude.toString(),
         'N',
       );
-      
+
       // const response:any = {
       //   data: {
       //     status: true,
@@ -268,17 +270,17 @@ export const useLoginUser = () => {
       //       firstName: 'Naeem Afzal',
       //       active: 'Y',
       //       password: '1234',
-      //       designation: 'CsEO',
+      //       designation: 'CEO',
       //       region: '',
       //       zone: '',
       //       branch: 'HO',
       //       assignedId: '1',
       //       fullAuth: 'Y',
-      //       macAddress: '7c755e6c3af45fda',
+      //       macAddress: '',
       //     },
       //   },
       // };
-      
+
       console.log('Login API Response:', response);
       if (response?.data?.status) {
         const role = response?.data?.data?.designation;
@@ -317,15 +319,16 @@ export const useLoginUser = () => {
           role !== 'AVO' &&
           fullAuth !== 'Y'
         ) {
-          if (fullAuth == 'N') {
-            showMessage({
-              message: 'Access Denied',
-              description: 'You do not have access to this application.',
-              type: 'danger',
-              style: CommonStyles.error,
-            });
-            return;
-          } else {
+          // if (fullAuth == 'N') {
+          //   showMessage({
+          //     message: 'Access Denied',
+          //     description: 'You are not Authorised.',
+          //     type: 'danger',
+          //     style: CommonStyles.error,
+          //   });
+          //   return;
+          // } else
+             {
             showMessage({
               message: 'Access Denied',
               description: 'You are not Authorised.',
@@ -352,10 +355,43 @@ export const useLoginUser = () => {
           });
         }
       } else {
-        console.log('in else', response);
+        console.log('in else');
         if (response?.data?.message === 'Please Verify OTP') {
+          const role = response?.data?.data?.designation;
+          const fullAuth = response?.data?.data?.auth;
+
+          if (
+            role !== 'Master Admin' &&
+            role !== 'CEO' &&
+            role !== 'RM' &&
+            role !== 'ZM' &&
+            role !== 'AGM' &&
+            role !== 'BM' &&
+            role !== 'AVO' &&
+            fullAuth !== 'Y'
+          ) {
+            // if (fullAuth == 'N') {
+            //   showMessage({
+            //     message: 'Access Denied',
+            //     description: 'You are not Authorised.',
+            //     type: 'danger',
+            //     style: CommonStyles.error,
+            //   });
+            //   return;
+            // } else 
+              {
+              showMessage({
+                message: 'Access Denied',
+                description: 'You are not Authorised.',
+                type: 'danger',
+                style: CommonStyles.error,
+              });
+              return;
+            }
+          }
+
           navigation.navigate('otp', {
-            res: response?.data?.data,
+            res: response?.data?.data?.mobile,
             payloadforOTP,
           });
           showMessage({

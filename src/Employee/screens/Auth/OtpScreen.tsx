@@ -183,7 +183,7 @@ const OtpScreen: React.FC = () => {
           // }
 
           if (
-              role !== 'Master Admin' &&
+          role !== 'Master Admin' &&
           role !== 'CEO' &&
           role !== 'RM' &&
           role !== 'ZM' &&
@@ -195,7 +195,7 @@ const OtpScreen: React.FC = () => {
             if (fullAuth == 'N') {
               showMessage({
                 message: 'Access Denied',
-                description: 'You do not have access to this application.',
+                description: 'You are not Authorised.',
                 type: 'danger',
                 style: CommonStyles.error,
               });

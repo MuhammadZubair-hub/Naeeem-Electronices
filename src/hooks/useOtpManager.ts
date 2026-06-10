@@ -8,8 +8,8 @@ import {
 
 // Zong SMS API credentials
 const ZONG_SMS_URL = 'https://cbs.zong.com.pk/reachrestapi/home/SendQuickSMS';
-// const ZONG_LOGIN_ID = '923158671200';
-const ZONG_LOGIN_ID = '923158671';  // wrong
+const ZONG_LOGIN_ID = '923158671200';  //correct
+// const ZONG_LOGIN_ID = '923158671';  // wrong
 const ZONG_PASSWORD = '!B@koz1007*!';
 const ZONG_MASK = 'NE Pvt Ltd.';
 // const nbr = '0300-0734015';
@@ -51,7 +51,7 @@ export const useOtpManager = ({ onOtpRead }: UseOtpManagerOptions = {}) => {
   const [countdown, setCountdown] = useState(0);
   const [canResend, setCanResend] = useState(false);
   const [appHash, setAppHash] = useState('');
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Fetch the 11-char app hash on mount (Android only).
   // This hash must be appended to the SMS message so the OS can identify the app.
