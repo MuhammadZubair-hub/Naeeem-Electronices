@@ -59,7 +59,7 @@ export const BranchList: React.FC = () => {
 
   const getAllBranches = async () => {
     setLoading(true);
-    console.log('user data is ', users);
+    console.log('user data is ', users?.empId);
     console.log(zoneId);
     const response = await API_Config.getZoneBranches({
       ID: users?.empId,
@@ -122,6 +122,7 @@ export const BranchesData = ({
 
   const handleBranchPress = (item: any) => {
     navigation.navigate('AVOsList', { branch: item?.branchCode });
+    console.log("🚀 ~ :125 ~ handleBranchPress ~ item?.branchCode:", item?.branchCode)
   };
 
   return (

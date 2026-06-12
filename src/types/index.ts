@@ -1,11 +1,11 @@
 export enum Role {
-  Admin = 'Master Admin',
-  CEO = 'CEO',
-  RM = 'RM', // Regional Manager
-  AGM = 'AGM', // Assistant General Manager
-  ZM = 'ZM', // Zone Manager
-  BM = 'BM', // Branch Manager
-  AVO = 'AVO',
+  Admin = 'Master Admin',  //done
+  CEO = 'CEO',  // done
+  RM = 'RM', // done
+  AGM = 'AGM',  
+  ZM = 'ZM', // done
+  BM = 'BM',  
+  AVO = 'AVO',               //done
 }
 
 // AVO, RM, ZM, BM, AGM, CEO , Master Admin

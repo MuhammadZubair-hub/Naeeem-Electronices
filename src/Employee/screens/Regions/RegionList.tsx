@@ -17,6 +17,7 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
   const navigation = useNavigation<any>();
 
   const handleRegionPress = (region: any) => {
+    console.log("🚀 ~ :20 ~ handleRegionPress ~ region:", region)
     navigation.navigate('ZoneList', { data: region });
   };
 

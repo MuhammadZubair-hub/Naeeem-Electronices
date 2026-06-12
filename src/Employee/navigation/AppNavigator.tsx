@@ -69,22 +69,25 @@ const RoleBasedNavigator = () => {
 
   switch (designation) {
     case Role.CEO:
+    case Role.Admin:
       initialScreen = screenName.CEO_GM_Dashboard;
       break;
-    case 'RM':
+    case Role.RM:
       initialScreen = screenName.RM_ZM_Dashboard;
       break;
     case Role.ZM:
       initialScreen = screenName.ZM_BR_Dashboard;
       break;
+    // case 'AVM':
     case Role.BM:
+    case Role.AVO:
       initialScreen = screenName.BR_AVO_Dashboard;
       break;
     case Role.AVO:
       initialScreen = screenName.AVO_AllCustomers;
       break;
-    default:
-      initialScreen = screenName.AVO_AllCustomers;
+    // default:
+    //   initialScreen = screenName.AVO_AllCustomers;
   }
 
   if (access?.toUpperCase() == 'Y' || access?.toUpperCase() == 'YES') {

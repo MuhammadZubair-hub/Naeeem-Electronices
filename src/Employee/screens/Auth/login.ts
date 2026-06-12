@@ -9,7 +9,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Geolocation from 'react-native-geolocation-service';
 import { Alert, Linking, PermissionsAndroid, Platform } from 'react-native';
 import { loginSuccess } from '../../../redux/slices/authSlice';
-import { toString } from 'lodash';
+
 
 export const useLoginUser = () => {
   const [credentials, setCredentials] = useState({ empId: '', password: '' });
@@ -198,10 +198,12 @@ export const useLoginUser = () => {
 
   const handleLogin = async (values: { empId: string; password: string }) => {
     // await getIPAddress();
+
     if (ipAddress === '') {
       showMessage({
         message: 'Network Error',
-        description: 'Unable to obtain IP address',
+        description:
+          'Unable to obtain IP address, Please check your network and restart the app',
         type: 'danger',
         style: CommonStyles.error,
       });
@@ -319,16 +321,16 @@ export const useLoginUser = () => {
           role !== 'AVO' &&
           fullAuth !== 'Y'
         ) {
-          // if (fullAuth == 'N') {
-          //   showMessage({
-          //     message: 'Access Denied',
-          //     description: 'You are not Authorised.',
-          //     type: 'danger',
-          //     style: CommonStyles.error,
-          //   });
-          //   return;
-          // } else
-             {
+          if (fullAuth == 'N') {
+            showMessage({
+              message: 'Access Denied',
+              description: 'You are not Authorised.',
+              type: 'danger',
+              style: CommonStyles.error,
+            });
+            return;
+          } else {
+            console.log('ere');
             showMessage({
               message: 'Access Denied',
               description: 'You are not Authorised.',
@@ -357,9 +359,9 @@ export const useLoginUser = () => {
       } else {
         console.log('in else');
         if (response?.data?.message === 'Please Verify OTP') {
-          const role = response?.data?.data?.designation;
+          const role = response?.data?.data?.design;
           const fullAuth = response?.data?.data?.auth;
-
+          console.log(role, fullAuth);
           if (
             role !== 'Master Admin' &&
             role !== 'CEO' &&
@@ -370,16 +372,17 @@ export const useLoginUser = () => {
             role !== 'AVO' &&
             fullAuth !== 'Y'
           ) {
-            // if (fullAuth == 'N') {
-            //   showMessage({
-            //     message: 'Access Denied',
-            //     description: 'You are not Authorised.',
-            //     type: 'danger',
-            //     style: CommonStyles.error,
-            //   });
-            //   return;
-            // } else 
-              {
+            if (fullAuth == 'N') {
+              console.log('objects  1');
+              showMessage({
+                message: 'Access Denied',
+                description: 'You are not Authorised.',
+                type: 'danger',
+                style: CommonStyles.error,
+              });
+              return;
+            } else {
+              console.log('objects');
               showMessage({
                 message: 'Access Denied',
                 description: 'You are not Authorised.',
@@ -391,6 +394,7 @@ export const useLoginUser = () => {
           }
 
           navigation.navigate('otp', {
+            // res: '03000734015',
             res: response?.data?.data?.mobile,
             payloadforOTP,
           });

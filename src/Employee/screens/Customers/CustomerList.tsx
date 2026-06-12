@@ -139,6 +139,7 @@ export const CustomerList: React.FC = () => {
   }
 
   const getAVOCount = useCallback(async () => {
+      console.log("🚀 ~ :142 ~ CustomerList ~ AvoId:", AvoId)
     const res = await API_Config.getAvoCountDetails({
       AssignedID: AvoId,
     });
@@ -219,7 +220,7 @@ export const CustomerList: React.FC = () => {
                 fontSize: AppSizes.Font_18,
               }}
             >
-              This AVO has no outstanding amounts against customers.
+              This AVO has no outstanding amounts against any customer.
             </Text>
           ) : (
             <>

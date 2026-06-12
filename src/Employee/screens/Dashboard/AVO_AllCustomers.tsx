@@ -66,6 +66,7 @@ export const AVO_AllCustomers: React.FC = () => {
   const [allZonesTotal, setAllZoneTotal] = useState<Region[]>([]);
 
   const getAVOCount = useCallback(async () => {
+      console.log("🚀 ~ :69 ~ AVO_AllCustomers ~ AvoId:", AvoId)
     const res = await API_Config.getAvoCountDetails({
       AssignedID: AvoId,
     });
@@ -215,7 +216,7 @@ export const AVO_AllCustomers: React.FC = () => {
               }}
             >
               {' '}
-              This AVO has no outstanding amounts against customers.{' '}
+              This AVO has no outstanding amounts against customers
             </Text>
           ) : (
             <>
