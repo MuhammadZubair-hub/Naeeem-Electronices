@@ -23,6 +23,7 @@ import Ionicons from '@react-native-vector-icons/ionicons';
 import { fonts } from '../../assets/fonts/Fonts';
 import { colors } from '../../styles/theme';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { logout } from '../../redux/slices/authSlice';
 // import { BlurView } from '@react-native-community/blur';
 
 const CoustomerLoginScreen = () => {
@@ -37,7 +38,7 @@ const CoustomerLoginScreen = () => {
     React.useCallback(() => {
       const backAction = () => {
         Alert.alert(
-          '',
+          'Hold On',
           'Do you want to exit the app?',
           [
             {
@@ -47,7 +48,10 @@ const CoustomerLoginScreen = () => {
             },
             {
               text: 'YES',
-              onPress: () => BackHandler.exitApp(),
+              onPress: () => {
+                dispatch(logout());
+                BackHandler.exitApp();
+              },
             },
           ],
           { cancelable: true },
@@ -66,20 +70,16 @@ const CoustomerLoginScreen = () => {
   );
 
   return (
-
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.white }]}>
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: theme.colors.white }]}
+    >
       <KeyboardAwareScrollView
         enableOnAndroid
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-
-
         <View style={styles.glassCard}>
-
-
-
           {/* Input Fields Container */}
           <View style={styles.inputFieldsContainer}>
             {/* User ID Input */}
@@ -174,38 +174,35 @@ const CoustomerLoginScreen = () => {
                   size={22}
                   color={theme.colors.secondaryDark}
                 />
-
               </View>
             </View>
           </View>
 
-
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: AppSizes.Margin_Horizontal_10 }}>
-
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginBottom: AppSizes.Margin_Horizontal_10,
+            }}
+          >
             <Text
-             onPress={() => { navigation.navigate('ForgetPassword') }}
-              style={[
-                styles.fieldLabel,
-                { color: theme.colors.secondaryDark },
-              ]}
+              onPress={() => {
+                navigation.navigate('ForgetPassword');
+              }}
+              style={[styles.fieldLabel, { color: theme.colors.secondaryDark }]}
             >
               Forget password ?
             </Text>
 
-
             <Text
-              onPress={() => { navigation.navigate('SignUp') }}
-              style={[
-                styles.fieldLabel,
-                { color: theme.colors.secondaryDark },
-              ]}
+              onPress={() => {
+                navigation.navigate('SignUp');
+              }}
+              style={[styles.fieldLabel, { color: theme.colors.secondaryDark }]}
             >
               Create an Account
             </Text>
-
           </View>
-
-
 
           <Button
             variant="secondary"
@@ -213,7 +210,6 @@ const CoustomerLoginScreen = () => {
             onPress={() => loginData.handleLogin(loginData.credentials)}
             style={styles.loginButton}
           />
-
         </View>
 
         {/* Footer Spacing */}
@@ -221,18 +217,13 @@ const CoustomerLoginScreen = () => {
       </KeyboardAwareScrollView>
 
       <LoadingModal visible={loginData.isLoading} />
-
     </SafeAreaView>
-
-
   );
 };
 
 export default CoustomerLoginScreen;
 
 const styles = StyleSheet.create({
-
-
   safeArea: {
     flex: 1,
     //zIndex: 2,

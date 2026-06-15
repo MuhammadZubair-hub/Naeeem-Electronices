@@ -11,7 +11,7 @@ class MainActivity : ReactActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    // window.addFlags(WindowManager.LayoutParams.FLAG_SECURE) // Uncomment to block screenshots
+     window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)  
   }
 
   override fun getMainComponentName(): String = "Naeem_Electronics"

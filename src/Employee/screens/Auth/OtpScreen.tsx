@@ -17,6 +17,7 @@ import { useTheme } from '../../../hooks/useTheme';
 import { useOtpManager } from '../../../hooks/useOtpManager';
 import OtpInput, { OtpInputHandle } from '../../../components/common/OtpInput';
 import { loginSuccess } from '../../../redux/slices/authSlice';
+import { markSessionStartedByLogin } from '../../../hooks/useSessionTimeout';
 import { CommonStyles } from '../../../styles/GlobalStyle';
 import { colors } from '../../../styles/theme';
 import { API_Config } from '../../services/apiServices';
@@ -212,6 +213,7 @@ const OtpScreen: React.FC = () => {
             }
           }
 
+          markSessionStartedByLogin();
           dispatch(
             loginSuccess({ data: response.data, token: response.data.token }),
           );

@@ -9,6 +9,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Geolocation from 'react-native-geolocation-service';
 import { Alert, Linking, PermissionsAndroid, Platform } from 'react-native';
 import { loginSuccess } from '../../../redux/slices/authSlice';
+import { markSessionStartedByLogin } from '../../../hooks/useSessionTimeout';
 
 
 export const useLoginUser = () => {
@@ -355,6 +356,7 @@ export const useLoginUser = () => {
             payloadforOTP,
           });
         } else {
+          markSessionStartedByLogin();
           dispatch(
             loginSuccess({ data: response.data, token: response.data.token }),
           );

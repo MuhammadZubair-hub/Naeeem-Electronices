@@ -2,6 +2,8 @@
 import { useCallback } from 'react';
 import { BackHandler, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../redux/slices/authSlice';
 
 interface BackHandlerOptions {
   message?: string;
@@ -13,12 +15,14 @@ interface BackHandlerOptions {
 }
 
 export const useBackHandler = (options: BackHandlerOptions = {}) => {
+  const dispatch = useDispatch();
+
   const {
-    title = '',
+    title = 'Hold On',
     message = 'Do you want to exit the app?',
     cancelText = 'Cancel',
     confirmText = 'YES',
-    onConfirm = () => BackHandler.exitApp(),
+    onConfirm = () => { dispatch(logout()); BackHandler.exitApp(); },
     onCancel = () => null,
   } = options;
 

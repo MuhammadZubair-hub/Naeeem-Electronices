@@ -447,6 +447,8 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useOtpManager } from '../../hooks/useOtpManager';
 import { showMessage } from 'react-native-flash-message';
 import { CommonStyles } from '../../styles/GlobalStyle';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../redux/slices/authSlice';
 
 // Define the different screen modes
 type ForgetPasswordMode = 'ENTER_CNIC' | 'ENTER_OTP' | 'CREATE_PASSWORD';
@@ -455,7 +457,7 @@ const ForgetPassword = () => {
   const { theme } = useTheme();
   const navigation = useNavigation();
   const loginData = useLoginUser();
-
+  const dispatch = useDispatch();
   const [mode, setMode] = useState<ForgetPasswordMode>('ENTER_CNIC');
   const [showPassword, setShowPassword] = useState<boolean>(true);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(true);
@@ -468,13 +470,19 @@ const ForgetPassword = () => {
   const otpInputRef = useRef<OtpInputHandle>(null);
   const currentOtp = useRef('');
 
-  const { sendOtp, verifyOtp, resendOtp, countdown, canResend, isSending: isOtpSending } =
-    useOtpManager({
-      onOtpRead: code => {
-        currentOtp.current = code;
-        otpInputRef.current?.autoFill(code);
-      },
-    });
+  const {
+    sendOtp,
+    verifyOtp,
+    resendOtp,
+    countdown,
+    canResend,
+    isSending: isOtpSending,
+  } = useOtpManager({
+    onOtpRead: code => {
+      currentOtp.current = code;
+      otpInputRef.current?.autoFill(code);
+    },
+  });
 
   // Auto-send OTP the first time user enters OTP mode
   useEffect(() => {
@@ -522,7 +530,9 @@ const ForgetPassword = () => {
           themeColor={theme.colors.secondaryDark}
           backgroundColor={theme.colors.white}
           disabled={isOtpSending}
-          onChange={code => { currentOtp.current = code; }}
+          onChange={code => {
+            currentOtp.current = code;
+          }}
         />
         <TouchableOpacity
           style={styles.resendContainer}
@@ -541,7 +551,9 @@ const ForgetPassword = () => {
                 },
               ]}
             >
-              {canResend ? 'Resend OTP' : `Resend (${formatCountdown(countdown)})`}
+              {canResend
+                ? 'Resend OTP'
+                : `Resend (${formatCountdown(countdown)})`}
             </Text>
           </Text>
         </TouchableOpacity>
@@ -769,7 +781,7 @@ const ForgetPassword = () => {
         }
 
         Alert.alert(
-          '',
+          'Hold On',
           'Do you want to exit the app?',
           [
             {
@@ -779,7 +791,10 @@ const ForgetPassword = () => {
             },
             {
               text: 'YES',
-              onPress: () => BackHandler.exitApp(),
+              onPress: () => {
+                dispatch(logout());
+                BackHandler.exitApp();
+              },
             },
           ],
           { cancelable: true },
@@ -801,7 +816,7 @@ const ForgetPassword = () => {
       case 'ENTER_CNIC':
         return <CNICForm />;
       case 'ENTER_OTP':
-        // return <OTPVerify />;
+      // return <OTPVerify />;
       case 'CREATE_PASSWORD':
         return <CreatePasswordForm />;
       default:

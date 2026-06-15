@@ -7,7 +7,15 @@ import { RootState } from '../redux/store';
 
  const IDLE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 const LAST_ACTIVE_KEY = 'lastActive';
-const ACTIVITY_DEBOUNCE = 10 * 1000; 
+const ACTIVITY_DEBOUNCE = 10 * 1000;
+
+// Module-level flag — resets to false when the app process is killed.
+// Set to true only after an explicit login in this JS runtime session.
+let _sessionStartedByLogin = false;
+
+export const markSessionStartedByLogin = () => {
+  _sessionStartedByLogin = true;
+};
 
 export const useSessionTimeout = () => {
   const dispatch = useDispatch();
@@ -102,7 +110,12 @@ export const useSessionTimeout = () => {
     }
 
     const initSession = async () => {
-      // Cold-start: app was killed — check if session expired while away
+      // Cold start: app was killed and relaunched — always go to login
+      if (!_sessionStartedByLogin) {
+        handleSessionExpired();
+        return;
+      }
+      // Normal path: user just logged in this session — check idle timeout
       const expired = await checkSessionExpiry();
       if (expired) {
         handleSessionExpired();

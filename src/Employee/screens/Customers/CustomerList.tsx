@@ -31,8 +31,9 @@ import { screenName } from '../../navigation/ScreenName';
 import { debounce } from 'lodash';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import EmptyComponents from '../../../components/common/EmptyComponents';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../redux/store';
+import { logout } from '../../../redux/slices/authSlice';
 import MainHeader from '../../../components/common/MainHeader';
 import { HorizontalStackedBarGraph } from '../../../components/charts/BarGraphHorizontal';
 import { Card } from '../../../components/common';
@@ -89,6 +90,7 @@ interface Region {
 export const CustomerList: React.FC = () => {
   const { theme } = useTheme();
   const navigation = useNavigation<any>();
+  const dispatch = useDispatch();
   const users = useSelector((state: RootState) => state.auth.user);
   const route = useRoute<any>();
   const AvoId = route?.params?.AvoId ?? users?.assignedId;
@@ -110,7 +112,7 @@ export const CustomerList: React.FC = () => {
       React.useCallback(() => {
         const backAction = () => {
           Alert.alert(
-            '',
+            'Hold On',
             'Do you want to exit the app?',
             [
               {
@@ -120,7 +122,10 @@ export const CustomerList: React.FC = () => {
               },
               {
                 text: 'YES',
-                onPress: () => BackHandler.exitApp(),
+                onPress: () => {
+                  dispatch(logout());
+                  BackHandler.exitApp();
+                },
               },
             ],
             { cancelable: true },

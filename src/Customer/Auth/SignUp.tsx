@@ -24,6 +24,7 @@ import Ionicons from '@react-native-vector-icons/ionicons';
 import { fonts } from '../../assets/fonts/Fonts';
 import { colors } from '../../styles/theme';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { logout } from '../../redux/slices/authSlice';
 // import { BlurView } from '@react-native-community/blur';
 
 const CoustomerSignUpScreen = () => {
@@ -39,7 +40,7 @@ const CoustomerSignUpScreen = () => {
     React.useCallback(() => {
       const backAction = () => {
         Alert.alert(
-          '',
+          'Hold On',
           'Do you want to exit the app?',
           [
             {
@@ -49,7 +50,10 @@ const CoustomerSignUpScreen = () => {
             },
             {
               text: 'YES',
-              onPress: () => BackHandler.exitApp(),
+              onPress: () => {
+                dispatch(logout());
+                BackHandler.exitApp();
+              },
             },
           ],
           { cancelable: true },
