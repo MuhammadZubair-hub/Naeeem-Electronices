@@ -2,10 +2,15 @@ export enum Role {
   Admin = 'Master Admin',  //done
   CEO = 'CEO',  // done
   RM = 'RM', // done
-  AGM = 'AGM',  
+  AGM = 'AGM',
+  // AGM_Full = 'Area General Manager',
+  AGM_Full = 'AREA GENERAL MANAGER',
   ZM = 'ZM', // done
-  BM = 'BM',  
+  // BM = 'BM',  
   AVO = 'AVO',               //done
+  
+  
+  AVM = 'AVM',  
 }
 
 // AVO, RM, ZM, BM, AGM, CEO , Master Admin

@@ -47,7 +47,9 @@ export const Header: React.FC<HeaderProps> = ({
       navigation.navigate(screenName.RM_ZM_Dashboard as never);
     } else if (role === 'ZM') {
       navigation.navigate(screenName.ZM_BR_Dashboard as never);
-    }  else if (role === 'AVO') {
+    } else if (role === 'AVM') {
+      navigation.navigate(screenName.BR_AVO_Dashboard as never);
+    } else if (role === 'AVO') {
       navigation.navigate(screenName.BR_AVO_Dashboard as never);
     } else {
       navigation.navigate(screenName.CEO_GM_Dashboard as never);

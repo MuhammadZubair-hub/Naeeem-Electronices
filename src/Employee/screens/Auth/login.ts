@@ -269,16 +269,16 @@ export const useLoginUser = () => {
       //     message: 'EmployeeInfo retrieved successfully.',
       //     data: {
       //       empId: '1',
-      //       firstName: 'Naeem Afzal',
+      //       firstName: 'Naeemer Afzal',
       //       active: 'Y',
       //       password: '1234',
-      //       designation: 'CEO',
+      //       designation: 'RCO',
       //       region: '',
       //       zone: '',
       //       branch: 'HO',
       //       assignedId: '1',
-      //       fullAuth: 'Y',
-      //       macAddress: '',
+      //       fullAuth: 'N',
+      //       macAddress: '62eaea749334d89d',
       //     },
       //   },
       // };
@@ -311,14 +311,22 @@ export const useLoginUser = () => {
         //   return;
         // }
 
+
+
         if (
+          /// have to confirm role in otp andwell
           role !== 'Master Admin' &&
           role !== 'CEO' &&
           role !== 'RM' &&
           role !== 'ZM' &&
-          role !== 'AGM' &&
-          role !== 'BM' &&
+          role !== 'AGM' &&  
+          
+          role !== 'Area General Manager' &&
+
           role !== 'AVO' &&
+
+
+          role !== 'AVM' &&
           fullAuth !== 'Y'
         ) {
           if (fullAuth == 'N') {
@@ -367,8 +375,10 @@ export const useLoginUser = () => {
             role !== 'CEO' &&
             role !== 'RM' &&
             role !== 'ZM' &&
-            role !== 'AGM' &&
-            role !== 'BM' &&
+            role !== 'AGM' && 
+            
+            role !== 'Area General Manager' &&
+            role !== 'AVM' &&
             role !== 'AVO' &&
             fullAuth !== 'Y'
           ) {

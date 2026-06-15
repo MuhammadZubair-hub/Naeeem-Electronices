@@ -68,9 +68,14 @@ const RoleBasedNavigator = () => {
   let initialScreen;
 
   switch (designation) {
+
     case Role.CEO:
     case Role.Admin:
       initialScreen = screenName.CEO_GM_Dashboard;
+      break;
+    case Role.AGM:
+    case Role.AGM_Full:
+      initialScreen = screenName.ZM_BR_Dashboard;
       break;
     case Role.RM:
       initialScreen = screenName.RM_ZM_Dashboard;
@@ -78,24 +83,26 @@ const RoleBasedNavigator = () => {
     case Role.ZM:
       initialScreen = screenName.ZM_BR_Dashboard;
       break;
-    // case 'AVM':
-    case Role.BM:
-    case Role.AVO:
+    // case Role.BM:
+    case Role.AVM:
       initialScreen = screenName.BR_AVO_Dashboard;
       break;
     case Role.AVO:
       initialScreen = screenName.AVO_AllCustomers;
       break;
     // default:
-    //   initialScreen = screenName.AVO_AllCustomers;
+    //   console.log('no screen allocated');
+    //   break;
   }
 
-  if (access?.toUpperCase() == 'Y' || access?.toUpperCase() == 'YES') {
+  if (
+    (designation === Role.CEO || designation === Role.Admin) &&
+    (access?.toUpperCase() == 'Y' || access?.toUpperCase() == 'YES')
+  ) {
     initialScreen = screenName.CEO_GM_Dashboard;
-  } else {
-    // initialScreen = screenName.AVO_AllCustomers
-    console.log('no ausdfsfddsf');
   }
+
+  
   return (
     <Stack.Navigator
       initialRouteName={initialScreen}
