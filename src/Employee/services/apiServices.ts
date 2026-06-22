@@ -17,6 +17,7 @@ export const API_Config = {
     ipAddress: string,
     longitude: string,
     latitude: string,
+    deviceName: string,
     verified: string,
   ) => {
     return apicall_new({
@@ -29,6 +30,7 @@ export const API_Config = {
         ipAddress,
         longitude,
         latitude,
+        deviceName,
         verified,
       },
     });
@@ -117,6 +119,13 @@ export const API_Config = {
       endpoint: `${baseUrl}${endPoints.avocountdetial}`,
       method: 'GET',
       params: param,
+    });
+  },
+ 
+  Appversion: async () => {
+    return apicall_new({
+      endpoint: `${baseUrl}${endPoints.Appversion}`,
+      method: 'GET',
     });
   },
 

@@ -207,7 +207,8 @@ export const CustomerList: React.FC = () => {
 
   return (
     <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
-      <Header title="Customers" subtitle="AVO's Customers" showBackButton />
+      {/* <Header title={String(users?.firstName)} subtitle={users?.empId} showBackButton /> */}
+      <Header title="Customers" subtitle="AVO's Customers" Id={String(users?.empId)} showBackButton />
 
       {loading ? (
         <Loader title="Loading Customers" />

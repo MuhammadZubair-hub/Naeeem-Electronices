@@ -14,10 +14,13 @@ import { AppSizes } from '../../utils/AppSizes';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { screenName } from '../../Employee/navigation/ScreenName';
+import { fonts } from '../../assets/fonts/Fonts';
+import { colors } from '../../styles/theme';
 
 interface HeaderProps {
   title: string;
   subtitle?: string;
+  Id: string;
   showBackButton?: boolean;
   onBackPress?: () => void;
   rightButton?: React.ReactNode;
@@ -34,6 +37,7 @@ export const Header: React.FC<HeaderProps> = ({
   style,
   titleStyle,
   subtitleStyle,
+  Id,
 }) => {
   const navigation = useNavigation();
   const { theme } = useTheme();
@@ -80,11 +84,32 @@ export const Header: React.FC<HeaderProps> = ({
         )}
 
         <View>
-          <Text
-            style={[styles.title, { color: theme.colors.white }, titleStyle]}
+          
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              // gap: 10,
+              width:'87%',
+              // backgroundColor:colors.accentDark,
+              alignItems:'center'
+            }}
           >
-            {title}
+            <Text
+              style={[styles.title, { color: theme.colors.white }, titleStyle]}
+            >
+              {title}
+            </Text>
+            <Text
+            style={[
+              styles.title,
+              { color: theme.colors.white, justifyContent: 'center' },
+            ]}
+          >
+            EmpID : {Id}
+            {/* EmpID : <Text style={{fontSize:15, fontFamily:fonts.regular}}>{Id}</Text> */}
           </Text>
+          </View>
           {subtitle && (
             <Text
               style={[
@@ -143,6 +168,10 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
+    fontFamily: 'Poppins-Bold',
+  },
+  id: {
+    fontSize: 14,
     fontFamily: 'Poppins-Bold',
   },
   subtitle: {

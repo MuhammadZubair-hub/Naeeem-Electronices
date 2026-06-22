@@ -81,7 +81,7 @@ export const AVOsList: React.FC = () => {
 
   return (
     <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
-      <Header title="AVO's" subtitle="Branch's AVOs" showBackButton />
+      <Header title="AVO's" subtitle="Branch's AVOs" Id={String(users?.empId)} showBackButton />
 
       {loading ? (
         <Loader title={'Loading AVOs'} />

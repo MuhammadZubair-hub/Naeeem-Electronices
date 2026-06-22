@@ -25,9 +25,10 @@ import { formatDate, formatTime } from '../../utils/formatters';
 interface MainHeaderProps {
   title: string | undefined;
   subTitle: string | undefined;
+  Id: string | undefined;
 }
 
-const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
+const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle, Id }) => {
   const { theme } = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const [menuVisible, setMenuVisible] = useState(false);
@@ -72,9 +73,11 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
     const response = await API_Config.getEmployeeLogs(empId.trim());
     if (response.success && response.data?.status) {
       const items = Array.isArray(response.data.data) ? response.data.data : [];
-      console.log("🚀 ~ :75 ~ fetchLoginHistory ~ items:", items)
-      const logs = items.filter((item:any)=>item.status==="Login successful.")
-      console.log("🚀 ~ :77 ~ fetchLoginHistory ~ logs:", logs)
+      console.log('🚀 ~ :75 ~ fetchLoginHistory ~ items:', items);
+      const logs = items.filter(
+        (item: any) => item.status === 'Login successful.',
+      );
+      console.log('🚀 ~ :77 ~ fetchLoginHistory ~ logs:', logs);
       setLoginHistoryData(logs);
       if (items.length === 0) {
         setLoginHistoryError('No login history found for this employee.');
@@ -212,9 +215,11 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
           <Text style={[styles.title, { color: theme.colors.white }]}>
             {title}
           </Text>
-          <Text style={[styles.subTitle, { color: theme.colors.white }]}>
-            ({subTitle})
-          </Text>
+            <Text style={[styles.subTitle, { color: theme.colors.white }]}>
+              ({subTitle} 
+              {/* {Id ?  <> - {Id}</> : null}  */}
+              )
+            </Text>
         </View>
 
         <View
@@ -494,6 +499,25 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
                         : '-'}
                     </Text>
                   </View>
+                  <View style={styles.historyRow}>
+                    <Text
+                      style={[
+                        styles.historyLabel,
+                        { color: theme.colors.secondaryDark },
+                      ]}
+                    >
+                      Device Name
+                    </Text>
+                    <Text
+                      style={[
+                        styles.historyValue,
+                        { color: theme.colors.textTertiary },
+                      ]}
+                    >
+                      {' '}
+                      {item.deviceName || '-'}
+                    </Text>
+                  </View>
 
                   <View style={styles.historyRow}>
                     <Text
@@ -572,6 +596,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ title, subTitle }) => {
                     </Text>
                   </View>
 
+                  
                   <View style={styles.historyRow}>
                     <Text
                       style={[

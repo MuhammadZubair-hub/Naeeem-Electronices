@@ -92,7 +92,7 @@ export const BranchList: React.FC = () => {
 
   return (
     <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
-      <Header title="Branches" subtitle="Zone's Branches" showBackButton />
+      <Header title="Branches" subtitle="Zone's Branches" showBackButton Id={String(users?.empId)}/>
       {loading ? (
         <Loader title={'Loading Branches'} />
       ) : ( 

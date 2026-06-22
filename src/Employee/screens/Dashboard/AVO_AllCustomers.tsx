@@ -145,7 +145,7 @@ export const AVO_AllCustomers: React.FC = () => {
   return (
     <SafeAreaView edges={['top']} style={CommonStyles.mainContainer}>
       <StatusBar backgroundColor={'#140958'} barStyle="light-content" />
-      <MainHeader title={users?.firstName} subTitle={users?.designation} />
+      <MainHeader title={users?.firstName} subTitle={users?.designation} Id={users?.empId}/>
 
       {loading ? (
         <Loader title="Loading Customers" />

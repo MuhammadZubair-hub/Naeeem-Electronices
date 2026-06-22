@@ -11,12 +11,12 @@ import { Alert, Linking, PermissionsAndroid, Platform } from 'react-native';
 import { loginSuccess } from '../../../redux/slices/authSlice';
 import { markSessionStartedByLogin } from '../../../hooks/useSessionTimeout';
 
-
 export const useLoginUser = () => {
   const [credentials, setCredentials] = useState({ empId: '', password: '' });
   const [coordinates, setCoordinates] = useState({ latitude: 0, longitude: 0 });
   const [isLoading, setIsLoading] = useState(false);
   const [deviceId, setDeviceId] = useState('');
+  const [deviceName, setDeviceName] = useState('');
   const [ipAddress, setIpAddress] = useState('');
 
   const dispatch = useDispatch();
@@ -33,8 +33,26 @@ export const useLoginUser = () => {
   const getDeviceId = async () => {
     try {
       const uniqueId = await DeviceInfo.getUniqueId();
-      // return 'e4972c4089b12734';
+      // const deviceName = await DeviceInfo.getDevice();
+      // console.log('🚀 ~ :37 ~ getDeviceId ~ deviceName:', deviceName);
+      // const deviceName2 = await DeviceInfo.getDeviceName();
+      // console.log('🚀 ~ :39 ~ getDeviceId ~ deviceName2:', deviceName2);
+      // const currentVersion = DeviceInfo.getVersion();
+      // console.log("🚀 ~ :40 ~ getDeviceId ~ currentVersion:", currentVersion)
+
+      // return 'a77a54bf13da6f87';
       return uniqueId;
+    } catch (error) {
+      console.error('Error getting device ID:', error);
+      return null;
+    }
+  };
+
+  const getDeviceName = async () => {
+    try {
+      const deviceName = await DeviceInfo.getDeviceName();
+      console.log('🚀 ~ :37 ~ getDeviceId ~ deviceName:', deviceName);
+      return deviceName;
     } catch (error) {
       console.error('Error getting device ID:', error);
       return null;
@@ -189,6 +207,8 @@ export const useLoginUser = () => {
         EmptyCredentials();
         const id = await getDeviceId();
         setDeviceId(id as any);
+        const dname = await getDeviceName();
+        setDeviceName(dname as any);
         await getIPAddress();
       };
 
@@ -238,6 +258,7 @@ export const useLoginUser = () => {
       ipAddress,
       coordinates.latitude.toString(),
       coordinates.longitude.toString(),
+      deviceName,
       'N',
     );
 
@@ -248,6 +269,7 @@ export const useLoginUser = () => {
       ipAddress: ipAddress,
       latitude: coordinates.latitude.toString(),
       longitude: coordinates.longitude.toString(),
+      deviceName,
       verified: 'Y',
     };
 
@@ -261,6 +283,7 @@ export const useLoginUser = () => {
         ipAddress,
         coordinates.latitude.toString(),
         coordinates.longitude.toString(),
+        deviceName,
         'N',
       );
 
@@ -312,21 +335,15 @@ export const useLoginUser = () => {
         //   return;
         // }
 
-
-
         if (
           /// have to confirm role in otp andwell
           role !== 'Master Admin' &&
           role !== 'CEO' &&
           role !== 'RM' &&
           role !== 'ZM' &&
-          role !== 'AGM' &&  
-          
+          role !== 'AGM' &&
           role !== 'Area General Manager' &&
-
           role !== 'AVO' &&
-
-
           role !== 'AVM' &&
           fullAuth !== 'Y'
         ) {
@@ -377,8 +394,7 @@ export const useLoginUser = () => {
             role !== 'CEO' &&
             role !== 'RM' &&
             role !== 'ZM' &&
-            role !== 'AGM' && 
-            
+            role !== 'AGM' &&
             role !== 'Area General Manager' &&
             role !== 'AVM' &&
             role !== 'AVO' &&

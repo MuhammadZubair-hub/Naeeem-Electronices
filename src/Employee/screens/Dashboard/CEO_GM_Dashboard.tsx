@@ -138,7 +138,7 @@ export const CEO_GM_Dashboard: React.FC = () => {
       style={[styles.safeArea, { backgroundColor: theme.colors.surface }]}
     >
       <StatusBar backgroundColor={'#140958'} barStyle="light-content" />
-      <MainHeader title={users?.firstName} subTitle={users?.designation} />
+      <MainHeader title={users?.firstName} subTitle={users?.designation} Id={users?.empId} />
 
       {loader ? (
         <Loader title={'Loading Dashboard'} />

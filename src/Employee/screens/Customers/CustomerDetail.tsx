@@ -25,11 +25,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { set } from 'lodash';
 import BaseModal from '../../../components/common/BaseModal';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store';
 
 export const CustomerDetail: React.FC = () => {
   const { theme } = useTheme();
   const route = useRoute<any>();
   const { CustomerCode } = route.params;
+  const users = useSelector((state: RootState) => state.auth.user);
 
   const [customerDetails, setCustomerDetails] = useState<any>([]);
   const [loading, setLoading] = useState(false);
@@ -591,7 +594,8 @@ export const CustomerDetail: React.FC = () => {
 
   return (
     <SafeAreaView edges={['top']} style={styles.background}>
-      <Header title="Customer" subtitle="Customer Information" showBackButton />
+      <Header title="Customer" subtitle="Customer Information" Id={String(users?.empId)} showBackButton />
+      {/* <Header title={String(users?.firstName)} subtitle={users?.empId} showBackButton /> */}
 
       {loading ? (
         <Loader title="Loading Customer detail" />
