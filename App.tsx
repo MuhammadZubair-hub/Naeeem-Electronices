@@ -22,6 +22,7 @@ import { useSessionTimeout } from './src/hooks/useSessionTimeout';
 import { ActivityTracker } from './src/components/common/ActivityTracker';
 import DeviceInfo from 'react-native-device-info';
 import { API_Config } from './src/Employee/services/apiServices';
+import { colors } from './src/styles/theme';
 
 const PLAY_STORE_URL =
   'https://play.google.com/store/apps/details?id=com.naeem_electronics';
@@ -90,7 +91,9 @@ const AppContent = () => {
   const [checkingUpdate, setCheckingUpdate] = useState(true);
   const [isUpdateRequired, setIsUpdateRequired] = useState(false);
   const [currentVersion, setCurrentVersion] = useState<string | null>(null);
-  const [lattestVersion, setlattestCurrentVersion] = useState<string | null>(null);
+  const [lattestVersion, setlattestCurrentVersion] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
     const runVersionCheck = async () => {
@@ -116,7 +119,7 @@ const AppContent = () => {
             response?.data?.data?.version,
           );
           const AppVersion = response?.data?.data?.version;
-          setlattestCurrentVersion(AppVersion)
+          setlattestCurrentVersion(AppVersion);
           if (AppVersion != version) {
             setIsUpdateRequired(true);
           }
@@ -309,17 +312,26 @@ const styles = StyleSheet.create({
   },
   badgeRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    // flex: 1,
+    gap: 10,
+    // paddingVertical: 10,
     marginBottom: 24,
   },
   badge: {
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    marginHorizontal: 6,
+    borderRadius: 10,
+    // paddingHorizontal: 10,
+
+    paddingVertical: 20,
+    // marginHorizontal: 6,
+    backgroundColor: colors.accent,
+    padding: 10,
+    // flex:1,
+    gap: 10,
+    justifyContent: 'space-between',
   },
   badgeText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600',
   },
   updateButton: {

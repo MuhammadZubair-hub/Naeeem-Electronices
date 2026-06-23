@@ -33,12 +33,6 @@ export const useLoginUser = () => {
   const getDeviceId = async () => {
     try {
       const uniqueId = await DeviceInfo.getUniqueId();
-      // const deviceName = await DeviceInfo.getDevice();
-      // console.log('🚀 ~ :37 ~ getDeviceId ~ deviceName:', deviceName);
-      // const deviceName2 = await DeviceInfo.getDeviceName();
-      // console.log('🚀 ~ :39 ~ getDeviceId ~ deviceName2:', deviceName2);
-      // const currentVersion = DeviceInfo.getVersion();
-      // console.log("🚀 ~ :40 ~ getDeviceId ~ currentVersion:", currentVersion)
 
       // return 'a77a54bf13da6f87';
       return uniqueId;
