@@ -25,7 +25,7 @@ import { API_Config } from './src/Employee/services/apiServices';
 import { colors } from './src/styles/theme';
 
 const PLAY_STORE_URL =
-  'https://play.google.com/store/apps/details?id=com.naeem_electronics';
+  'https://play.google.com/store/apps/details?id=com.ne.recovery_app';
 
 const parsePlayStoreVersion = (html: string) => {
   const versionPatterns = [
@@ -79,7 +79,7 @@ const App = () => (
       <SafeAreaProvider>
         <AppContent />
         <FlashMessage position="top" />
-      </SafeAreaProvider>
+      </SafeAreaProvider> 
     </PersistGate>
   </Provider>
 );
@@ -100,7 +100,7 @@ const AppContent = () => {
       try {
         // const version = '1.0.0';
         const version = DeviceInfo.getVersion();
-        // console.log('🚀 ~ :97 ~ runVersionCheck ~ version:', version);
+        console.log('🚀 ~ :97 ~ runVersionCheck ~ version:', version);
         setCurrentVersion(version);
 
         if (Platform.OS === 'android') {
@@ -114,10 +114,10 @@ const AppContent = () => {
           // const html = await response.text();
           // const storeVersion = parsePlayStoreVersion(html);
           const response = await API_Config.Appversion();
-          console.log(
-            '🚀 ~ :112 ~ runVersionCheck ~ response:',
-            response?.data?.data?.version,
-          );
+          // console.log(
+          //   '🚀 ~ :112 ~ runVersionCheck ~ response:',
+          //   response?.data?.data?.version,
+          // );
           const AppVersion = response?.data?.data?.version;
           setlattestCurrentVersion(AppVersion);
           if (AppVersion != version) {

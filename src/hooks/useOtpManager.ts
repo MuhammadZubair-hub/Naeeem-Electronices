@@ -213,6 +213,7 @@ export const useOtpManager = ({ onOtpRead }: UseOtpManagerOptions = {}) => {
    * Verifies the entered OTP. Returns error if expired (>60s) or wrong code.
    */
   const verifyOtp = (enteredOtp: string): VerifyOtpResult => {
+    // console.log(' i am in verify otp :',enteredOtp,otpRecord);
     if (!otpRecord) {
       return { success: false, error: 'No OTP sent. Please request one.' };
     }

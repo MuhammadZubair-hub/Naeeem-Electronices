@@ -153,7 +153,9 @@ const OtpScreen: React.FC = () => {
           payloadforOTP.ipAddress,
           payloadforOTP.latitude,
           payloadforOTP.longitude,
+          payloadforOTP.deviceName,
           'Y',
+          
         );
         console.log('Login API Response:', response);
         if (response?.data?.status) {

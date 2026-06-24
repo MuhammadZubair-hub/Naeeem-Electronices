@@ -1,4 +1,4 @@
-package com.naeem_electronics
+package com.ne.recovery_app
 
 import android.os.Bundle
 import android.view.WindowManager
