@@ -25,7 +25,7 @@ import { API_Config } from './src/Employee/services/apiServices';
 import { colors } from './src/styles/theme';
 
 const PLAY_STORE_URL =
-  'https://play.google.com/store/apps/details?id=com.naeem_electronics';
+  'https://play.google.com/store/apps/details?id=com.ne.recovery_app';
 
 const parsePlayStoreVersion = (html: string) => {
   const versionPatterns = [

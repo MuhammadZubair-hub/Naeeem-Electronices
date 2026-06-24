@@ -1,4 +1,4 @@
-package com.naeem_electronics
+package com.ne.recovery_app
 
 import android.app.Application
 import com.facebook.react.PackageList
