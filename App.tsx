@@ -25,7 +25,7 @@ import { API_Config } from './src/Employee/services/apiServices';
 import { colors } from './src/styles/theme';
 
 const PLAY_STORE_URL =
-  'https://play.google.com/store/apps/details?id=com.ne.recovery_app';
+  'https://play.google.com/store/apps/details?id=com.ne.recoveryapp';
 
 const parsePlayStoreVersion = (html: string) => {
   const versionPatterns = [
@@ -120,7 +120,9 @@ const AppContent = () => {
           // );
           const AppVersion = response?.data?.data?.version;
           setlattestCurrentVersion(AppVersion);
-          if (AppVersion != version) {
+
+
+          if (AppVersion != version ) {
             setIsUpdateRequired(true);
           }
 

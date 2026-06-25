@@ -1,4 +1,4 @@
-package com.ne.recovery_app
+package com.ne.recoveryapp
 
 import android.app.Application
 import com.facebook.react.PackageList
